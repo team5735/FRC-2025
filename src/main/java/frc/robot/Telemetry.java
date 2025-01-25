@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,7 +29,6 @@ public class Telemetry {
      */
     public Telemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
-        SignalLogger.start();
     }
 
     /* What to publish over networktables for telemetry */
@@ -81,7 +79,7 @@ public class Telemetry {
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
 
-    /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
+    /** Accept the swerve drive state and telemeterize it to SmartDashboard. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
         drivePose.set(state.Pose);
@@ -103,10 +101,39 @@ public class Telemetry {
             m_moduleTargetsArray[i*2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
         }
 
-        SignalLogger.writeDoubleArray("DriveState/Pose", m_poseArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleStates", m_moduleStatesArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
-        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
+        SmartDashboard.putNumberArray("DriveState/Pose", m_poseArray);
+        SmartDashboard.putNumberArray("DriveState/ModuleStates", m_moduleStatesArray);
+        SmartDashboard.putNumberArray("DriveState/ModuleTargets", m_moduleTargetsArray);
+        SmartDashboard.putNumber("DriveState/OdometryPeriod/seconds", state.OdometryPeriod);
+
+        SmartDashboard.putNumber("translation_position", state.Pose.getY());
+        SmartDashboard.putNumber("translation_velocity", state.ModuleStates[0].speedMetersPerSecond);
+        SmartDashboard.putNumber(
+            "FL_drive_volts", 
+            RobotContainer.drivetrain.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble()
+        );
+        
+        SmartDashboard.putNumber("steer_position", state.ModuleStates[0].angle.getRotations());
+        SmartDashboard.putNumber(
+            "steer_velocity", 
+            RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "FL_steer_volts",
+            RobotContainer.drivetrain.getModule(0).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "rotation_position", 
+            RobotContainer.drivetrain.getPigeon2().getYaw().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "rotation_velocity", 
+            RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()
+        );
+
+        
+
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");

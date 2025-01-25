@@ -4,9 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -16,12 +16,15 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -31,6 +34,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+    private double MaxSpeed = DrivetrainConstants.SPEED_MPS; // kSpeedAt12Volts desired top speed
+    private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -43,6 +48,10 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
+    private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -50,8 +59,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             null,        // Use default ramp rate (1 V/s)
             Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
             null,        // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())
+            // Log state by default
+            null
         ),
         new SysIdRoutine.Mechanism(
             output -> setControl(m_translationCharacterization.withVolts(output)),
@@ -66,8 +75,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             null,        // Use default ramp rate (1 V/s)
             Volts.of(7), // Use dynamic voltage of 7 V
             null,        // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdSteer_State", state.toString())
+            // Log state by default
+            null
         ),
         new SysIdRoutine.Mechanism(
             volts -> setControl(m_steerCharacterization.withVolts(volts)),
@@ -88,15 +97,15 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             /* This is in radians per second, but SysId only supports "volts" */
             Volts.of(Math.PI),
             null, // Use default timeout (10 s)
-            // Log state with SignalLogger class
-            state -> SignalLogger.writeString("SysIdRotation_State", state.toString())
+            // Log state by default
+            null
         ),
         new SysIdRoutine.Mechanism(
             output -> {
                 /* output is actually radians per second, but SysId only supports "volts" */
                 setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
                 /* also log the requested output for SysId */
-                SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
+                SmartDashboard.putNumber("Rotational_Rate", output.in(Volts));
             },
             null,
             this
@@ -104,7 +113,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineSteer;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -235,6 +244,18 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         }
     }
 
+    public Command joystickDriveCommand(
+        Supplier<Double> stickX, 
+        Supplier<Double> stickY, 
+        Supplier<Double> leftTrigger, 
+        Supplier<Double> rightTrigger
+    ){
+        return applyRequest(() -> fieldCentricRequest
+            .withVelocityX(-deadband(stickY.get()) * MaxSpeed)
+            .withVelocityY(-deadband(stickX.get()) * MaxSpeed)
+            .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * MaxAngularRate));
+    }
+
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -248,5 +269,12 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    private static double deadband(double input) {
+        if (Math.abs(input) <= DrivetrainConstants.DEADBAND) {
+            return 0;
+        }
+        return input;
     }
 }
