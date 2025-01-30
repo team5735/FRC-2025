@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,20 +15,15 @@ public class CoralSubsystem extends SubsystemBase {
     private final SparkMaxConfig pull_config = new SparkMaxConfig();
 
     public CoralSubsystem() {
-        pull_config.inverted(true);
-        sparkMax_pull.configure(pull_config, null, null);
+        sparkMax_pull.configure(pull_config.inverted(true), null, null);
     }
 
     public void pull() {
-        double pullSpeed = CoralConstants.TOP_VOLTS;
-
-        sparkMax_pull.setVoltage(pullSpeed);
+        sparkMax_pull.setVoltage(CoralConstants.TOP_VOLTS);
     }
 
     public void push() {
-        double pushSpeed = CoralConstants.BOTTOM_VOLTS;
-
-        sparkMax_pull.setVoltage(pushSpeed);
+        sparkMax_pull.setVoltage(CoralConstants.BOTTOM_VOLTS);
     }
 
     public void stop() {
@@ -41,10 +35,11 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command pushStopCommand() {
-        return runOnce(() -> push());
+        return startEnd(() -> push(), () -> stop());
     }
 
     public Command stopCommand() {
         return runOnce(() -> stop());
     }
+
 }
