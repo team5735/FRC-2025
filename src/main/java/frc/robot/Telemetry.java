@@ -108,19 +108,14 @@ public class Telemetry {
 
         SmartDashboard.putNumber("translation_position", state.Pose.getY());
         SmartDashboard.putNumber("translation_velocity", state.ModuleStates[0].speedMetersPerSecond);
-        SmartDashboard.putNumber(
-            "FL_drive_volts", 
-            RobotContainer.drivetrain.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble()
-        );
         
-        SmartDashboard.putNumber("steer_position", state.ModuleStates[0].angle.getRotations());
+        SmartDashboard.putNumber(
+            "steer_position", 
+            (RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRotations() + 1)% 1
+        );
         SmartDashboard.putNumber(
             "steer_velocity", 
             RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble()
-        );
-        SmartDashboard.putNumber(
-            "FL_steer_volts",
-            RobotContainer.drivetrain.getModule(0).getSteerMotor().getMotorVoltage().getValueAsDouble()
         );
 
         SmartDashboard.putNumber(
@@ -132,7 +127,49 @@ public class Telemetry {
             RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()
         );
 
-        
+        SmartDashboard.putNumber(
+            "steer_setpoint", 
+            (RobotContainer.drivetrain.getModule(0).getTargetState().angle.getRotations() + 1)% 1
+        );
+
+        SmartDashboard.putNumber(
+            "FL_drive_volts", 
+            RobotContainer.drivetrain.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "FL_steer_volts",
+            RobotContainer.drivetrain.getModule(0).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "FR_drive_volts", 
+            RobotContainer.drivetrain.getModule(1).getDriveMotor().getMotorVoltage().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "FR_steer_volts",
+            RobotContainer.drivetrain.getModule(1).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "BL_drive_volts", 
+            RobotContainer.drivetrain.getModule(2).getDriveMotor().getMotorVoltage().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "BL_steer_volts",
+            RobotContainer.drivetrain.getModule(2).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "BR_drive_volts", 
+            RobotContainer.drivetrain.getModule(3).getDriveMotor().getMotorVoltage().getValueAsDouble()
+        );
+        SmartDashboard.putNumber(
+            "BR_steer_volts",
+            RobotContainer.drivetrain.getModule(3).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+
+
 
 
         /* Telemeterize the pose to a Field2d */

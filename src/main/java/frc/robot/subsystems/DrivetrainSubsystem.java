@@ -7,11 +7,17 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +28,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
@@ -45,16 +50,17 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
+    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
-    private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
+    private final SysIdRoutine sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
             Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
@@ -63,14 +69,14 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             null
         ),
         new SysIdRoutine.Mechanism(
-            output -> setControl(m_translationCharacterization.withVolts(output)),
+            output -> setControl(translationCharacterization.withVolts(output)),
             null,
             this
         )
     );
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
-    private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
+    private final SysIdRoutine sysIdRoutineSteer = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
             Volts.of(7), // Use dynamic voltage of 7 V
@@ -79,7 +85,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             null
         ),
         new SysIdRoutine.Mechanism(
-            volts -> setControl(m_steerCharacterization.withVolts(volts)),
+            volts -> setControl(steerCharacterization.withVolts(volts)),
             null,
             this
         )
@@ -90,7 +96,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
-    private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
+    private final SysIdRoutine sysIdRoutineRotation = new SysIdRoutine(
         new SysIdRoutine.Config(
             /* This is in radians per second², but SysId only supports "volts per second" */
             Volts.of(Math.PI / 6).per(Second),
@@ -103,7 +109,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         new SysIdRoutine.Mechanism(
             output -> {
                 /* output is actually radians per second, but SysId only supports "volts" */
-                setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
+                setControl(rotationCharacterization.withRotationalRate(output.in(Volts)));
                 /* also log the requested output for SysId */
                 SmartDashboard.putNumber("Rotational_Rate", output.in(Volts));
             },
@@ -113,7 +119,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineSteer;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineSteer;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -276,5 +282,37 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             return 0;
         }
         return input;
+    }
+
+    private ChassisSpeeds getChassisSpeeds() {
+        var states = new SwerveModuleState[4];
+
+        for (int i = 0; i < 4; i++) {
+            states[i] = getModule(i).getCurrentState();
+        }
+
+        return this.getKinematics().toChassisSpeeds(states);
+    }
+
+    private void autoDriveRobotRelative(ChassisSpeeds robotChassisSpeeds) {
+        var discrete = ChassisSpeeds.discretize(robotChassisSpeeds, 1.0 / 20.0); // TODO: is this the right frequency? (copied from 2024)
+
+        setControl(robotCentricRequest
+                .withVelocityX(discrete.vxMetersPerSecond)
+                .withVelocityY(discrete.vyMetersPerSecond)
+                .withDriveRequestType(DriveRequestType.Velocity)
+                .withRotationalRate(discrete.omegaRadiansPerSecond));
+    }
+
+    private void setUpAuto(){
+        AutoBuilder.configure(
+            () -> getState().Pose,
+            this::resetPose,
+            null,
+            null,
+            null,
+            RobotConfig.fromGUISettings(),
+            null,
+            this);
     }
 }
