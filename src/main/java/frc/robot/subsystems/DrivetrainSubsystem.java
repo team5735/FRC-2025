@@ -8,18 +8,20 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
@@ -37,10 +40,10 @@ import frc.robot.constants.drivetrain.DrivetrainConstants;
  */
 public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
-    private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
-    private double MaxSpeed = DrivetrainConstants.SPEED_MPS; // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private Notifier simNotifier = null;
+    private double lastSimTime;
+    private double maxSpeed = DrivetrainConstants.SPEED_MPS;
+    private double maxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -55,7 +58,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
@@ -139,6 +142,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpAuto();
     }
 
     /**
@@ -163,6 +167,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpAuto();
     }
 
     /**
@@ -195,6 +200,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpAuto();
     }
 
     /**
@@ -257,24 +263,28 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         Supplier<Double> rightTrigger
     ){
         return applyRequest(() -> fieldCentricRequest
-            .withVelocityX(-deadband(stickY.get()) * MaxSpeed)
-            .withVelocityY(-deadband(stickX.get()) * MaxSpeed)
-            .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * MaxAngularRate));
+            .withVelocityX(-deadband(stickY.get()) * maxSpeed)
+            .withVelocityY(-deadband(stickX.get()) * maxSpeed)
+            .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate));
+    }
+
+    public Command brakeCommand(){
+        return runOnce(() -> setControl(new SwerveRequest.SwerveDriveBrake()));
     }
 
     private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
+        lastSimTime = Utils.getCurrentTimeSeconds();
 
         /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
+        simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
+            double deltaTime = currentTime - lastSimTime;
+            lastSimTime = currentTime;
 
             /* use the measured time delta, get battery voltage from WPILib */
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
+        simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
     private static double deadband(double input) {
@@ -305,14 +315,43 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     private void setUpAuto(){
+        RobotConfig config = new RobotConfig(
+                DrivetrainConstants.ROBOT_MASS_KG,
+                DrivetrainConstants.ROBOT_MOI_KGxMxM,
+                new ModuleConfig(
+                    CompbotTunerConstants.kWheelRadius.in(Meters),
+                    CompbotTunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+                    DrivetrainConstants.COEFFICIENT_OF_FRICTION,
+                    DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.kDriveGearRatio),
+                    60,
+                    1
+                )
+        );
+
         AutoBuilder.configure(
             () -> getState().Pose,
             this::resetPose,
-            null,
-            null,
-            null,
-            RobotConfig.fromGUISettings(),
-            null,
+            this::getChassisSpeeds,
+            (speeds, ff) -> autoDriveRobotRelative(speeds),
+            new PPHolonomicDriveController(
+                new PIDConstants(
+                    CompbotTunerConstants.driveGains.kP, 
+                    CompbotTunerConstants.driveGains.kD
+                ), 
+                new PIDConstants(
+                    DrivetrainConstants.ROTATION_KP, 
+                    DrivetrainConstants.ROTATION_KI, 
+                    DrivetrainConstants.ROTATION_KD
+                )
+            ),
+            config,
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
             this);
     }
 }
