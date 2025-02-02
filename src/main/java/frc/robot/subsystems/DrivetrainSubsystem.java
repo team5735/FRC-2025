@@ -17,6 +17,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -122,7 +123,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineSteer;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineRotation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -316,16 +317,20 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
     private void setUpAuto(){
         RobotConfig config = new RobotConfig(
-                DrivetrainConstants.ROBOT_MASS_KG,
-                DrivetrainConstants.ROBOT_MOI_KGxMxM,
-                new ModuleConfig(
-                    CompbotTunerConstants.kWheelRadius.in(Meters),
-                    CompbotTunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-                    DrivetrainConstants.COEFFICIENT_OF_FRICTION,
-                    DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.kDriveGearRatio),
-                    60,
-                    1
-                )
+            DrivetrainConstants.ROBOT_MASS_KG,
+            DrivetrainConstants.ROBOT_MOI_KGxMxM,
+            new ModuleConfig(
+                CompbotTunerConstants.kWheelRadius.in(Meters),
+                CompbotTunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+                DrivetrainConstants.COEFFICIENT_OF_FRICTION,
+                DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.kDriveGearRatio),
+                60,
+                1
+            ),
+            new Translation2d(CompbotTunerConstants.kFrontLeftXPos, CompbotTunerConstants.kFrontLeftYPos),
+            new Translation2d(CompbotTunerConstants.kFrontRightXPos, CompbotTunerConstants.kFrontRightYPos),
+            new Translation2d(CompbotTunerConstants.kBackLeftXPos, CompbotTunerConstants.kBackLeftYPos),
+            new Translation2d(CompbotTunerConstants.kBackRightXPos, CompbotTunerConstants.kBackRightYPos)
         );
 
         AutoBuilder.configure(

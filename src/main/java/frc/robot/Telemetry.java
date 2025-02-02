@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -117,10 +118,12 @@ public class Telemetry {
             "steer_velocity", 
             RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble()
         );
-
         SmartDashboard.putNumber(
             "rotation_position", 
-            RobotContainer.drivetrain.getPigeon2().getYaw().getValueAsDouble()
+            MathUtil.inputModulus(
+                RobotContainer.drivetrain.getPigeon2().getYaw().getValueAsDouble(),
+                0, 360
+            )
         );
         SmartDashboard.putNumber(
             "rotation_velocity", 
