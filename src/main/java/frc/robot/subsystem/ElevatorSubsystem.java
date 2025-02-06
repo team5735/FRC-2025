@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystem;
 
 import com.revrobotics.spark.SparkMax;
 
@@ -7,11 +7,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Constants;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    private final SparkMax sparkMax_feed = new SparkMax(Constants.ALGAE_FALCON_ID, MotorType.kBrushless);
+    private final SparkMax sparkMax_feed = new SparkMax(Constants.ELEVATOR_KRAKEN_RIGHT_ID, MotorType.kBrushless);
     private final SparkMaxConfig pull_config = new SparkMaxConfig();
 
     public ElevatorSubsystem() {
@@ -19,11 +19,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void feed() {
-        sparkMax_feed.setVoltage(ElevatorConstants.ELEVATOR_MOTOR_LEFT_VOLTS);
+        sparkMax_feed.setVoltage(ElevatorConstants.ELEVATOR_KRAKEN_RIGHT_VOLTS);
     }
 
     public void spit() {
-        sparkMax_feed.setVoltage(-ElevatorConstants.ELEVATOR_MOTOR_LEFT_VOLTS);
+        sparkMax_feed.setVoltage(ElevatorConstants.ELEVATOR_KRAKEN_LEFT_VOLTS);
     }
 
     public void stop() {
