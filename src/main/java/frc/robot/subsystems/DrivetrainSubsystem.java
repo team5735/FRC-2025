@@ -44,7 +44,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private Notifier simNotifier = null;
     private double lastSimTime;
     private double maxSpeed = DrivetrainConstants.SPEED_MPS;
-    private double maxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond);
+    private double maxAngularRate = RotationsPerSecond.of(DrivetrainConstants.SPIN_RPS).in(RadiansPerSecond);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -123,7 +123,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineRotation;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineSteer;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -345,7 +345,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 ), 
                 new PIDConstants(
                     DrivetrainConstants.ROTATION_KP, 
-                    DrivetrainConstants.ROTATION_KI, 
                     DrivetrainConstants.ROTATION_KD
                 )
             ),

@@ -111,13 +111,42 @@ public class Telemetry {
         SmartDashboard.putNumber("translation_velocity", state.ModuleStates[0].speedMetersPerSecond);
         
         SmartDashboard.putNumber(
-            "steer_position", 
+            "FL_steer_position", 
             (RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRotations() + 1)% 1
         );
         SmartDashboard.putNumber(
-            "steer_velocity", 
+            "FL_steer_velocity", 
             RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble()
         );
+
+        SmartDashboard.putNumber(
+            "FR_steer_position", 
+            (RobotContainer.drivetrain.getModule(1).getCurrentState().angle.getRotations() + 1)% 1
+        );
+        SmartDashboard.putNumber(
+            "FR_steer_velocity", 
+            RobotContainer.drivetrain.getModule(1).getSteerMotor().getVelocity().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "BR_steer_position", 
+            (RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRotations() + 1)% 1
+        );
+        SmartDashboard.putNumber(
+            "BR_steer_velocity", 
+            RobotContainer.drivetrain.getModule(2).getSteerMotor().getVelocity().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "BL_steer_position", 
+            (RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRotations() + 1)% 1
+        );
+        SmartDashboard.putNumber(
+            "BL_steer_velocity", 
+            RobotContainer.drivetrain.getModule(3).getSteerMotor().getVelocity().getValueAsDouble()
+        );
+
+        
         SmartDashboard.putNumber(
             "rotation_position", 
             MathUtil.inputModulus(
@@ -131,7 +160,7 @@ public class Telemetry {
         );
 
         SmartDashboard.putNumber(
-            "steer_setpoint", 
+            "FL_steer_setpoint", 
             (RobotContainer.drivetrain.getModule(0).getTargetState().angle.getRotations() + 1)% 1
         );
 

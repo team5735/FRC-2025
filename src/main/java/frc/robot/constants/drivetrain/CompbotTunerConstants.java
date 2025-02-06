@@ -24,8 +24,8 @@ public class CompbotTunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     public static final Slot0Configs steerGains = new Slot0Configs()
-        .withKP(24.928).withKI(0).withKD(1.152)
-        .withKS(0.018475).withKV(1.4041).withKA(0.064912)
+        .withKP(29.519).withKI(0).withKD(1.7115)
+        .withKS(0.052654).withKV(1.3981).withKA(0.092636)
         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -74,7 +74,7 @@ public class CompbotTunerConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(6.76);
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(12/1.6977);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
