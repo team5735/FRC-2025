@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -129,20 +130,20 @@ public class Telemetry {
         );
 
         SmartDashboard.putNumber(
-            "BR_steer_position", 
+            "BL_steer_position", 
             (RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRotations() + 1)% 1
         );
         SmartDashboard.putNumber(
-            "BR_steer_velocity", 
+            "BL_steer_velocity", 
             RobotContainer.drivetrain.getModule(2).getSteerMotor().getVelocity().getValueAsDouble()
         );
 
         SmartDashboard.putNumber(
-            "BL_steer_position", 
+            "BR_steer_position", 
             (RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRotations() + 1)% 1
         );
         SmartDashboard.putNumber(
-            "BL_steer_velocity", 
+            "BR_steer_velocity", 
             RobotContainer.drivetrain.getModule(3).getSteerMotor().getVelocity().getValueAsDouble()
         );
 
@@ -198,6 +199,11 @@ public class Telemetry {
         SmartDashboard.putNumber(
             "BR_steer_volts",
             RobotContainer.drivetrain.getModule(3).getSteerMotor().getMotorVoltage().getValueAsDouble()
+        );
+
+        SmartDashboard.putNumber(
+            "FL_drive_motor_rotations", 
+            RobotContainer.drivetrain.getModule(0).getDriveMotor().getRotorPosition().getValue().in(Units.Rotations)
         );
 
 
