@@ -5,24 +5,23 @@ import static edu.wpi.first.units.Units.*;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -123,7 +122,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineTranslation;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineRotation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -273,6 +272,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         return runOnce(() -> setControl(new SwerveRequest.SwerveDriveBrake()));
     }
 
+
     private void startSimThread() {
         lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -308,11 +308,16 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private void autoDriveRobotRelative(ChassisSpeeds robotChassisSpeeds) {
         var discrete = ChassisSpeeds.discretize(robotChassisSpeeds, 1.0 / 10.0); // TODO: is this the right frequency? (copied from 2024)
 
-        setControl(robotCentricRequest
+        setControl(
+            robotCentricRequest
                 .withVelocityX(discrete.vxMetersPerSecond)
                 .withVelocityY(discrete.vyMetersPerSecond)
-                .withDriveRequestType(DriveRequestType.Velocity)
-                .withRotationalRate(discrete.omegaRadiansPerSecond));
+                .withRotationalRate(discrete.omegaRadiansPerSecond)
+        );
+    }
+
+    private Pose2d getAutoPose(){
+        return new Pose2d(new Translation2d(getState().Pose.getMeasureX(), getState().Pose.getMeasureY()), new Rotation2d());
     }
 
     private void setUpAuto(){
@@ -322,14 +327,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             this::getChassisSpeeds,
             (speeds, ff) -> autoDriveRobotRelative(speeds),
             new PPHolonomicDriveController(
-                new PIDConstants(
-                    CompbotTunerConstants.driveGains.kP, 
-                    CompbotTunerConstants.driveGains.kD
-                ), 
-                new PIDConstants(
-                    DrivetrainConstants.ROTATION_KP, 
-                    DrivetrainConstants.ROTATION_KD
-                )
+                DrivetrainConstants.AUTO_POS_CONSTANTS,
+                DrivetrainConstants.AUTO_ROT_CONSTANTS
             ),
             DrivetrainConstants.CONFIG,
             () -> {

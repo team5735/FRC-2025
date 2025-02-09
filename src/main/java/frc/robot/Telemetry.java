@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +16,9 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,6 +85,65 @@ public class Telemetry {
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
 
+    private final Field2d sendableField = new Field2d();
+
+    private final Sendable sendableState = new Sendable() {
+        @Override
+        public void initSendable(SendableBuilder builder){
+            builder.setSmartDashboardType("SwerveDrive");
+
+            builder.addDoubleProperty(
+                "Front Left Angle", 
+                () -> RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRadians(), 
+                null
+            );
+            builder.addDoubleProperty(
+                "Front Left Velocity",
+                () -> RobotContainer.drivetrain.getModule(0).getCurrentState().speedMetersPerSecond,
+                null
+            );
+
+            builder.addDoubleProperty(
+                "Front Right Angle", 
+                () -> RobotContainer.drivetrain.getModule(1).getCurrentState().angle.getRadians(), 
+                null
+            );
+            builder.addDoubleProperty(
+                "Front Right Velocity",
+                () -> RobotContainer.drivetrain.getModule(1).getCurrentState().speedMetersPerSecond,
+                null
+            );
+
+            builder.addDoubleProperty(
+                "Back Left Angle", 
+                () -> RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRadians(), 
+                null
+            );
+            builder.addDoubleProperty(
+                "Back Left Velocity",
+                () -> RobotContainer.drivetrain.getModule(2).getCurrentState().speedMetersPerSecond,
+                null
+            );
+
+            builder.addDoubleProperty(
+                "Back Right Angle", 
+                () -> RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRadians(), 
+                null
+            );
+            builder.addDoubleProperty(
+                "Back Right Velocity",
+                () -> RobotContainer.drivetrain.getModule(3).getCurrentState().speedMetersPerSecond,
+                null
+            );
+
+            builder.addDoubleProperty(
+                "Robot Angle", 
+                () -> RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians),
+                null
+            );
+        }
+    };
+
     /** Accept the swerve drive state and telemeterize it to SmartDashboard. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
@@ -102,6 +165,11 @@ public class Telemetry {
             m_moduleTargetsArray[i*2 + 0] = state.ModuleTargets[i].angle.getRadians();
             m_moduleTargetsArray[i*2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
         }
+
+        sendableField.setRobotPose(AutoBuilder.getCurrentPose());
+        SmartDashboard.putData(sendableField);
+
+        SmartDashboard.putData("Swerve State", sendableState);
 
         SmartDashboard.putNumberArray("DriveState/Pose", m_poseArray);
         SmartDashboard.putNumberArray("DriveState/ModuleStates", m_moduleStatesArray);
@@ -146,18 +214,17 @@ public class Telemetry {
             "BR_steer_velocity", 
             RobotContainer.drivetrain.getModule(3).getSteerMotor().getVelocity().getValueAsDouble()
         );
-
         
         SmartDashboard.putNumber(
             "rotation_position", 
             MathUtil.inputModulus(
-                RobotContainer.drivetrain.getPigeon2().getYaw().getValueAsDouble(),
-                0, 360
+                RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians),
+                -Math.PI, Math.PI
             )
         );
         SmartDashboard.putNumber(
             "rotation_velocity", 
-            RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()
+            RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValue().in(Units.RadiansPerSecond)
         );
 
         SmartDashboard.putNumber(
