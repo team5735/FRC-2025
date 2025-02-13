@@ -18,8 +18,10 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driveController.a().whileTrue(coraler.topStopCommand());
-        driveController.b().whileTrue(coraler.bottomStopCommand());
+        driveController.a().whileTrue(coraler.feedInCommand());
+        driveController.b().whileTrue(coraler.branchCommand());
+        driveController.x().whileTrue(coraler.troughCommand());
+        driveController.y().onTrue(coraler.stopCommand());
     }
 
     public Command getAutonomousCommand() {
