@@ -3,39 +3,57 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 
 public class CoralSubsystem extends SubsystemBase {
-    private final SparkFlex sparkFlex_pull = new SparkFlex(Constants.MANIPULATOR_MOTOR_BOTTOM_ID, MotorType.kBrushless);
-    private final SparkFlexConfig pull_config = new SparkFlexConfig();
-    private final SparkFlex sparkFlex_push = new SparkFlex(Constants.MANIPULATOR_MOTOR_TOP_ID, MotorType.kBrushless);
-    private final SparkFlexConfig push_config = new SparkFlexConfig();
+    private final SparkFlex vortex_top = new SparkFlex(Constants.MANIPULATOR_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+    private final SparkFlexConfig top_config = new SparkFlexConfig();
+    private final SparkFlex vortex_bottom = new SparkFlex(Constants.MANIPULATOR_MOTOR_TOP_ID, MotorType.kBrushless);
+    private final SparkFlexConfig bottom_config = new SparkFlexConfig();
     private final DigitalInput m_switch = new DigitalInput(Constants.INTAKE_BEAM_ID);
 
 
     public CoralSubsystem() {
-        sparkFlex_pull.configure(pull_config.inverted(true), null, null);
-        sparkFlex_push.configure(push_config.inverted(true), null, null);
+        vortex_top.configure(top_config.inverted(true).idleMode(IdleMode.kBrake), null, null);
+        vortex_bottom.configure(bottom_config.inverted(true).idleMode(IdleMode.kBrake), null, null);
     }
 
-    public void top() {
-        sparkFlex_pull.setVoltage(CoralConstants.TOP_VOLTS);
+    private void intakeTop() {
+        vortex_top.setVoltage(CoralConstants.INTAKE_TOP_VOLTS);
     }
 
-    public void bottom() {
-        sparkFlex_push.setVoltage(CoralConstants.BOTTOM_VOLTS);
+    private void intakeBottom() {
+        vortex_bottom.setVoltage(CoralConstants.INTAKE_BOTTOM_VOLTS);
     }
 
-    public void stop() {
-        sparkFlex_push.setVoltage(0);
-        sparkFlex_pull.setVoltage(0);
+    private void troughTop() {
+        vortex_top.setVoltage(CoralConstants.TROUGH_TOP_VOLTS);
+    }
+
+    private void troughBottom() {
+        vortex_bottom.setVoltage(CoralConstants.TROUGH_BOTTOM_VOLTS);
+    }
+
+    private void branchTop() {
+        vortex_top.setVoltage(CoralConstants.BRANCH_TOP_VOLTS);
+    }
+
+    private void branchBottom() {
+        vortex_bottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
+    }
+
+    private void stop() {
+        vortex_top.setVoltage(0);
+        vortex_bottom.setVoltage(0);
     }
 
     @Override
@@ -47,19 +65,29 @@ public class CoralSubsystem extends SubsystemBase {
         return m_switch.get();
     }
 
-    public Command topStopCommand() {
-        return startEnd(() -> top(), () -> stop());
-    }
-
-    public Command bottomStopCommand() {
-        return startEnd(() -> bottom(), () -> stop());
+    public Trigger beamBreakEngaged() {
+        return new Trigger(() -> !getSwitchStatus());
     }
 
     public Command stopCommand() {
         return runOnce(() -> stop());
     }
 
-    public Trigger beamBreakEngaged() {
-        return new Trigger(() -> !getSwitchStatus());
+    public Command feedInCommand() {
+        return runOnce(() -> intakeBottom())
+            .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+            .andThen(runOnce(() -> intakeTop()))
+            .until(beamBreakEngaged())
+            .andThen(runOnce(() -> stop()));
+    }
+
+    public Command troughCommand() {
+        return runOnce(() -> troughTop())
+            .alongWith(runOnce(() -> troughBottom())); //awaiting buttom mapping
+    }
+
+    public Command branchCommand() {
+        return runOnce(() -> branchTop())
+            .alongWith(runOnce(() -> branchBottom())); //awaiting buttom mapping
     }
 }

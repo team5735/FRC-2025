@@ -1,6 +1,16 @@
 package frc.robot.constants;
 
 public class CoralConstants {
-    public static final double TOP_VOLTS = 1.0;
-    public static final double BOTTOM_VOLTS = -1.0;
+    //TODO FIND ACTUAL VOLTAGES
+    //TODO FIND ACTUAL DELAY
+    public static final double INTAKE_TOP_VOLTS = 1.0;
+    public static final double INTAKE_BOTTOM_VOLTS = -1.0;
+
+    public static final double TROUGH_TOP_VOLTS = 1.0;
+    public static final double TROUGH_BOTTOM_VOLTS = -1.0;
+
+    public static final double BRANCH_TOP_VOLTS = 1.0;
+    public static final double BRANCH_BOTTOM_VOLTS = -1.0;
+    
+    public static final double FEED_DELAY_SECONDS = 0;
 }
