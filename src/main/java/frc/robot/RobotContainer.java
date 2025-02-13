@@ -18,8 +18,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driveController.a().whileTrue(coraler.pushStopCommand());
-        driveController.b().whileTrue(coraler.pullStopCommand());
+        driveController.a().whileTrue(coraler.topStopCommand());
+        driveController.b().whileTrue(coraler.bottomStopCommand());
     }
 
     public Command getAutonomousCommand() {
