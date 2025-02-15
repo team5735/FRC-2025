@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -12,25 +14,22 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.FeederConstants;
 
 public class FeederSubsystems extends SubsystemBase {
-    private final SparkMax sparkMax_feed = new SparkMax(Constants.FEEDER_NEO_ID, MotorType.kBrushless);
-    private final SparkMaxConfig feed_config = new SparkMaxConfig();
-        private final DigitalInput beanBreak = new DigitalInput(Constants.FEEDER_BEAM_ID);
-
+    private final DigitalInput beamBreak = new DigitalInput(Constants.FEEDER_BEAM_ID);
+    private final TalonFX falcon = new TalonFX(Constants.FEEDER_FALCON_ID);
 
     public void FeederSubsystem() {
-        sparkMax_feed.configure(feed_config.inverted(true), null, null);
     }
 
     public void feed() {
-        sparkMax_feed.setVoltage(FeederConstants.FEEDER_NEO_VOLTS);
+        falcon.setVoltage(FeederConstants.FEED_VOLTS);
     }
 
     public void unfeed() {
-        sparkMax_feed.setVoltage(-FeederConstants.FEEDER_NEO_VOLTS);
+        falcon.setVoltage(-FeederConstants.UNFEED_VOLTS);
     }
 
     public void stop() {
-        sparkMax_feed.setVoltage(0);
+        falcon.setVoltage(0);
     }
 
     public Command feedCommand() {
