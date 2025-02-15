@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorFeedforward ff = new ElevatorFeedforward(
         ElevatorConstants.KS, ElevatorConstants.KG, ElevatorConstants.KV, ElevatorConstants.KA
     );
-    private ElevatorConstants.Level currentLevel = ElevatorConstants.Level.BASE;
+    private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
 
     public ElevatorSubsystem(){
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
@@ -46,7 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        pid.setGoal(currentLevel.stateSupplier.get());
+        pid.setGoal(activeLevel.stateSupplier.get());
 
         double voltsToSet = 
             pid.calculate(getPosition().in(Meters)) + ff.calculate(pid.getSetpoint().velocity);
@@ -65,7 +65,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void setLevel(ElevatorConstants.Level level){
-        currentLevel = level;
+        activeLevel = level;
     }
 
     private void resetMeasurement(){
