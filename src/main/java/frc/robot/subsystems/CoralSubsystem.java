@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.security.cert.TrustAnchor;
+
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
@@ -8,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -15,45 +18,53 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 
 public class CoralSubsystem extends SubsystemBase {
-    private final SparkFlex vortex_top = new SparkFlex(Constants.MANIPULATOR_MOTOR_BOTTOM_ID, MotorType.kBrushless);
-    private final SparkFlexConfig top_config = new SparkFlexConfig();
-    private final SparkFlex vortex_bottom = new SparkFlex(Constants.MANIPULATOR_MOTOR_TOP_ID, MotorType.kBrushless);
-    private final SparkFlexConfig bottom_config = new SparkFlexConfig();
-    private final DigitalInput m_switch = new DigitalInput(Constants.INTAKE_BEAM_ID);
+    private final SparkFlex vortexTop = new SparkFlex(Constants.MANIPULATOR_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+    private final SparkFlexConfig topConfig = new SparkFlexConfig();
+    private final SparkFlex vortexBottom = new SparkFlex(Constants.MANIPULATOR_MOTOR_TOP_ID, MotorType.kBrushless);
+    private final SparkFlexConfig bottomConfig = new SparkFlexConfig();
+    private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
 
 
     public CoralSubsystem() {
-        vortex_top.configure(top_config.inverted(true).idleMode(IdleMode.kBrake), null, null);
-        vortex_bottom.configure(bottom_config.inverted(true).idleMode(IdleMode.kBrake), null, null);
+        vortexTop.configure(topConfig.inverted(false).idleMode(IdleMode.kBrake), null, null);
+        vortexBottom.configure(bottomConfig.inverted(true).idleMode(IdleMode.kBrake), null, null);
     }
 
     private void intakeTop() {
-        vortex_top.setVoltage(CoralConstants.INTAKE_TOP_VOLTS);
+        vortexTop.setVoltage(CoralConstants.INTAKE_TOP_VOLTS);
     }
 
     private void intakeBottom() {
-        vortex_bottom.setVoltage(CoralConstants.INTAKE_BOTTOM_VOLTS);
+        vortexBottom.setVoltage(CoralConstants.INTAKE_BOTTOM_VOLTS);
+    }
+
+    private void outtakeTop() {
+        vortexTop.setVoltage(-CoralConstants.INTAKE_TOP_VOLTS);
+    }
+
+    private void outtakeBottom() {
+        vortexBottom.setVoltage(-CoralConstants.INTAKE_BOTTOM_VOLTS);
     }
 
     private void troughTop() {
-        vortex_top.setVoltage(CoralConstants.TROUGH_TOP_VOLTS);
+        vortexTop.setVoltage(CoralConstants.TROUGH_TOP_VOLTS);
     }
 
     private void troughBottom() {
-        vortex_bottom.setVoltage(CoralConstants.TROUGH_BOTTOM_VOLTS);
+        vortexBottom.setVoltage(CoralConstants.TROUGH_BOTTOM_VOLTS);
     }
 
     private void branchTop() {
-        vortex_top.setVoltage(CoralConstants.BRANCH_TOP_VOLTS);
+        vortexTop.setVoltage(CoralConstants.BRANCH_TOP_VOLTS);
     }
 
     private void branchBottom() {
-        vortex_bottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
+        vortexBottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
     }
 
     private void stop() {
-        vortex_top.setVoltage(0);
-        vortex_bottom.setVoltage(0);
+        vortexTop.setVoltage(0);
+        vortexBottom.setVoltage(0);
     }
 
     @Override
@@ -62,7 +73,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public boolean getSwitchStatus() {
-        return m_switch.get();
+        return beam.get();
     }
 
     public Trigger beamBreakEngaged() {
@@ -82,12 +93,23 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command troughCommand() {
-        return runOnce(() -> troughTop())
-            .alongWith(runOnce(() -> troughBottom())); //awaiting buttom mapping
+        return new FunctionalCommand(() -> {
+            troughTop();
+            troughBottom();
+        }, () -> {}, (b) -> stop(), () -> false, this);
     }
 
     public Command branchCommand() {
-        return runOnce(() -> branchTop())
-            .alongWith(runOnce(() -> branchBottom())); //awaiting buttom mapping
+        return new FunctionalCommand(() -> {
+            branchTop();
+            branchBottom();
+        }, () -> {}, (b) -> stop(), () -> false, this);
+    }
+
+    public Command outtakeCommand() {
+        return new FunctionalCommand(() -> {
+            outtakeTop();
+            outtakeBottom();
+        }, () -> {}, (b) -> stop(), () -> false, this);
     }
 }
