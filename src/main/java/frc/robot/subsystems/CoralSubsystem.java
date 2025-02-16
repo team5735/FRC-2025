@@ -103,31 +103,30 @@ public class CoralSubsystem extends SubsystemBase {
         //     .andThen(runOnce(() -> intakeTop()))
         //     .until(beamBreakEngaged())
         //     .finallyDo(() -> stop());
-        return new FunctionalCommand(() -> {
+        return startEnd(() -> {
             intakeTop();
             intakeBottom();
-        }, () -> {}, (b) -> stop(), () -> false, this);
-
+        }, () -> stop());
     }
 
     public Command troughCommand() {
-        return new FunctionalCommand(() -> {
+        return startEnd(() -> {
             troughTop();
             troughBottom();
-        }, () -> {}, (b) -> stop(), () -> false, this);
+        }, () -> stop());
     }
 
     public Command branchCommand() {
-        return new FunctionalCommand(() -> {
+        return startEnd(() -> {
             branchTop();
             branchBottom();
-        }, () -> {}, (b) -> stop(), () -> false, this);
+        }, () -> stop());
     }
 
     public Command outtakeCommand() {
-        return new FunctionalCommand(() -> {
+        return startEnd(() -> {
             outtakeTop();
             outtakeBottom();
-        }, () -> {}, (b) -> stop(), () -> false, this);
+        }, () -> stop());
     }
 }
