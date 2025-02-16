@@ -6,8 +6,8 @@ public class CoralConstants {
     public static final double INTAKE_TOP_VOLTS = 0.5;
     public static final double INTAKE_BOTTOM_VOLTS = 0.5;
 
-    public static final double TROUGH_TOP_VOLTS = 0.5;
-    public static final double TROUGH_BOTTOM_VOLTS = 0.5;
+    public static final double TROUGH_TOP_VOLTS = 2;
+    public static final double TROUGH_BOTTOM_VOLTS = 1.5;
 
     public static final double BRANCH_TOP_VOLTS = 1.0;
     public static final double BRANCH_BOTTOM_VOLTS = 1.0;
