@@ -8,8 +8,10 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import java.lang.System.Logger.Level;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -36,6 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
 
     public ElevatorSubsystem(){
+        krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
         resetMeasurement();
     }
