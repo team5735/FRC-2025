@@ -14,6 +14,6 @@ public class ClimberSubsystem extends SubsystemBase{
 
     public ClimberSubsystem(){
         falconRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
-        falconLeft.apply(new Follower(Constants.CLIMBER_FALCON_RIGHT_ID, true));
+        falconLeft.setControl(new Follower(Constants.CLIMBER_FALCON_RIGHT_ID, true));
     }
 }
