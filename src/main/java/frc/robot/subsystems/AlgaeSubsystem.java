@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AlgaeConstants;
@@ -14,14 +15,16 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public AlgaeSubsystem() {
         falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        SmartDashboard.putNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS);
+        SmartDashboard.putNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS);
     }
 
     public void grab() {
-        falcon.setVoltage(AlgaeConstants.GRAB_VOLTS);
+        falcon.setVoltage(SmartDashboard.getNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS));
     }
 
     public void spit() {
-        falcon.setVoltage(-AlgaeConstants.SPIT_VOLTS);
+        falcon.setVoltage(-SmartDashboard.getNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS));
     }
 
     public void stop() {

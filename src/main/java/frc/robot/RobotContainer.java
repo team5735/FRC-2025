@@ -6,15 +6,23 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.AlgaeSubsystem;
 
 public class RobotContainer {
-  public RobotContainer() {
-    configureBindings();
-  }
+    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final AlgaeSubsystem algaer = new AlgaeSubsystem();
 
-  private void configureBindings() {}
+    public RobotContainer() {
+        configureBindings();
+    }
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    private void configureBindings() {
+        driverController.a().whileTrue(algaer.grabStopCommand());
+        driverController.b().whileTrue(algaer.spitStopCommand());
+    }
+
+    public Command getAutonomousCommand() {
+        return Commands.print("No autonomous command configured");
+    }
 }
