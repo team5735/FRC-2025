@@ -62,12 +62,6 @@ public class RobotContainer {
                 () -> point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driveController.povDown().onTrue(
-                Commands.runOnce(() -> {
-                    drivetrain.seedFieldCentric();
-                    drivetrain.getPigeon2().setYaw(0);
-                }, drivetrain));
-
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -79,6 +73,7 @@ public class RobotContainer {
         driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
         driveController.a().whileTrue(algaer.grabStopCommand());
         driveController.b().whileTrue(algaer.spitStopCommand());
 
