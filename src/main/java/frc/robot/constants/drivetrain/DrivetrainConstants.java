@@ -7,6 +7,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -27,24 +28,25 @@ public class DrivetrainConstants {
     public static final double SPIN_RPS = 0.25;
     public static final double ROBOT_MASS_KG = 25.35;
     public static final double MAX_WHEEL_DISTANCE_M = Units.inchesToMeters(25);
-    public static final double ROBOT_MOI_KGxMxM = 
-            ROBOT_MASS_KG * MAX_WHEEL_DISTANCE_M / 2 * SPIN_KA / CompbotTunerConstants.driveGains.kA; // Formula for approx. MoI
+    public static final double ROBOT_MOI_KGxMxM = ROBOT_MASS_KG * MAX_WHEEL_DISTANCE_M / 2 * SPIN_KA
+            / CompbotTunerConstants.DRIVE_GAINS.kA; // Formula for approx. MoI
     public static final double COEFFICIENT_OF_FRICTION = 1.5;
 
+    public static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
+    public static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
+
     public static final RobotConfig CONFIG = new RobotConfig(
-        DrivetrainConstants.ROBOT_MASS_KG,
-        DrivetrainConstants.ROBOT_MOI_KGxMxM,
-        new ModuleConfig(
-            CompbotTunerConstants.kWheelRadius.in(Meters),
-            CompbotTunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-            DrivetrainConstants.COEFFICIENT_OF_FRICTION,
-            DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.kDriveGearRatio),
-            60,
-            1
-        ),
-        new Translation2d(CompbotTunerConstants.kFrontLeftXPos, CompbotTunerConstants.kFrontLeftYPos),
-        new Translation2d(CompbotTunerConstants.kFrontRightXPos, CompbotTunerConstants.kFrontRightYPos),
-        new Translation2d(CompbotTunerConstants.kBackLeftXPos, CompbotTunerConstants.kBackLeftYPos),
-        new Translation2d(CompbotTunerConstants.kBackRightXPos, CompbotTunerConstants.kBackRightYPos)
-    );
+            DrivetrainConstants.ROBOT_MASS_KG,
+            DrivetrainConstants.ROBOT_MOI_KGxMxM,
+            new ModuleConfig(
+                    CompbotTunerConstants.WHEEL_RADIUS.in(Meters),
+                    CompbotTunerConstants.SPEED_AT12_VOLTS.in(MetersPerSecond),
+                    DrivetrainConstants.COEFFICIENT_OF_FRICTION,
+                    DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.DRIVE_GEAR_RATIO),
+                    60,
+                    1),
+            new Translation2d(CompbotTunerConstants.FRONT_LEFT_XPOS, CompbotTunerConstants.FRONT_LEFT_YPOS),
+            new Translation2d(CompbotTunerConstants.FrontRightXPos, CompbotTunerConstants.FRONT_RIGHT_YPOS),
+            new Translation2d(CompbotTunerConstants.BACK_LEFT_XPOS, CompbotTunerConstants.BACK_LEFT_YPOS),
+            new Translation2d(CompbotTunerConstants.BACK_RIGHT_XPOS, CompbotTunerConstants.BACK_RIGHT_YPOS));
 }
