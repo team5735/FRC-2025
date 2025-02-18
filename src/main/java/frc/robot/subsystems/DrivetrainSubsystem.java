@@ -56,6 +56,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
     /*
@@ -265,6 +266,23 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         }
     }
 
+    public final Pose2d getEstimatedPosition() {
+        return getState().Pose;
+    }
+
+    /**
+     * For use by PIDs. Speed limited for safety.
+     */
+    public void pidDrive(double vx, double vy, double omega) {
+        if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
+            setControl(brake);
+        }
+    }
+
+    public void pidDrive(Translation2d trans, double omega) {
+        pidDrive(trans.getX(), trans.getY(), omega);
+    }
+
     public Command joystickDriveCommand(
             Supplier<Double> stickX,
             Supplier<Double> stickY,
@@ -277,7 +295,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command brakeCommand() {
-        return runOnce(() -> setControl(new SwerveRequest.SwerveDriveBrake()));
+        return runOnce(() -> setControl(brake));
     }
 
     private void startSimThread() {
