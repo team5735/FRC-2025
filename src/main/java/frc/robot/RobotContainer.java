@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
+import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class RobotContainer {
@@ -31,9 +33,12 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
-    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final CommandXboxController driveController = new CommandXboxController(0);
 
     public static final DrivetrainSubsystem drivetrain = CompbotTunerConstants.createDrivetrain();
+
+    private AlgaeSubsystem algaer = new AlgaeSubsystem();
+    private CoralSubsystem coraler = new CoralSubsystem();
 
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -48,17 +53,17 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.joystickDriveCommand(
-                        () -> driverController.getLeftX(),
-                        () -> driverController.getLeftY(),
-                        () -> driverController.getLeftTriggerAxis(),
-                        () -> driverController.getRightTriggerAxis()));
+                        () -> driveController.getLeftX(),
+                        () -> driveController.getLeftY(),
+                        () -> driveController.getLeftTriggerAxis(),
+                        () -> driveController.getRightTriggerAxis()));
 
-        driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driverController.b().whileTrue(drivetrain.applyRequest(
+        driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        driveController.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(
-                        new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
+                        new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driverController.povDown().onTrue(
+        driveController.povDown().onTrue(
                 Commands.runOnce(() -> {
                     drivetrain.seedFieldCentric();
                     drivetrain.getPigeon2().setYaw(0);
@@ -66,17 +71,22 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driverController.a().whileTrue(algaer.grabStopCommand());
-        driverController.b().whileTrue(algaer.spitStopCommand());
+        driveController.a().whileTrue(algaer.grabStopCommand());
+        driveController.b().whileTrue(algaer.spitStopCommand());
+
+        driveController.a().whileTrue(coraler.feedInCommand());
+        driveController.b().whileTrue(coraler.outtakeCommand());
+        driveController.x().whileTrue(coraler.troughCommand());
+        driveController.y().onTrue(coraler.stopCommand());
     }
 
     public Command getAutonomousCommand() {

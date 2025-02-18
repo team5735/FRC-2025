@@ -46,7 +46,7 @@ public class DrivetrainConstants {
                     60,
                     1),
             new Translation2d(CompbotTunerConstants.FRONT_LEFT_XPOS, CompbotTunerConstants.FRONT_LEFT_YPOS),
-            new Translation2d(CompbotTunerConstants.FrontRightXPos, CompbotTunerConstants.FRONT_RIGHT_YPOS),
+            new Translation2d(CompbotTunerConstants.FRONT_RIGHT_XPOS, CompbotTunerConstants.FRONT_RIGHT_YPOS),
             new Translation2d(CompbotTunerConstants.BACK_LEFT_XPOS, CompbotTunerConstants.BACK_LEFT_YPOS),
             new Translation2d(CompbotTunerConstants.BACK_RIGHT_XPOS, CompbotTunerConstants.BACK_RIGHT_YPOS));
 }
