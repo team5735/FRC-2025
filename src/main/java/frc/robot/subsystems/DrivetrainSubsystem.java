@@ -277,6 +277,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
             setControl(brake);
         }
+        setControl(fieldCentricRequest.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
     }
 
     public void pidDrive(Translation2d trans, double omega) {
