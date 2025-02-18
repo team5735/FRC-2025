@@ -4,17 +4,86 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.constants.drivetrain.CompbotTunerConstants;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class RobotContainer {
-  public RobotContainer() {
-    configureBindings();
-  }
+    private double MaxSpeed = CompbotTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
-  private void configureBindings() {}
+    /* Setting up bindings for necessary control of the swerve drive platform */
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    private final Telemetry logger = new Telemetry(MaxSpeed);
+
+    private final SendableChooser<Command> autoChooser;
+
+    private final CommandXboxController joystick = new CommandXboxController(0);
+
+    public static final DrivetrainSubsystem drivetrain = CompbotTunerConstants.createDrivetrain();
+
+    public RobotContainer() {
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("Choose an Auto", autoChooser);
+        configureBindings();
+    }
+    
+    private void configureBindings() {
+        // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        drivetrain.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivetrain.joystickDriveCommand(
+                () -> joystick.getLeftX(), 
+                () -> joystick.getLeftY(), 
+                () -> joystick.getLeftTriggerAxis(), 
+                () -> joystick.getRightTriggerAxis())
+        );
+
+        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.b().whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        ));
+
+        joystick.povDown().onTrue(
+            Commands.runOnce(() -> {
+                drivetrain.seedFieldCentric();
+                drivetrain.getPigeon2().setYaw(0);
+            }, drivetrain));
+
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+        // reset the field-centric heading on left bumper press
+        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public Command getAutonomousCommand() {
+        Command auto = autoChooser.getSelected();
+        if (auto == null) {
+            System.out.println("auto is null");
+            return drivetrain.brakeCommand();
+        }
+
+        return auto;
+    }
 }
