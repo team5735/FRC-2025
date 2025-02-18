@@ -22,14 +22,13 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class RobotContainer {
-    private double MaxSpeed = CompbotTunerConstants.SPEED_AT12_VOLTS.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                          // speed
+    private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(MAX_SPEED);
 
     private final SendableChooser<Command> autoChooser;
 

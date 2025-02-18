@@ -40,7 +40,7 @@ public class DrivetrainConstants {
             DrivetrainConstants.ROBOT_MOI_KGxMxM,
             new ModuleConfig(
                     CompbotTunerConstants.WHEEL_RADIUS.in(Meters),
-                    CompbotTunerConstants.SPEED_AT12_VOLTS.in(MetersPerSecond),
+                    CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond),
                     DrivetrainConstants.COEFFICIENT_OF_FRICTION,
                     DCMotor.getKrakenX60(1).withReduction(CompbotTunerConstants.DRIVE_GEAR_RATIO),
                     60,
