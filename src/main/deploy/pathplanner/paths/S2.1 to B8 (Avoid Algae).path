@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 1.0
+        "x": 0.7117500000000001,
+        "y": 1.4217499999999996
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.75,
-        "y": 1.0
+        "x": 2.01825,
+        "y": 0.7489999999999987
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "S2.1"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 1.0
+        "x": 3.9389999999999996,
+        "y": 2.80625
       },
       "prevControl": {
-        "x": 1.75,
-        "y": 1.0
+        "x": 3.198,
+        "y": 2.06525
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B8"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Calibration",
+  "folder": "From S2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 54.0
   },
   "useDefaultConstraints": true
 }

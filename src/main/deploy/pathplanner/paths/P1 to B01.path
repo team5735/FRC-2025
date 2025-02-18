@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 1.0
+        "x": 8.0,
+        "y": 7.25
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.75,
-        "y": 1.0
+        "x": 6.707999999999999,
+        "y": 7.232749999999999
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "P1"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 1.0
+        "x": 4.739,
+        "y": 5.4095
       },
       "prevControl": {
-        "x": 1.75,
-        "y": 1.0
+        "x": 5.440999999999999,
+        "y": 6.56
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Calibration",
+  "folder": "From P1",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
