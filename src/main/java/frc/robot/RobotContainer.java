@@ -57,6 +57,8 @@ public class RobotContainer {
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis()));
 
+        drivetrain.registerTelemetry(logger::telemeterize);
+
         driveController.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driveController.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(
@@ -70,17 +72,15 @@ public class RobotContainer {
         driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        driveController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+        driveController.leftBumper().and(driveController.a()).whileTrue(algaer.grabStopCommand());
+        driveController.leftBumper().and(driveController.b()).whileTrue(algaer.grabStopCommand());
 
-        driveController.a().whileTrue(algaer.grabStopCommand());
-        driveController.b().whileTrue(algaer.spitStopCommand());
-
-        driveController.a().whileTrue(coraler.feedInCommand());
-        driveController.b().whileTrue(coraler.outtakeCommand());
-        driveController.x().whileTrue(coraler.troughCommand());
-        driveController.y().onTrue(coraler.stopCommand());
+        driveController.rightBumper().and(driveController.a()).whileTrue(coraler.feedInCommand());
+        driveController.rightBumper().and(driveController.b()).whileTrue(coraler.outtakeCommand());
+        driveController.rightBumper().and(driveController.x()).whileTrue(coraler.troughCommand());
+        driveController.rightBumper().and(driveController.y()).onTrue(coraler.stopCommand());
     }
 
     public Command getAutonomousCommand() {
