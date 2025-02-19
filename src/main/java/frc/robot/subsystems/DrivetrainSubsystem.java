@@ -268,12 +268,11 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public Command joystickDriveCommand(
             Supplier<Double> stickX,
             Supplier<Double> stickY,
-            Supplier<Double> leftTrigger,
-            Supplier<Double> rightTrigger) {
+            Supplier<Double> rotation) {
         return applyRequest(() -> fieldCentricRequest
                 .withVelocityX(-deadband(stickY.get()) * maxSpeed)
                 .withVelocityY(-deadband(stickX.get()) * maxSpeed)
-                .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate));
+                .withRotationalRate(deadband(rotation.get()) * maxAngularRate));
     }
 
     public Command brakeCommand() {

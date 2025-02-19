@@ -13,9 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
@@ -32,7 +32,9 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
-    private final CommandXboxController driveController = new CommandXboxController(0);
+    private final CommandXboxController driveController = new CommandXboxController(Constants.DRIVE_CONTROLLER_PORT);
+    private final CommandXboxController subsystemController = new CommandXboxController(
+            Constants.SUBSYSTEM_CONTROLLER_PORT);
 
     public static final DrivetrainSubsystem drivetrain = CompbotTunerConstants.createDrivetrain();
 
@@ -51,11 +53,12 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
+                // both joysticks are combined here so that you only need one at a time to test
+                // anything.
                 drivetrain.joystickDriveCommand(
-                        () -> driveController.getLeftX(),
-                        () -> driveController.getLeftY(),
-                        () -> driveController.getLeftTriggerAxis(),
-                        () -> driveController.getRightTriggerAxis()));
+                        () -> driveController.getLeftX() + subsystemController.getLeftX(),
+                        () -> driveController.getLeftY() + subsystemController.getLeftY(),
+                        () -> driveController.getRightX() + subsystemController.getRightX()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -74,13 +77,12 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driveController.leftBumper().and(driveController.a()).whileTrue(algaer.grabStopCommand());
-        driveController.leftBumper().and(driveController.b()).whileTrue(algaer.grabStopCommand());
+        subsystemController.start().whileTrue(algaer.grabStopCommand());
 
         driveController.rightBumper().and(driveController.a()).whileTrue(coraler.feedInCommand());
         driveController.rightBumper().and(driveController.b()).whileTrue(coraler.outtakeCommand());
         driveController.rightBumper().and(driveController.x()).whileTrue(coraler.troughCommand());
-        driveController.rightBumper().and(driveController.y()).onTrue(coraler.stopCommand());
+        driveController.rightBumper().and(driveController.y()).onTrue(coraler.branchCommand());
     }
 
     public Command getAutonomousCommand() {

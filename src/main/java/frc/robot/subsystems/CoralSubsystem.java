@@ -94,11 +94,6 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command feedInCommand() {
-        // return runOnce(() -> intakeBottom())
-        // .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-        // .andThen(runOnce(() -> intakeTop()))
-        // .until(beamBreakEngaged())
-        // .finallyDo(() -> stop());
         return startEnd(() -> {
             intakeTop();
             intakeBottom();
