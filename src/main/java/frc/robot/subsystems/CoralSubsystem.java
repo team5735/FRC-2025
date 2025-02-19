@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -93,11 +94,20 @@ public class CoralSubsystem extends SubsystemBase {
         return runOnce(() -> stop());
     }
 
-    public Command feedInCommand() {
+    public Command simpleFeedCommand() {
         return startEnd(() -> {
             intakeTop();
             intakeBottom();
         }, () -> stop());
+    }
+
+    // TODO: implement beam break in hardware & find proper delay
+    public Command feedStageCommand(){
+        return runOnce(() -> intakeBottom())
+            .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+            .andThen(runOnce(() -> intakeTop()))
+            .until(beamBreakEngaged())
+            .finallyDo(() -> stop());
     }
 
     public Command troughCommand() {
