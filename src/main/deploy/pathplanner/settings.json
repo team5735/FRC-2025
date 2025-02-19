@@ -43,6 +43,7 @@
     "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.109,\"y\":0.266},\"size\":{\"width\":0.1143,\"length\":0.306},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":true}}",
     "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.0,\"y\":0.0},\"size\":{\"width\":0.762,\"length\":0.762},\"borderRadius\":0.0,\"strokeWidth\":0.02,\"filled\":false}}",
     "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.406,\"y\":0.151},\"radius\":0.038,\"strokeWidth\":0.02,\"filled\":true}}",
-    "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.406,\"y\":-0.151},\"radius\":0.038,\"strokeWidth\":0.02,\"filled\":true}}"
+    "{\"name\":\"Circle\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.406,\"y\":-0.151},\"radius\":0.038,\"strokeWidth\":0.02,\"filled\":true}}",
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.216,\"y\":0.13999999999999999},\"size\":{\"width\":0.412,\"length\":0.287},\"borderRadius\":0.0,\"strokeWidth\":0.02,\"filled\":true}}"
   ]
 }
