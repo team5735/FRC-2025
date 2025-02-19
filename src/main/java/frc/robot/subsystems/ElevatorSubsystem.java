@@ -39,7 +39,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
 
     private final SysIdRoutine routine = new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.of(0.5).per(Second), Volts.of(5), null, null),
+            new SysIdRoutine.Config(Volts.of(1).per(Second), Volts.of(5), null, null),
             new SysIdRoutine.Mechanism(
                     v -> krakenRight.setVoltage(v.in(Volts)),
                     null,
