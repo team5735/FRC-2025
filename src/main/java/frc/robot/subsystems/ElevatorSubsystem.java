@@ -57,6 +57,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/Volts", krakenRight.getMotorVoltage().getValue().in(Volts));
 
         SmartDashboard.putNumber("Elevator/TuningVolts", 0);
+
+        SmartDashboard.putString("Elevator/ActiveLevel", activeLevel.name());
+        SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
+
         this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
     }
 
@@ -74,6 +78,8 @@ public class ElevatorSubsystem extends SubsystemBase {
                                 * ElevatorConstants.ROTATIONS_TO_FEET)
                         .in(MetersPerSecond));
         SmartDashboard.putNumber("Elevator/Volts", krakenRight.getMotorVoltage().getValue().in(Volts));
+        SmartDashboard.putString("Elevator/ActiveLevel", activeLevel.name());
+        SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
     }
 
     private void setPIDVolts() {
