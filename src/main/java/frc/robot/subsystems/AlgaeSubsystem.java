@@ -15,16 +15,16 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     public AlgaeSubsystem() {
         falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
-        SmartDashboard.putNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS);
-        SmartDashboard.putNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS);
+        SmartDashboard.putNumber("Algae/GrabVolts", AlgaeConstants.GRAB_VOLTS);
+        SmartDashboard.putNumber("Algae/SpitVolts", AlgaeConstants.SPIT_VOLTS);
     }
 
     public void grab() {
-        falcon.setVoltage(SmartDashboard.getNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS));
+        falcon.setVoltage(SmartDashboard.getNumber("Algae/GrabVolts", AlgaeConstants.GRAB_VOLTS));
     }
 
     public void spit() {
-        falcon.setVoltage(-SmartDashboard.getNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS));
+        falcon.setVoltage(-SmartDashboard.getNumber("Algae/SpitVolts", AlgaeConstants.SPIT_VOLTS));
     }
 
     public void stop() {
