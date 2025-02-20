@@ -23,7 +23,7 @@ public enum Branch {
     }
 
     public Translation2d scoringPosition(Pose2d tagPos){
-        Rotation2d theta = new Rotation2d(Degrees.of(tagPos.getRotation().getRadians()));
+        Rotation2d theta = tagPos.getRotation();
 
         Translation2d offset = new Translation2d(perpendicular, parallel).rotateBy(theta);
 

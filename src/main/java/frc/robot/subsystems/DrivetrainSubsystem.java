@@ -379,7 +379,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public Command toBranchDriveCommand(Pose2d tagPos, Branch branch){
         try{
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                new Pose2d(branch.scoringPosition(tagPos), new Rotation2d(Degrees.of(tagPos.getRotation().getRadians())))
+                new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation())
             ); // TODO: Change Rotation2d to be perpendicular away from the tag, once the tags have been changed
 
             PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
@@ -388,7 +388,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 waypoints, 
                 constraints,
                 null,
-                new GoalEndState(0, new Rotation2d(Degrees.of(tagPos.getRotation().getRadians())))
+                new GoalEndState(0, tagPos.getRotation())
             ); // TODO: Change Rotation2d to be perpendicular towards the tag, akin to the previous comment
 
             return new FollowPathCommand(
