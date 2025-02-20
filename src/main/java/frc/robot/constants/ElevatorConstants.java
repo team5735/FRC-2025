@@ -1,13 +1,11 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -42,7 +40,7 @@ public class ElevatorConstants {
         L4(() -> new State(BASE_HEIGHT.in(Units.Meters), 0)),
         SMARTDASHBOARD(() -> new State(
             Feet.of(
-                SmartDashboard.getNumber("ElevatorHeightTargetFeet", BASE_HEIGHT.in(Units.Feet))).in(Units.Meters
+                SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet))).in(Units.Meters
             ), 
             0
         ));

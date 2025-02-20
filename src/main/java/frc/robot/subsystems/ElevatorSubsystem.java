@@ -29,6 +29,7 @@ import frc.robot.constants.ElevatorConstants;
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
+
     private ProfiledPIDController pid = new ProfiledPIDController(
             ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
             new Constraints(
@@ -36,6 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                     ElevatorConstants.MAX_ACCELERATION.in(MetersPerSecondPerSecond)));
     private ElevatorFeedforward ff = new ElevatorFeedforward(
             ElevatorConstants.KS, ElevatorConstants.KG, ElevatorConstants.KV, ElevatorConstants.KA);
+    
     private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
 
     private final SysIdRoutine routine = new SysIdRoutine(
@@ -50,9 +52,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
         resetMeasurement();
 
-        SmartDashboard.putNumber("ElevatorPosMeters", ElevatorConstants.BASE_HEIGHT.in(Meters));
-        SmartDashboard.putNumber("ElevatorVelocityMPS", 0);
-        SmartDashboard.putNumber("ElevatorVolts", krakenRight.getMotorVoltage().getValue().in(Volts));
+        SmartDashboard.putNumber("Elevator/PosMeters", ElevatorConstants.BASE_HEIGHT.in(Meters));
+        SmartDashboard.putNumber("Elevator/VelocityMPS", 0);
+        SmartDashboard.putNumber("Elevator/Volts", krakenRight.getMotorVoltage().getValue().in(Volts));
+
+        SmartDashboard.putNumber("Elevator/TuningVolts", 0);
         this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
     }
 
@@ -62,22 +66,24 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("ElevatorPosMeters", getPosition().in(Meters));
+        SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
         SmartDashboard.putNumber(
-                "ElevatorVelocityMPS",
+                "Elevator/VelocityMPS",
                 FeetPerSecond.of(
                         krakenRight.getVelocity().getValue().in(RotationsPerSecond)
                                 * ElevatorConstants.ROTATIONS_TO_FEET)
                         .in(MetersPerSecond));
-        SmartDashboard.putNumber("ElevatorVolts", krakenRight.getMotorVoltage().getValue().in(Volts));
+        SmartDashboard.putNumber("Elevator/Volts", krakenRight.getMotorVoltage().getValue().in(Volts));
     }
 
     private void setPIDVolts() {
         pid.setGoal(activeLevel.stateSupplier.get());
 
-        double voltsToSet = pid.calculate(getPosition().in(Meters)) + ff.calculate(pid.getSetpoint().velocity);
-        if (isAtRest())
-            voltsToSet = 0; // TODO check if better logic is needed here
+        // double voltsToSet = pid.calculate(getPosition().in(Meters)) + ff.calculate(pid.getSetpoint().velocity);
+        // if (isAtRest())
+        //     voltsToSet = 0; // TODO check if better logic is needed here
+
+        double voltsToSet = SmartDashboard.getNumber("Elevator/TuningVolts", 0);
 
         krakenRight.setVoltage(voltsToSet);
     }
