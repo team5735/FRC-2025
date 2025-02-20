@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -13,11 +16,17 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -29,9 +38,11 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.Branch;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
@@ -42,8 +53,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
     private double lastSimTime;
-    private double maxSpeed = DrivetrainConstants.SPEED_MPS;
-    private double maxAngularRate = RotationsPerSecond.of(DrivetrainConstants.SPIN_RPS).in(RadiansPerSecond);
+    private double maxSpeed = DrivetrainConstants.DEFAULT_SPEED.in(MetersPerSecond);
+    private double maxAngularRate = DrivetrainConstants.DEFAULT_ROTATIONAL_RATE.in(RadiansPerSecond);
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -365,5 +376,44 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     return false;
                 },
                 this);
+    }
+
+    public Command toBranchDriveCommand(Pose2d tagPos, Branch branch){
+        try{
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                new Pose2d(branch.scoringPosition(tagPos), new Rotation2d(Degrees.of(tagPos.getRotation().getRadians())))
+            ); // TODO: Change Rotation2d to be perpendicular away from the tag, once the tags have been changed
+
+            PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
+
+            PathPlannerPath idealPath = new PathPlannerPath(
+                waypoints, 
+                constraints,
+                null,
+                new GoalEndState(0, new Rotation2d(Degrees.of(tagPos.getRotation().getRadians())))
+            ); // TODO: Change Rotation2d to be perpendicular towards the tag, akin to the previous comment
+
+            return new FollowPathCommand(
+                idealPath,
+                () -> getState().Pose,
+                this::getChassisSpeeds,
+                (speeds, ff) -> autoDriveRobotRelative(speeds),
+                new PPHolonomicDriveController(
+                        DrivetrainConstants.AUTO_POS_CONSTANTS,
+                        DrivetrainConstants.AUTO_ROT_CONSTANTS),
+                DrivetrainConstants.CONFIG,
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this
+            );
+        } catch(Exception e) {
+            DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
     }
 }
