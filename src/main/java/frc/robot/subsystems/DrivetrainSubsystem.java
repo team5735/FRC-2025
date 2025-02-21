@@ -380,17 +380,16 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         try{
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                 new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation())
-            ); // TODO: Change Rotation2d to be perpendicular away from the tag, once the tags have been changed
-
+            );
             PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
 
             PathPlannerPath idealPath = new PathPlannerPath(
                 waypoints, 
                 constraints,
                 null,
-                new GoalEndState(0, tagPos.getRotation())
-            ); // TODO: Change Rotation2d to be perpendicular towards the tag, akin to the previous comment
-
+                new GoalEndState(0, tagPos.getRotation().unaryMinus())
+            );
+            
             return new FollowPathCommand(
                 idealPath,
                 () -> getState().Pose,
