@@ -1,6 +1,6 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,27 +33,27 @@ public class ReefAprilTagPositions {
             // 17
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-4.700446, -0.719482),
-                    new Rotation2d(Degrees.of(-120)))),
+                    Rotation2d.fromDegrees(-120))),
             // 18
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-5.116498, 0),
-                    new Rotation2d(Degrees.of(180)))),
+                    Rotation2d.fromDegrees(180))),
             // 19
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-4.700446, 0.719482),
-                    new Rotation2d(Degrees.of(120)))),
+                    Rotation2d.fromDegrees(120))),
             // 20
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-3.869358, 0.719482),
-                    new Rotation2d(Degrees.of(60)))),
+                    Rotation2d.fromDegrees(60))),
             // 21
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-3.453306, 0),
-                    new Rotation2d(Degrees.of(0)))),
+                    Rotation2d.fromDegrees(0))),
             // 22
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-3.869358, -0.719482),
-                    new Rotation2d(Degrees.of(-60)))),
+                    Rotation2d.fromDegrees(-60))),
     };
 
     private static final double FIELD_LENGTH = 17.5483;
