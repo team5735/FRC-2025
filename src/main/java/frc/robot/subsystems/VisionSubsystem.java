@@ -16,14 +16,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.NTDoubleSection;
 
 public class VisionSubsystem extends SubsystemBase {
     DrivetrainSubsystem drivetrain;
-    private final StructPublisher<Pose2d> limelightPosePublisher = NetworkTableInstance.getDefault()
-            .getTable("telemetry").getStructTopic("pose estimation", Pose2d.struct).publish();
-    private final StructPublisher<Pose2d> limelightMt2Publisher = NetworkTableInstance.getDefault()
-            .getTable("telemetry").getStructTopic("mt2", Pose2d.struct).publish();
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
@@ -51,17 +46,15 @@ public class VisionSubsystem extends SubsystemBase {
         }).andThen(run(() -> seedPigeon()).ignoringDisable(true));
     }
 
-    private Pose2d updateVisionMeasurement(String limelight_name) {
+    private void updateVisionMeasurement(String limelight_name) {
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight_name);
         if (mt2 == null) {
             // failed to get mt2
             SmartDashboard.putNumber("poseestimator_status", -1);
-            return null;
         }
         if (mt2.tagCount == 0) {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
-            return null;
         }
         SmartDashboard.putNumber("poseestimator_status", 0);
 
@@ -69,8 +62,6 @@ public class VisionSubsystem extends SubsystemBase {
         drivetrain.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
-
-        return mt2.pose;
     }
 
     private void addMt1Reading() {
@@ -105,7 +96,7 @@ public class VisionSubsystem extends SubsystemBase {
                     this.drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
                     0, 0, 0);
 
-            Pose2d mt2 = updateVisionMeasurement(limelight);
+            updateVisionMeasurement(limelight);
         }
 
         addMt1Reading();
