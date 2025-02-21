@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -13,7 +14,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,10 +35,12 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
+import frc.robot.util.ReefAlignment;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -42,8 +50,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
     private double lastSimTime;
-    private double maxSpeed = DrivetrainConstants.SPEED_MPS;
-    private double maxAngularRate = RotationsPerSecond.of(DrivetrainConstants.SPIN_RPS).in(RadiansPerSecond);
+    private double maxSpeed = DrivetrainConstants.DEFAULT_SPEED.in(MetersPerSecond);
+    private double maxAngularRate = DrivetrainConstants.DEFAULT_ROTATIONAL_RATE.in(RadiansPerSecond);
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -56,6 +64,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
     /*
@@ -265,6 +274,24 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         }
     }
 
+    public final Pose2d getEstimatedPosition() {
+        return getState().Pose;
+    }
+
+    /**
+     * For use by PIDs. Speed limited for safety.
+     */
+    public void pidDrive(double vx, double vy, double omega) {
+        if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
+            setControl(brake);
+        }
+        setControl(fieldCentricRequest.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
+    }
+
+    public void pidDrive(Translation2d trans, double omega) {
+        pidDrive(trans.getX(), trans.getY(), omega);
+    }
+
     public Command joystickDriveCommand(
             Supplier<Double> stickX,
             Supplier<Double> stickY,
@@ -276,7 +303,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command brakeCommand() {
-        return runOnce(() -> setControl(new SwerveRequest.SwerveDriveBrake()));
+        return runOnce(() -> setControl(brake));
     }
 
     private void startSimThread() {
@@ -345,5 +372,31 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     return false;
                 },
                 this);
+    }
+
+    public Command toBranchDriveCommand(Pose2d tagPos, ReefAlignment branch) {
+        try {
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                    new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation()));
+            PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
+
+            PathPlannerPath idealPath = new PathPlannerPath(waypoints, constraints, null,
+                    new GoalEndState(0, tagPos.getRotation().unaryMinus()));
+
+            return new FollowPathCommand(
+                    idealPath,
+                    () -> getState().Pose,
+                    this::getChassisSpeeds,
+                    (speeds, ff) -> autoDriveRobotRelative(speeds),
+                    new PPHolonomicDriveController(
+                            DrivetrainConstants.AUTO_POS_CONSTANTS,
+                            DrivetrainConstants.AUTO_ROT_CONSTANTS),
+                    DrivetrainConstants.CONFIG,
+                    () -> false,
+                    this);
+        } catch (Exception e) {
+            DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
     }
 }

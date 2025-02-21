@@ -15,11 +15,19 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
+import frc.robot.util.TunableNumber;
 
 public class CoralSubsystem extends SubsystemBase {
     private final SparkFlex vortexTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
+
+    private TunableNumber outTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
+    private TunableNumber outBottomVolts = new TunableNumber("coral", "out_bottom_volts",
+            CoralConstants.TROUGH_BOTTOM_VOLTS);
+    private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
+    private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
+            CoralConstants.INTAKE_BOTTOM_VOLTS);
 
     public CoralSubsystem() {
         vortexTop.configure(
@@ -30,10 +38,6 @@ public class CoralSubsystem extends SubsystemBase {
                 new SparkFlexConfig().inverted(true).idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        SmartDashboard.putNumber("Coral/OutTopVolts", CoralConstants.TROUGH_TOP_VOLTS);
-        SmartDashboard.putNumber("Coral/OutBottomVolts", CoralConstants.TROUGH_BOTTOM_VOLTS);
-        SmartDashboard.putNumber("Coral/InTopVolts", CoralConstants.INTAKE_TOP_VOLTS);
-        SmartDashboard.putNumber("Coral/InBottomVolts", CoralConstants.INTAKE_BOTTOM_VOLTS);
     }
 
     private void intakeTop() {
@@ -45,23 +49,19 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     private void outtakeTop() {
-        // vortexTop.setVoltage(-CoralConstants.INTAKE_TOP_VOLTS);
-        vortexTop.setVoltage(-SmartDashboard.getNumber("Coral/InTopVolts", CoralConstants.INTAKE_TOP_VOLTS));
+        vortexTop.setVoltage(-inTopVolts.get());
     }
 
     private void outtakeBottom() {
-        // vortexBottom.setVoltage(-CoralConstants.INTAKE_BOTTOM_VOLTS);
-        vortexBottom.setVoltage(-SmartDashboard.getNumber("Coral/InBottomVolts", CoralConstants.INTAKE_BOTTOM_VOLTS));
+        vortexBottom.setVoltage(-inBottomVolts.get());
     }
 
     private void troughTop() {
-        // vortexTop.setVoltage(CoralConstants.TROUGH_TOP_VOLTS);
-        vortexTop.setVoltage(SmartDashboard.getNumber("Coral/OutTopVolts", CoralConstants.TROUGH_TOP_VOLTS));
+        vortexTop.setVoltage(outTopVolts.get());
     }
 
     private void troughBottom() {
-        // vortexBottom.setVoltage(CoralConstants.TROUGH_BOTTOM_VOLTS);
-        vortexBottom.setVoltage(SmartDashboard.getNumber("Coral/OutBottomVolts", CoralConstants.TROUGH_BOTTOM_VOLTS));
+        vortexBottom.setVoltage(outBottomVolts.get());
     }
 
     private void branchTop() {

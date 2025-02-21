@@ -96,7 +96,7 @@ public class CompbotTunerConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
-    public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(12 / 1.6977);
+    public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(12 / 1.7106);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     private static final double COUPLE_RATIO = 3.7;
