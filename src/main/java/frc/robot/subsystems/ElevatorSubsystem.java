@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -15,10 +16,16 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
+import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
+import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,6 +36,8 @@ import frc.robot.constants.ElevatorConstants;
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
+
+    private final LaserCan lidar = new LaserCan(Constants.ELEVATOR_LIDAR_ID);
 
     private ProfiledPIDController pid = new ProfiledPIDController(
             ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
@@ -51,6 +60,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
         resetMeasurement();
+
+        try{
+            lidar.setRangingMode(RangingMode.SHORT);
+            lidar.setRegionOfInterest(new RegionOfInterest(0, 0, 0, 0)); //TODO: use the "grapplehook" program to find roi
+            lidar.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
+        } catch (ConfigurationFailedException e){
+            DriverStation.reportError("Lidar Config Failed: " + e.getMessage(), e.getStackTrace());
+        }
 
         SmartDashboard.putNumber("Elevator/PosMeters", ElevatorConstants.BASE_HEIGHT.in(Meters));
         SmartDashboard.putNumber("Elevator/VelocityMPS", 0);
@@ -95,7 +112,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getPosition() {
-        return Feet.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.ROTATIONS_TO_FEET);
+        //return Feet.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.ROTATIONS_TO_FEET);
+        return Millimeters.of(lidar.getMeasurement().distance_mm);
     }
 
     public Command toLevelCommand(ElevatorConstants.Level level) {
