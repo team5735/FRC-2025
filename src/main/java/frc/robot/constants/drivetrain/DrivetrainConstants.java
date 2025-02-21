@@ -29,13 +29,14 @@ public class DrivetrainConstants {
 
     public static final Distance ROBOT_TOTAL_WIDTH = Feet.of(0); // Left to Right
     public static final Distance ROBOT_TOTAL_LENGTH = Feet.of(0); // Front to Back
+    // from 'robot center' (defined as the X formed by the swerve medules)
+    public static final Distance TO_ROBOT_FRONT = Feet.of(0); // TODO: determine
 
     public static final PathConstraints PATH_FOLLOW_CONSTRAINTS = new PathConstraints(
-        MetersPerSecond.of(0),
-        MetersPerSecondPerSecond.of(0),
-        DegreesPerSecond.of(0),
-        DegreesPerSecondPerSecond.of(0)
-    ); //TODO fill values based on auto configs
+            MetersPerSecond.of(0),
+            MetersPerSecondPerSecond.of(0),
+            DegreesPerSecond.of(0),
+            DegreesPerSecondPerSecond.of(0)); // TODO fill values based on auto configs
 
     public static final double SPIN_KP = 0.014787;
     public static final double SPIN_KI = 0;
