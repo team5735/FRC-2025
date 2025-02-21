@@ -1,4 +1,4 @@
-package frc.robot.Constants;
+package frc.robot.constants;
 
 public class Constants {
     public static final int FEEDER_BEAM_ID = 12;

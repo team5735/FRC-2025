@@ -1,4 +1,4 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Constants;
-import frc.robot.Constants.FeederConstants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.FeederConstants;
 
 public class FeederSubsystems extends SubsystemBase {
     private final DigitalInput beamBreak = new DigitalInput(Constants.FEEDER_BEAM_ID);
