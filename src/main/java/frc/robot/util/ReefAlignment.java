@@ -12,7 +12,7 @@ import frc.robot.constants.drivetrain.DrivetrainConstants;
 public enum ReefAlignment {
     LEFT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).unaryMinus()),
     RIGHT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2)),
-    NEITHER(Meters.of(0));
+    ALGAE(Meters.of(0)); // TODO: is this correct?
 
     private Distance parallel;
 

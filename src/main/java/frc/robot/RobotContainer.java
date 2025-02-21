@@ -66,7 +66,7 @@ public class RobotContainer {
                 () -> point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.NEITHER));
+        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE));
 
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
