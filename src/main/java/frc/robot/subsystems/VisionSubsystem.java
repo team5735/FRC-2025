@@ -4,17 +4,9 @@
 
 package frc.robot.subsystems;
 
-import java.util.Arrays;
-
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -27,23 +19,6 @@ public class VisionSubsystem extends SubsystemBase {
     // Initializes the vision subsystem
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
-    }
-
-    LinearFilter mt1RzAverage = LinearFilter.movingAverage(VisionConstants.AVERAGING_WINDOW);
-    double lastRot = Double.NaN;
-    double curRot;
-    int ticksWithNoTv = 0;
-
-    public void seedPigeon() {
-        drivetrain.getPigeon2().setYaw(curRot);
-    }
-
-    public Command getSeedPigeon() {
-        return runOnce(() -> {
-            double[] inputBuffer = new double[VisionConstants.AVERAGING_WINDOW];
-            Arrays.fill(inputBuffer, drivetrain.getEstimatedPosition().getRotation().getDegrees());
-            mt1RzAverage.reset(inputBuffer, new double[0]);
-        }).andThen(run(() -> seedPigeon()).ignoringDisable(true));
     }
 
     private void updateVisionMeasurement(String limelight_name) {
@@ -64,31 +39,6 @@ public class VisionSubsystem extends SubsystemBase {
                 mt2.timestampSeconds);
     }
 
-    private void addMt1Reading() {
-        if (!LimelightHelpers.getTV(null)) {
-            ticksWithNoTv++;
-            if (ticksWithNoTv > 5) {
-                double[] inputBuffer = new double[VisionConstants.AVERAGING_WINDOW];
-                Arrays.fill(inputBuffer, drivetrain.getEstimatedPosition().getRotation().getDegrees());
-                mt1RzAverage.reset(inputBuffer, new double[0]);
-            }
-            return;
-        }
-
-        ticksWithNoTv = 0;
-        double thisRot = LimelightHelpers.getBotPose2d_wpiBlue(null).getRotation().getDegrees();
-        if (thisRot == lastRot) {
-            return;
-        }
-        lastRot = thisRot;
-        curRot = mt1RzAverage.calculate(thisRot);
-        telemetry_doubles.set("averagedMt1", curRot);
-    }
-
-    // all in deg
-    NTDoubleSection telemetry_doubles = new NTDoubleSection("test_telem_doubles", "mt1_rz", "mt2_rz", "pigeon",
-            "poseest", "averagedMt1");
-
     @Override
     public void periodic() {
         for (String limelight : LIMELIGHTS) {
@@ -98,7 +48,5 @@ public class VisionSubsystem extends SubsystemBase {
 
             updateVisionMeasurement(limelight);
         }
-
-        addMt1Reading();
     }
 }
