@@ -389,7 +389,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 null,
                 new GoalEndState(0, tagPos.getRotation().unaryMinus())
             );
-            
+
             return new FollowPathCommand(
                 idealPath,
                 () -> getState().Pose,
@@ -399,13 +399,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                         DrivetrainConstants.AUTO_POS_CONSTANTS,
                         DrivetrainConstants.AUTO_ROT_CONSTANTS),
                 DrivetrainConstants.CONFIG,
-                () -> {
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
+                () -> false,
                 this
             );
         } catch(Exception e) {
