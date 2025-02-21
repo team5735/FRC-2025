@@ -27,6 +27,8 @@ public class VisionSubsystem extends SubsystemBase {
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
+    private static final String LIMELIGHTS[] = { "limelight_front", "limelight_back" };
+
     // Initializes the vision subsystem
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
@@ -49,8 +51,8 @@ public class VisionSubsystem extends SubsystemBase {
         }).andThen(run(() -> seedPigeon()).ignoringDisable(true));
     }
 
-    private Pose2d updateVisionMeasurement() {
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    private Pose2d updateVisionMeasurement(String limelight_name) {
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight_name);
         if (mt2 == null) {
             // failed to get mt2
             SmartDashboard.putNumber("poseestimator_status", -1);
@@ -98,21 +100,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        LimelightHelpers.SetRobotOrientation(null,
-                this.drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-                0, 0, 0);
+        for (String limelight : LIMELIGHTS) {
+            LimelightHelpers.SetRobotOrientation(limelight,
+                    this.drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+                    0, 0, 0);
 
-        Pose2d mt2 = updateVisionMeasurement();
-        if (mt2 != null) {
-            this.limelightMt2Publisher.set(mt2);
+            Pose2d mt2 = updateVisionMeasurement(limelight);
         }
-        this.limelightPosePublisher.set(drivetrain.getEstimatedPosition());
-
-        telemetry_doubles.set("mt1_rz", LimelightHelpers.getBotPose2d_wpiBlue(null).getRotation().getDegrees());
-        telemetry_doubles.set("mt2_rz",
-                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(null).pose.getRotation().getDegrees());
-        telemetry_doubles.set("pigeon", drivetrain.getPigeon2().getRotation2d().getDegrees());
-        telemetry_doubles.set("poseest", drivetrain.getEstimatedPosition().getRotation().getDegrees());
 
         addMt1Reading();
     }
