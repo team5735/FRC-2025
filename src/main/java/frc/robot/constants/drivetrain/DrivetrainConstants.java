@@ -30,7 +30,7 @@ public class DrivetrainConstants {
     public static final Distance ROBOT_TOTAL_WIDTH = Feet.of(0); // Left to Right
     public static final Distance ROBOT_TOTAL_LENGTH = Feet.of(0); // Front to Back
     // from 'robot center' (defined as the X formed by the swerve medules)
-    public static final Distance TO_ROBOT_FRONT = Feet.of(0); // TODO: determine
+    public static final Distance PIGEON_TO_ROBOT_FRONT = Feet.of(0); // TODO: determine
 
     public static final PathConstraints PATH_FOLLOW_CONSTRAINTS = new PathConstraints(
             MetersPerSecond.of(0),

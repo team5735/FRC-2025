@@ -23,7 +23,7 @@ public enum ReefAlignment {
     public Translation2d scoringPosition(Pose2d tagPos) {
         Rotation2d theta = tagPos.getRotation();
 
-        Translation2d offset = new Translation2d(DrivetrainConstants.TO_ROBOT_FRONT, parallel)
+        Translation2d offset = new Translation2d(DrivetrainConstants.PIGEON_TO_ROBOT_FRONT, parallel)
                 .rotateBy(theta);
 
         return tagPos.getTranslation().plus(offset);
