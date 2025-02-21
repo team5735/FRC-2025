@@ -381,10 +381,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation()));
             PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
 
-            PathPlannerPath idealPath = new PathPlannerPath(
-                    waypoints,
-                    constraints,
-                    null,
+            PathPlannerPath idealPath = new PathPlannerPath(waypoints, constraints, null,
                     new GoalEndState(0, tagPos.getRotation().unaryMinus()));
 
             return new FollowPathCommand(
