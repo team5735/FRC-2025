@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -41,7 +40,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
-import frc.robot.util.Branch;
+import frc.robot.util.ReefAlignment;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -376,33 +375,30 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 this);
     }
 
-    public Command toBranchDriveCommand(Pose2d tagPos, Branch branch){
-        try{
+    public Command toBranchDriveCommand(Pose2d tagPos, ReefAlignment branch) {
+        try {
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation())
-            );
+                    new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation()));
             PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
 
             PathPlannerPath idealPath = new PathPlannerPath(
-                waypoints, 
-                constraints,
-                null,
-                new GoalEndState(0, tagPos.getRotation().unaryMinus())
-            );
+                    waypoints,
+                    constraints,
+                    null,
+                    new GoalEndState(0, tagPos.getRotation().unaryMinus()));
 
             return new FollowPathCommand(
-                idealPath,
-                () -> getState().Pose,
-                this::getChassisSpeeds,
-                (speeds, ff) -> autoDriveRobotRelative(speeds),
-                new PPHolonomicDriveController(
-                        DrivetrainConstants.AUTO_POS_CONSTANTS,
-                        DrivetrainConstants.AUTO_ROT_CONSTANTS),
-                DrivetrainConstants.CONFIG,
-                () -> false,
-                this
-            );
-        } catch(Exception e) {
+                    idealPath,
+                    () -> getState().Pose,
+                    this::getChassisSpeeds,
+                    (speeds, ff) -> autoDriveRobotRelative(speeds),
+                    new PPHolonomicDriveController(
+                            DrivetrainConstants.AUTO_POS_CONSTANTS,
+                            DrivetrainConstants.AUTO_ROT_CONSTANTS),
+                    DrivetrainConstants.CONFIG,
+                    () -> false,
+                    this);
+        } catch (Exception e) {
             DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
             return Commands.none();
         }

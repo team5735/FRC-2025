@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
 
 public class ReefAprilTagPositions {
     /**
@@ -88,4 +89,7 @@ public class ReefAprilTagPositions {
         }
         return best;
     }
+
+    // TODO: find actual distance
+    public static final Distance DISTANCE_BETWEEN_BRANCHES = Meters.of(0);
 }

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.util.Branch;
+import frc.robot.util.ReefAlignment;
 import frc.robot.util.Line;
 import frc.robot.util.NTDoubleSection;
 import frc.robot.util.TunablePIDController;
@@ -30,7 +30,7 @@ public class AlignToReef extends Command {
     /**
      * Positions the robot in order to score a coral.
      */
-    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, Supplier<Branch> whichBranch) {
+    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, Supplier<ReefAlignment> whichBranch) {
         this.drivetrain = drivetrain;
         addRequirements(drivetrain, vision);
     }

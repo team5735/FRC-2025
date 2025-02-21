@@ -21,7 +21,7 @@ import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.util.Branch;
+import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
@@ -66,7 +66,7 @@ public class RobotContainer {
                 () -> point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> Branch.NEITHER));
+        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.NEITHER));
 
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
