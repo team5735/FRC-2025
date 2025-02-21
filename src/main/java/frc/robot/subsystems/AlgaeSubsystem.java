@@ -4,27 +4,28 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AlgaeConstants;
 import frc.robot.constants.Constants;
+import frc.robot.util.TunableNumber;
 
 public class AlgaeSubsystem extends SubsystemBase {
     private final TalonFX falcon = new TalonFX(Constants.ALGAE_FALCON_ID);
 
+    private TunableNumber grabVolts = new TunableNumber("algae", "grab_volts", AlgaeConstants.GRAB_VOLTS);
+    private TunableNumber spitVolts = new TunableNumber("algae", "spit_volts", AlgaeConstants.SPIT_VOLTS);
+
     public AlgaeSubsystem() {
         falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
-        SmartDashboard.putNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS);
-        SmartDashboard.putNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS);
     }
 
     public void grab() {
-        falcon.setVoltage(SmartDashboard.getNumber("AlgaeGrabVolts", AlgaeConstants.GRAB_VOLTS));
+        falcon.setVoltage(grabVolts.get());
     }
 
     public void spit() {
-        falcon.setVoltage(-SmartDashboard.getNumber("AlgaeSpitVolts", AlgaeConstants.SPIT_VOLTS));
+        falcon.setVoltage(-spitVolts.get());
     }
 
     public void stop() {
