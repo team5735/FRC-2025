@@ -14,7 +14,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -23,7 +22,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 
-public class DrivetrainConstants {
+public interface DrivetrainConstants {
     public static final PIDConstants AUTO_POS_CONSTANTS = new PIDConstants(10, 0);
     public static final PIDConstants AUTO_ROT_CONSTANTS = new PIDConstants(15, 0);
 
@@ -45,7 +44,6 @@ public class DrivetrainConstants {
     public static final double SPIN_KV = 0.013474;
     public static final double SPIN_KA = 0.0050825;
 
-    public static final double DEADBAND = 0.15;
     public static final LinearVelocity DEFAULT_SPEED = MetersPerSecond.of(4);
     public static final AngularVelocity DEFAULT_ROTATIONAL_RATE = RotationsPerSecond.of(0.25);
     public static final Mass ROBOT_MASS = Kilograms.of(25.35);
@@ -53,10 +51,6 @@ public class DrivetrainConstants {
     public static final double ROBOT_MOI_KGxMxM = ROBOT_MASS.in(Kilograms) * MAX_WHEEL_DISTANCE.in(Meters) / 2 * SPIN_KA
             / CompbotTunerConstants.DRIVE_GAINS.kA; // Formula for approx. MoI
     public static final double COEFFICIENT_OF_FRICTION = 1.5;
-
-    public static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
-    public static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
-
     public static final RobotConfig CONFIG = new RobotConfig(
             DrivetrainConstants.ROBOT_MASS.in(Kilograms),
             DrivetrainConstants.ROBOT_MOI_KGxMxM,
