@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
+import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -38,7 +39,19 @@ public class RobotContainer {
     private final CommandXboxController subsystemController = new CommandXboxController(
             Constants.SUBSYSTEM_CONTROLLER_PORT);
 
-    public static final DrivetrainSubsystem drivetrain = CompbotTunerConstants.createDrivetrain();
+    public static final DrivetrainSubsystem drivetrain;
+
+    static{
+        switch (Constants.DRIVETRAIN_TYPE) {
+            case DEVBOT:
+                drivetrain = DevbotTunerConstants.createDrivetrain();
+                break;
+            case COMPBOT:
+            default:
+                drivetrain = CompbotTunerConstants.createDrivetrain();
+                break;
+        }
+    }
     private static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
     private AlgaeSubsystem algaer = new AlgaeSubsystem();
@@ -59,9 +72,10 @@ public class RobotContainer {
                 // both joysticks are combined here so that you only need one at a time to test
                 // anything.
                 drivetrain.joystickDriveCommand(
-                        () -> driveController.getLeftX() + subsystemController.getLeftX(),
-                        () -> driveController.getLeftY() + subsystemController.getLeftY(),
-                        () -> driveController.getRightX() + subsystemController.getRightX()));
+                        () -> driveController.getLeftX(),
+                        () -> driveController.getLeftY(),
+                        () -> driveController.getLeftTriggerAxis(),
+                        () -> driveController.getRightTriggerAxis()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 

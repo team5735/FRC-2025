@@ -1,8 +1,10 @@
 package frc.robot.constants.drivetrain;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -20,27 +22,27 @@ import frc.robot.util.Todo;
 public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        throw new Todo();
+        return new PIDConstants(15, 0);
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        throw new Todo();
+        return new PIDConstants(10, 0);
     }
 
     @Override
     public Distance getRobotTotalWidth() {
-        throw new Todo();
+        return Inches.of(30);
     }
 
     @Override
     public Distance getRobotTotalLength() {
-        throw new Todo();
+        return Inches.of(30);
     }
 
     @Override
     public Distance getPigeonToRobotFront() {
-        throw new Todo();
+        return Inches.of(17.5);
     }
 
     @Override
@@ -65,37 +67,37 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSpinKs() {
-        throw new Todo();
+        return 0.08652;
     }
 
     @Override
     public double getSpinKv() {
-        throw new Todo();
+        return 1.0453;
     }
 
     @Override
     public double getSpinKa() {
-        throw new Todo();
+        return 0.042742;
     }
 
     @Override
     public LinearVelocity getDefaultSpeed() {
-        throw new Todo();
+        return MetersPerSecond.of(4); //TODO
     }
 
     @Override
     public AngularVelocity getDefaultRotationalRate() {
-        throw new Todo();
+        return RotationsPerSecond.of(0.25); //TODO
     }
 
     @Override
     public Mass getRobotMass() {
-        throw new Todo();
+        return Kilograms.of(37.50);
     }
 
     @Override
     public Distance getMaxWheelDistance() {
-        throw new Todo();
+        return Inches.of(25);
     }
 
     @Override
@@ -127,6 +129,10 @@ public class DevbotConstants implements DrivetrainConstants {
     @Override
     public RobotConfig getConfig() {
         return config;
+    }
+
+    public Translation2d getPigeonToCenterOfRotation(){
+        return new Translation2d(Inches.of(2.5), Inches.of(0));
     }
 
 }

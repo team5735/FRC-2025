@@ -26,12 +26,13 @@ public class VisionSubsystem extends SubsystemBase {
         if (mt2 == null) {
             // failed to get mt2
             SmartDashboard.putNumber("poseestimator_status", -1);
-        }
-        if (mt2.tagCount == 0) {
+            return;
+        } else if (mt2.tagCount == 0) {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
-        }
-        SmartDashboard.putNumber("poseestimator_status", 0);
+            return;
+        } 
+        else SmartDashboard.putNumber("poseestimator_status", 0);
 
         drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
         drivetrain.addVisionMeasurement(
