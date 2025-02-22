@@ -107,7 +107,7 @@ public class CompbotConstants implements DrivetrainConstants {
         return 1.5;
     }
 
-    private RobotConfig config = new RobotConfig(
+    private final RobotConfig config = new RobotConfig(
             getRobotMass().in(Kilograms),
             getRobotMoiKgxMxM(),
             new ModuleConfig(

@@ -1,9 +1,16 @@
 package frc.robot.constants.drivetrain;
 
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -93,17 +100,33 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public double getRobotMoiKgxMxM() {
-        throw new Todo();
+        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getSpinKa()
+                / DevbotTunerConstants.DRIVE_GAINS.kA;
     }
 
     @Override
     public double getCoefficientOfFriction() {
-        throw new Todo();
+        return 1.5;
     }
+
+    private final RobotConfig config = new RobotConfig(
+            getRobotMass().in(Kilograms),
+            getRobotMoiKgxMxM(),
+            new ModuleConfig(
+                    DevbotTunerConstants.WHEEL_RADIUS.in(Meters),
+                    DevbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond),
+                    getCoefficientOfFriction(),
+                    DCMotor.getKrakenX60(1).withReduction(DevbotTunerConstants.DRIVE_GEAR_RATIO),
+                    60,
+                    1),
+            new Translation2d(DevbotTunerConstants.FRONT_LEFT_XPOS, DevbotTunerConstants.FRONT_LEFT_YPOS),
+            new Translation2d(DevbotTunerConstants.FRONT_RIGHT_XPOS, DevbotTunerConstants.FRONT_RIGHT_YPOS),
+            new Translation2d(DevbotTunerConstants.BACK_LEFT_XPOS, DevbotTunerConstants.BACK_LEFT_YPOS),
+            new Translation2d(DevbotTunerConstants.BACK_RIGHT_XPOS, DevbotTunerConstants.BACK_RIGHT_YPOS));
 
     @Override
     public RobotConfig getConfig() {
-        throw new Todo();
+        return config;
     }
 
 }
