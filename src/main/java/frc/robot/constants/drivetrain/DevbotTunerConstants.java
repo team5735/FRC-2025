@@ -21,17 +21,18 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class DevbotTunerConstants {
     // Both sets of gains need to be tuned to your individual robot.
 
-    // The steer motor uses any SwerveModule.SteerRequestType control request with the
+    // The steer motor uses any SwerveModule.SteerRequestType control request with
+    // the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
-    public static final Slot0Configs STEER_GAINS = new Slot0Configs()
-        .withKP(100).withKI(0).withKD(0.5)
-        .withKS(0.1).withKV(2.66).withKA(0)
-        .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    public static final Slot0Configs DEFAULT_STEER_GAINS = new Slot0Configs()
+            .withKP(54.02).withKI(0).withKD(0.3)
+            .withKS(0.052654).withKV(2.4095).withKA(0.49012)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
-        .withKP(0.1).withKI(0).withKD(0)
-        .withKS(0).withKV(0.124);
+            .withKP(1.9207).withKI(0).withKD(0)
+            .withKS(0.11139).withKV(2.4769).withKA(0.1416);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -74,11 +75,10 @@ public class DevbotTunerConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
-    public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(0);
+    public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(12 / DRIVE_GAINS.kV);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
-    // This may need to be tuned to your individual robot
-    private static final double kCoupleRatio = 3.5714285714285716;
+    private static final double kCoupleRatio = 2.417;
 
     public static final double DRIVE_GEAR_RATIO = 6.746031746031747;
     public static final double kSteerGearRatio = 21.428571428571427;
@@ -107,7 +107,7 @@ public class DevbotTunerConstants {
             .withSteerMotorGearRatio(kSteerGearRatio)
             .withCouplingGearRatio(kCoupleRatio)
             .withWheelRadius(WHEEL_RADIUS)
-            .withSteerMotorGains(STEER_GAINS)
+            .withSteerMotorGains(DEFAULT_STEER_GAINS)
             .withDriveMotorGains(DRIVE_GAINS)
             .withSteerMotorClosedLoopOutput(kSteerClosedLoopOutput)
             .withDriveMotorClosedLoopOutput(kDriveClosedLoopOutput)
@@ -133,6 +133,11 @@ public class DevbotTunerConstants {
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
+    public static final Slot0Configs FL_STEER_GAINS = new Slot0Configs()
+            .withKP(54.02).withKI(0).withKD(0.3)
+            .withKS(0.052654).withKV(2.4095).withKA(0.49012)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+
     public static final Distance FRONT_LEFT_XPOS = Inches.of(10);
     public static final Distance FRONT_LEFT_YPOS = Inches.of(12.5);
 
@@ -143,6 +148,11 @@ public class DevbotTunerConstants {
     private static final Angle kFrontRightEncoderOffset = Rotations.of(0.0556640625);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
+
+    public static final Slot0Configs FR_STEER_GAINS = new Slot0Configs()
+            .withKP(43.928).withKI(0).withKD(0.3)
+            .withKS(0.052654).withKV(2.3784).withKA(0.6636)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final Distance FRONT_RIGHT_XPOS = Inches.of(10);
     public static final Distance FRONT_RIGHT_YPOS = Inches.of(-12.5);
@@ -155,6 +165,11 @@ public class DevbotTunerConstants {
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
+    public static final Slot0Configs BL_STEER_GAINS = new Slot0Configs()
+            .withKP(54.382).withKI(0).withKD(0.3)
+            .withKS(0.052654).withKV(2.3776).withKA(0.48389)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+
     public static final Distance BACK_LEFT_XPOS = Inches.of(-10);
     public static final Distance BACK_LEFT_YPOS = Inches.of(12.5);
 
@@ -166,6 +181,11 @@ public class DevbotTunerConstants {
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 
+    public static final Slot0Configs BR_STEER_GAINS = new Slot0Configs()
+            .withKP(56.649).withKI(0).withKD(0.3)
+            .withKS(0.052654).withKV(2.3471).withKA(0.73024)
+            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+
     public static final Distance BACK_RIGHT_XPOS = Inches.of(-10);
     public static final Distance BACK_RIGHT_YPOS = Inches.of(-12.5);
 
@@ -174,22 +194,22 @@ public class DevbotTunerConstants {
         ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
             FRONT_LEFT_XPOS, FRONT_LEFT_YPOS, kInvertLeftSide, kFrontLeftSteerMotorInverted, kFrontLeftEncoderInverted
-        );
+        ).withSteerMotorGains(FL_STEER_GAINS);
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight =
         ConstantCreator.createModuleConstants(
             kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset,
             FRONT_RIGHT_XPOS, FRONT_RIGHT_YPOS, kInvertRightSide, kFrontRightSteerMotorInverted, kFrontRightEncoderInverted
-        );
+        ).withSteerMotorGains(FR_STEER_GAINS);
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft =
         ConstantCreator.createModuleConstants(
             kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
             BACK_LEFT_XPOS, BACK_LEFT_YPOS, kInvertLeftSide, kBackLeftSteerMotorInverted, kBackLeftEncoderInverted
-        );
+        ).withSteerMotorGains(BL_STEER_GAINS);
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight =
         ConstantCreator.createModuleConstants(
             kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
             BACK_RIGHT_XPOS, BACK_RIGHT_YPOS, kInvertRightSide, kBackRightSteerMotorInverted, kBackRightEncoderInverted
-        );
+        ).withSteerMotorGains(BR_STEER_GAINS);
 
     /**
      * Creates a CommandSwerveDrivetrain instance.

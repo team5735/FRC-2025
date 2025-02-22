@@ -48,32 +48,32 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSpinKp() {
-        throw new Todo();
+        return 0.014687;
     }
 
     @Override
     public double getSpinKi() {
-        throw new Todo();
+        return 0;
     }
 
     @Override
     public double getSpinKd() {
-        throw new Todo();
+        return 0;
     }
 
     @Override
     public double getSpinKs() {
-        throw new Todo();
+        return 0.08504;
     }
 
     @Override
     public double getSpinKv() {
-        throw new Todo();
+        return 0.013474;
     }
 
     @Override
     public double getSpinKa() {
-        throw new Todo();
+        return 0.0050825;
     }
 
     @Override
@@ -125,5 +125,9 @@ public class CompbotConstants implements DrivetrainConstants {
     @Override
     public RobotConfig getConfig() {
         return config;
+    }
+
+    public Translation2d getPigeonToCenterOfRotation(){
+        return new Translation2d(Inches.of(0), Inches.of(0));
     }
 }

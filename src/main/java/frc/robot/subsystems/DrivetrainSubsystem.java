@@ -23,7 +23,6 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -80,7 +79,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withCenterOfRotation(CONSTANTS.getPigeonToCenterOfRotation());
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
@@ -312,11 +312,12 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public Command joystickDriveCommand(
             Supplier<Double> stickX,
             Supplier<Double> stickY,
-            Supplier<Double> rotation) {
+            Supplier<Double> leftTrigger,
+            Supplier<Double> rightTrigger) {
         return applyRequest(() -> fieldCentricRequest
                 .withVelocityX(-deadband(stickY.get()) * maxSpeed)
                 .withVelocityY(-deadband(stickX.get()) * maxSpeed)
-                .withRotationalRate(deadband(rotation.get()) * maxAngularRate));
+                .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate));
     }
 
     public Command brakeCommand() {
@@ -364,11 +365,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                         .withVelocityX(discrete.vxMetersPerSecond)
                         .withVelocityY(discrete.vyMetersPerSecond)
                         .withRotationalRate(discrete.omegaRadiansPerSecond));
-    }
-
-    private Pose2d getAutoPose() {
-        return new Pose2d(new Translation2d(getState().Pose.getMeasureX(), getState().Pose.getMeasureY()),
-                new Rotation2d());
     }
 
     private void setUpAuto() {
