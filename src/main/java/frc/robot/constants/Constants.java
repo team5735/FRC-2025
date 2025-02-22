@@ -17,7 +17,6 @@ public class Constants {
 
     public static final double DEADBAND = 0.15;
 
-    
     public static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
     public static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;
 
@@ -28,7 +27,9 @@ public class Constants {
     public static final double PID_I = 2;
     public static final double PID_D = 0;
 
-    public enum DrivetrainType{
+    public static final DrivetrainType DRIVETRAIN_TYPE = DrivetrainType.DEVBOT;
+
+    public enum DrivetrainType {
         DEVBOT,
         COMPBOT
     }

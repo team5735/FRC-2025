@@ -38,7 +38,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.Constants;
+import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.constants.drivetrain.DevbotConstants;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 import frc.robot.util.ReefAlignment;
 
@@ -47,11 +50,25 @@ import frc.robot.util.ReefAlignment;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsystem {
+    public static final DrivetrainConstants CONSTANTS;
+
+    static {
+        switch (Constants.DRIVETRAIN_TYPE) {
+            case COMPBOT:
+                CONSTANTS = new CompbotConstants();
+                break;
+            case DEVBOT:
+            default:
+                CONSTANTS = new DevbotConstants();
+                break;
+        }
+    }
+
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
     private double lastSimTime;
-    private double maxSpeed = DrivetrainConstants.DEFAULT_SPEED.in(MetersPerSecond);
-    private double maxAngularRate = DrivetrainConstants.DEFAULT_ROTATIONAL_RATE.in(RadiansPerSecond);
+    private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
+    private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -267,8 +284,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
-                                ? DrivetrainConstants.RED_ALLIANCE_PERSPECTIVE_ROTATION
-                                : DrivetrainConstants.BLUE_ALLIANCE_PERSPECTIVE_ROTATION);
+                                ? Constants.RED_ALLIANCE_PERSPECTIVE_ROTATION
+                                : Constants.BLUE_ALLIANCE_PERSPECTIVE_ROTATION);
                 m_hasAppliedOperatorPerspective = true;
             });
         }
@@ -322,7 +339,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     private static double deadband(double input) {
-        if (Math.abs(input) <= DrivetrainConstants.DEADBAND) {
+        if (Math.abs(input) <= Constants.DEADBAND) {
             return 0;
         }
         return input;
@@ -335,7 +352,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             states[i] = getModule(i).getCurrentState();
         }
 
-        return DrivetrainConstants.CONFIG.toChassisSpeeds(states);
+        return CONSTANTS.getConfig().toChassisSpeeds(states);
     }
 
     private void autoDriveRobotRelative(ChassisSpeeds robotChassisSpeeds) {
@@ -361,9 +378,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 this::getChassisSpeeds,
                 (speeds, ff) -> autoDriveRobotRelative(speeds),
                 new PPHolonomicDriveController(
-                        DrivetrainConstants.AUTO_POS_CONSTANTS,
-                        DrivetrainConstants.AUTO_ROT_CONSTANTS),
-                DrivetrainConstants.CONFIG,
+                        CONSTANTS.getAutoPosConstants(),
+                        CONSTANTS.getAutoRotConstants()),
+                CONSTANTS.getConfig(),
                 () -> {
                     var alliance = DriverStation.getAlliance();
                     if (alliance.isPresent()) {
@@ -378,7 +395,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         try {
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                     new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation()));
-            PathConstraints constraints = DrivetrainConstants.PATH_FOLLOW_CONSTRAINTS;
+            PathConstraints constraints = CONSTANTS.getPathFollowConstraints();
 
             PathPlannerPath idealPath = new PathPlannerPath(waypoints, constraints, null,
                     new GoalEndState(0, tagPos.getRotation().unaryMinus()));
@@ -389,9 +406,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     this::getChassisSpeeds,
                     (speeds, ff) -> autoDriveRobotRelative(speeds),
                     new PPHolonomicDriveController(
-                            DrivetrainConstants.AUTO_POS_CONSTANTS,
-                            DrivetrainConstants.AUTO_ROT_CONSTANTS),
-                    DrivetrainConstants.CONFIG,
+                            CONSTANTS.getAutoPosConstants(),
+                            CONSTANTS.getAutoRotConstants()),
+                    CONSTANTS.getConfig(),
                     () -> false,
                     this);
         } catch (Exception e) {
