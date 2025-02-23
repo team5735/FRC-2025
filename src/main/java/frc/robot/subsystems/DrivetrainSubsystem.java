@@ -390,8 +390,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command toBranchDriveCommand(ReefAlignment branch) {
-        // Pose2d tagPos = ReefAprilTagPositions.getClosestTag(getEstimatedPosition().getTranslation());
-        Pose2d tagPos = ReefAprilTagPositions.TAGS[2];
+        Pose2d tagPos = ReefAprilTagPositions.getClosestTag(getEstimatedPosition().getTranslation());
         try {
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                     new Pose2d(branch.preAlignmentPosition(tagPos), tagPos.getRotation().unaryMinus()),
