@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
+import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
 import frc.robot.constants.drivetrain.DevbotConstants;
@@ -369,8 +370,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
     private void setUpAuto() {
         AutoBuilder.configure(
-                () -> getState().Pose,
-                this::resetPose,
+                () -> getEstimatedPosition(),
+                //this::resetPose,
+                null,
                 this::getChassisSpeeds,
                 (speeds, ff) -> autoDriveRobotRelative(speeds),
                 new PPHolonomicDriveController(
@@ -387,10 +389,13 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 this);
     }
 
-    public Command toBranchDriveCommand(Pose2d tagPos, ReefAlignment branch) {
+    public Command toBranchDriveCommand(ReefAlignment branch) {
+        // Pose2d tagPos = ReefAprilTagPositions.getClosestTag(getEstimatedPosition().getTranslation());
+        Pose2d tagPos = ReefAprilTagPositions.TAGS[2];
         try {
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                    new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation()));
+                    new Pose2d(branch.preAlignmentPosition(tagPos), tagPos.getRotation().unaryMinus()),
+                    new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation().unaryMinus()));
             PathConstraints constraints = CONSTANTS.getPathFollowConstraints();
 
             PathPlannerPath idealPath = new PathPlannerPath(waypoints, constraints, null,
@@ -398,7 +403,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
             return new FollowPathCommand(
                     idealPath,
-                    () -> getState().Pose,
+                    () -> getEstimatedPosition(),
                     this::getChassisSpeeds,
                     (speeds, ff) -> autoDriveRobotRelative(speeds),
                     new PPHolonomicDriveController(
@@ -409,6 +414,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     this);
         } catch (Exception e) {
             DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
+            System.out.println(e.getMessage());
             return Commands.none();
         }
     }

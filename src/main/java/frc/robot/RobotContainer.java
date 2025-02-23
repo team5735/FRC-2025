@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
@@ -41,7 +42,7 @@ public class RobotContainer {
 
     public static final DrivetrainSubsystem drivetrain;
 
-    static{
+    static {
         switch (Constants.DRIVETRAIN_TYPE) {
             case DEVBOT:
                 drivetrain = DevbotTunerConstants.createDrivetrain();
@@ -85,6 +86,9 @@ public class RobotContainer {
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
         driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE));
+        driveController.y().onTrue(Commands.runOnce(() -> {
+            vision.seedPigeon();
+        }));
 
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -103,6 +107,8 @@ public class RobotContainer {
         driveController.rightBumper().and(driveController.b()).whileTrue(coraler.outtakeCommand());
         driveController.rightBumper().and(driveController.x()).whileTrue(coraler.troughCommand());
         driveController.rightBumper().and(driveController.y()).onTrue(coraler.branchCommand());
+
+        driveController.povDown().whileTrue(drivetrain.toBranchDriveCommand(ReefAlignment.ALGAE));
     }
 
     public Command getAutonomousCommand() {

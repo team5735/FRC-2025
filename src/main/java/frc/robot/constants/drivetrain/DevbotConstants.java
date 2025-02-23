@@ -1,9 +1,12 @@
 package frc.robot.constants.drivetrain;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -47,7 +50,11 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public PathConstraints getPathFollowConstraints() {
-        throw new Todo();
+        return new PathConstraints(
+            MetersPerSecond.of(4), 
+            MetersPerSecondPerSecond.of(2), 
+            DegreesPerSecond.of(540), 
+            DegreesPerSecondPerSecond.of(270));
     }
 
     @Override
