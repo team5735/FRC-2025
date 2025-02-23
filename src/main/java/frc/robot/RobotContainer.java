@@ -101,13 +101,12 @@ public class RobotContainer {
         driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        driveController.leftBumper().and(driveController.a()).whileTrue(algaer.grabStopCommand());
-        driveController.leftBumper().and(driveController.b()).whileTrue(algaer.grabStopCommand());
+        subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
-        driveController.rightBumper().and(driveController.a()).whileTrue(coraler.simpleFeedCommand());
-        driveController.rightBumper().and(driveController.b()).whileTrue(coraler.outtakeCommand());
-        driveController.rightBumper().and(driveController.x()).whileTrue(coraler.troughCommand());
-        driveController.rightBumper().and(driveController.y()).onTrue(coraler.branchCommand());
+        subsystemController.a().whileTrue(coraler.simpleFeedCommand());
+        subsystemController.b().whileTrue(coraler.outtakeCommand());
+        subsystemController.x().whileTrue(coraler.troughCommand());
+        subsystemController.y().onTrue(coraler.branchCommand());
 
         driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.ALGAE));
     }
