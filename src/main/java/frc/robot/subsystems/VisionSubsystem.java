@@ -8,21 +8,20 @@ import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.NTDoubleSection;
 
 public class VisionSubsystem extends SubsystemBase {
     DrivetrainSubsystem drivetrain;
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
-    private static final String LIMELIGHTS[] = { "limelight_front", "limelight_back" };
+    private static final String LIMELIGHTS[] = { "limelight", "limelight_back" };
 
     // Initializes the vision subsystem
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
@@ -36,6 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void seedPigeon() {
         drivetrain.getPigeon2().setYaw(curRot);
+        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
     }
 
     public Command getSeedPigeon() {
@@ -56,10 +56,13 @@ public class VisionSubsystem extends SubsystemBase {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
             return;
-        } 
-        else SmartDashboard.putNumber("poseestimator_status", 0);
+        } else
+            SmartDashboard.putNumber("poseestimator_status", 0);
 
-        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+        double[] stddevs= NetworkTableInstance.getDefault().getTable(limelight_name).getEntry("stddevs").getDoubleArray(new double[12]);
+        double mt2xdev = stddevs[6];
+        double mt2ydev = stddevs[7];
+        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
         drivetrain.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
@@ -94,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         for (String limelight : LIMELIGHTS) {
             LimelightHelpers.SetRobotOrientation(limelight,
-                    this.drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+                    drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0,
                     0, 0, 0);
 
             updateVisionMeasurement(limelight);

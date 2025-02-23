@@ -30,7 +30,7 @@ public class ReefAprilTagPositions {
      * \y***************************************** /
      * </code>
      */
-    private static final Pose2d TAGS[] = new Pose2d[] {
+    public static final Pose2d TAGS[] = new Pose2d[] {
             // 17
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-4.700446, -0.719482),
