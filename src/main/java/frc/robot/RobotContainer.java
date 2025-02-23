@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.Constants;
 import frc.robot.commands.vision.AlignToReef;
+import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -108,7 +109,7 @@ public class RobotContainer {
         driveController.rightBumper().and(driveController.x()).whileTrue(coraler.troughCommand());
         driveController.rightBumper().and(driveController.y()).onTrue(coraler.branchCommand());
 
-        driveController.povDown().whileTrue(drivetrain.toBranchDriveCommand(ReefAlignment.ALGAE));
+        driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.ALGAE));
     }
 
     public Command getAutonomousCommand() {
