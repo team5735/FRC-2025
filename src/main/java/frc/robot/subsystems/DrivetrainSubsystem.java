@@ -347,7 +347,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         return input;
     }
 
-    private ChassisSpeeds getChassisSpeeds() {
+    public ChassisSpeeds getChassisSpeeds() {
         var states = new SwerveModuleState[4];
 
         for (int i = 0; i < 4; i++) {
@@ -357,7 +357,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         return CONSTANTS.getConfig().toChassisSpeeds(states);
     }
 
-    private void autoDriveRobotRelative(ChassisSpeeds robotChassisSpeeds) {
+    public void autoDriveRobotRelative(ChassisSpeeds robotChassisSpeeds) {
         var discrete = ChassisSpeeds.discretize(robotChassisSpeeds, 1.0 / 10.0); // TODO: is this the right frequency?
                                                                                  // (copied from 2024)
 
@@ -371,7 +371,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private void setUpAuto() {
         AutoBuilder.configure(
                 () -> getEstimatedPosition(),
-                //this::resetPose,
+                // this::resetPose,
                 null,
                 this::getChassisSpeeds,
                 (speeds, ff) -> autoDriveRobotRelative(speeds),
@@ -387,34 +387,5 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     return false;
                 },
                 this);
-    }
-
-    public Command toBranchDriveCommand(ReefAlignment branch) {
-        Pose2d tagPos = ReefAprilTagPositions.getClosestTag(getEstimatedPosition().getTranslation());
-        try {
-            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                    new Pose2d(branch.preAlignmentPosition(tagPos), tagPos.getRotation().unaryMinus()),
-                    new Pose2d(branch.scoringPosition(tagPos), tagPos.getRotation().unaryMinus()));
-            PathConstraints constraints = CONSTANTS.getPathFollowConstraints();
-
-            PathPlannerPath idealPath = new PathPlannerPath(waypoints, constraints, null,
-                    new GoalEndState(0, tagPos.getRotation().unaryMinus()));
-
-            return new FollowPathCommand(
-                    idealPath,
-                    () -> getEstimatedPosition(),
-                    this::getChassisSpeeds,
-                    (speeds, ff) -> autoDriveRobotRelative(speeds),
-                    new PPHolonomicDriveController(
-                            CONSTANTS.getAutoPosConstants(),
-                            CONSTANTS.getAutoRotConstants()),
-                    CONSTANTS.getConfig(),
-                    () -> false,
-                    this);
-        } catch (Exception e) {
-            DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
-            System.out.println(e.getMessage());
-            return Commands.none();
-        }
     }
 }
