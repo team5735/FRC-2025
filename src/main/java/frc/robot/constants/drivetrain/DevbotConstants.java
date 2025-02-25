@@ -25,7 +25,7 @@ import frc.robot.util.Todo;
 public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(15, 0);
+        return new PIDConstants(10, 0);
     }
 
     @Override
@@ -51,10 +51,10 @@ public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PathConstraints getPathFollowConstraints() {
         return new PathConstraints(
-            MetersPerSecond.of(4), 
+            MetersPerSecond.of(1), 
             MetersPerSecondPerSecond.of(2), 
-            DegreesPerSecond.of(540), 
-            DegreesPerSecondPerSecond.of(270));
+            DegreesPerSecond.of(270), 
+            DegreesPerSecondPerSecond.of(90));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -91,5 +91,5 @@ public class ReefAprilTagPositions {
     }
 
     // TODO: find actual distance
-    public static final Distance DISTANCE_BETWEEN_BRANCHES = Meters.of(0);
+    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(13);
 }
