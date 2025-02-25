@@ -13,37 +13,37 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.Constants;
 
-public class ClimberSubsystem extends SubsystemBase{
+public class ClimberSubsystem extends SubsystemBase {
     private final TalonFX falconRight = new TalonFX(Constants.CLIMBER_FALCON_RIGHT_ID);
     private final TalonFX falconLeft = new TalonFX(Constants.CLIMBER_FALCON_LEFT_ID);
 
-    public ClimberSubsystem(){
+    public ClimberSubsystem() {
         falconRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
         falconRight.setPosition(Rotations.of(0));
         falconLeft.setControl(new Follower(Constants.CLIMBER_FALCON_RIGHT_ID, true));
     }
 
-    public Angle getPosition(){
+    public Angle getPosition() {
         return falconRight.getPosition().getValue();
     }
 
-    private void out(){
+    private void out() {
         falconRight.setVoltage(ClimberConstants.OUT_VOLTS);
     }
 
-    private void climb(){
+    private void climb() {
         falconRight.setVoltage(ClimberConstants.CLIMB_VOLTS);
     }
 
-    private void stop(){
+    private void stop() {
         falconRight.setVoltage(0);
     }
 
-    public Command outCommand(){
+    public Command outCommand() {
         return startEnd(() -> out(), () -> stop()).until(() -> getPosition().equals(ClimberConstants.OUTER_LIMIT));
     }
 
-    public Command climbCommand(){
+    public Command climbCommand() {
         return startEnd(() -> climb(), () -> stop()).until(() -> getPosition().equals(ClimberConstants.INNER_LIMIT));
     }
 }
