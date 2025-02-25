@@ -6,13 +6,21 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.ClimberSubsystem;
 
 public class RobotContainer {
+    private CommandXboxController driveController = new CommandXboxController(0);
+
+    private ClimberSubsystem climber = new ClimberSubsystem();
+
     public RobotContainer() {
         configureBindings();
     }
 
     private void configureBindings() {
+        driveController.a().whileTrue(climber.climbCommand());
+        driveController.b().whileTrue(climber.outCommand());
     }
 
     public Command getAutonomousCommand() {
