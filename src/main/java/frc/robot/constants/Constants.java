@@ -33,4 +33,6 @@ public class Constants {
         DEVBOT,
         COMPBOT
     }
+
+    public static final int CANDLE_ID = 33;
 }
