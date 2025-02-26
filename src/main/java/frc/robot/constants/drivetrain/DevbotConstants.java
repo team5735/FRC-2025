@@ -30,22 +30,22 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(10, 0);
+        return new PIDConstants(16, 0);
     }
 
     @Override
     public Distance getRobotTotalWidth() {
-        return Inches.of(30);
+        return Inches.of(30).plus(getBumperWidth().times(2));
     }
 
     @Override
     public Distance getRobotTotalLength() {
-        return Inches.of(30);
+        return Inches.of(30).plus(getBumperWidth().times(2));
     }
 
     @Override
     public Distance getPigeonToRobotFront() {
-        return Inches.of(17.5);
+        return Inches.of(17.5).plus(getBumperWidth());
     }
 
     @Override
@@ -140,6 +140,11 @@ public class DevbotConstants implements DrivetrainConstants {
 
     public Translation2d getPigeonToCenterOfRotation(){
         return new Translation2d(Inches.of(2.5), Inches.of(0));
+    }
+
+    @Override
+    public Distance getBumperWidth(){
+        return Inches.of(3.5);
     }
 
 }

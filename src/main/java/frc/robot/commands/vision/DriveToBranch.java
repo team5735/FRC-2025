@@ -6,7 +6,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,13 +30,17 @@ public class DriveToBranch extends Command {
     @Override
     public void initialize() {
         try {
+            System.out.println("Building auto path");
+            double time = Timer.getFPGATimestamp();
             Pose2d tagPos = ReefAprilTagPositions.getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
             PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
             
-            AutoBuilder.pathfindToPose(
-                new Pose2d(alignment.get().scoringPosition(tagPos), tagPos.getRotation().unaryMinus()), 
+            storedCommand = AutoBuilder.pathfindToPose(
+                new Pose2d(alignment.get().scoringPosition(tagPos), tagPos.getRotation().plus(Rotation2d.k180deg)), 
                 constraints
-            ).withDeadline(this).schedule();
+            );
+            storedCommand.schedule();
+            System.out.println("Auto built after " + (Timer.getFPGATimestamp() - time) + "s.");
         } catch (Exception e) {
             DriverStation.reportError("Path Follow Error: " + e.getMessage(), e.getStackTrace());
             System.out.println(e.getMessage());

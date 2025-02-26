@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Watchdog;
 
 public class ReefAprilTagPositions {
     /**
@@ -78,6 +80,7 @@ public class ReefAprilTagPositions {
         }
         System.out.println("searching for closest tag to (x, y) = (" + position.getX() + ", " + position.getY() + ")");
 
+
         double closest_distance_so_far = Double.MAX_VALUE;
         Pose2d best = null;
         for (Pose2d tag : TAGS) {
@@ -90,6 +93,5 @@ public class ReefAprilTagPositions {
         return best;
     }
 
-    // TODO: find actual distance
-    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(13);
+    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); //exact from field diagram
 }

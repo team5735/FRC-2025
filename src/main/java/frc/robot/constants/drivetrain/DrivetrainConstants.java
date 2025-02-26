@@ -50,4 +50,6 @@ public interface DrivetrainConstants {
     public RobotConfig getConfig();
 
     public Translation2d getPigeonToCenterOfRotation();
+
+    public Distance getBumperWidth();
 }
