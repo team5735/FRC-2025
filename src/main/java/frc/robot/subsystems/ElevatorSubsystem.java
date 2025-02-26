@@ -79,6 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
 
         this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
+
     }
 
     public boolean isAtRest() {
@@ -87,7 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
+        // SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
         SmartDashboard.putNumber(
                 "Elevator/VelocityMPS",
                 FeetPerSecond.of(
@@ -111,10 +112,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         krakenRight.setVoltage(voltsToSet);
     }
 
-    public Distance getPosition() {
-        //return Feet.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.ROTATIONS_TO_FEET);
-        return Millimeters.of(lidar.getMeasurement().distance_mm);
-    }
+    // public Distance getPosition() {
+    //     //return Feet.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.ROTATIONS_TO_FEET);
+    //     return Millimeters.of(lidar.getMeasurement().distance_mm);
+    // }
 
     public Command toLevelCommand(ElevatorConstants.Level level) {
         return startRun(() -> setLevel(level), () -> setPIDVolts());
