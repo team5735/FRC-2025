@@ -78,7 +78,6 @@ public class ReefAprilTagPositions {
         }
         System.out.println("searching for closest tag to (x, y) = (" + position.getX() + ", " + position.getY() + ")");
 
-
         double closest_distance_so_far = Double.MAX_VALUE;
         Pose2d best = null;
         for (Pose2d tag : TAGS) {
@@ -91,5 +90,5 @@ public class ReefAprilTagPositions {
         return best;
     }
 
-    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); //exact from field diagram
+    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); // exact from field diagram
 }

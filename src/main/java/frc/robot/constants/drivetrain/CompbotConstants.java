@@ -127,12 +127,12 @@ public class CompbotConstants implements DrivetrainConstants {
         return config;
     }
 
-    public Translation2d getPigeonToCenterOfRotation(){
+    public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(0), Inches.of(0));
     }
 
     @Override
-    public Distance getBumperWidth(){
-        return Inches.of(3.5); //TODO
+    public Distance getBumperWidth() {
+        return Inches.of(3.5); // TODO
     }
 }

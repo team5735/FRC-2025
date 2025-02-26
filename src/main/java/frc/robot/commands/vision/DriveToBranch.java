@@ -33,11 +33,10 @@ public class DriveToBranch extends Command {
             double time = Timer.getFPGATimestamp();
             Pose2d tagPos = ReefAprilTagPositions.getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
             PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
-            
+
             storedCommand = AutoBuilder.pathfindToPose(
-                new Pose2d(alignment.get().scoringPosition(tagPos), tagPos.getRotation().plus(Rotation2d.k180deg)), 
-                constraints
-            );
+                    new Pose2d(alignment.get().scoringPosition(tagPos), tagPos.getRotation().plus(Rotation2d.k180deg)),
+                    constraints);
             storedCommand.schedule();
             System.out.println("Auto built after " + (Timer.getFPGATimestamp() - time) + "s.");
         } catch (Exception e) {

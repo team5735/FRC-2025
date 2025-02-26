@@ -14,7 +14,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public enum ReefAlignment {
     LEFT(Inches.of(3.5).plus(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2))),
     RIGHT(Inches.of(3.5).plus(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).unaryMinus())),
-    ALGAE(Meters.of(0)); 
+    ALGAE(Meters.of(0));
 
     private Distance parallel;
 
@@ -31,7 +31,7 @@ public enum ReefAlignment {
         return tagPos.getTranslation().plus(offset);
     }
 
-    public Translation2d preAlignmentPosition(Pose2d tagPos){
+    public Translation2d preAlignmentPosition(Pose2d tagPos) {
         Rotation2d theta = tagPos.getRotation();
 
         Translation2d offset = new Translation2d(Feet.of(2), Meters.of(0))
