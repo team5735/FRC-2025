@@ -4,8 +4,10 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +22,7 @@ import frc.robot.util.TunableNumber;
 public class CoralSubsystem extends SubsystemBase {
     private final SparkFlex vortexTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
+    private final SparkMax ejector = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
 
     private TunableNumber outTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
@@ -28,6 +31,7 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
     private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
             CoralConstants.INTAKE_BOTTOM_VOLTS);
+    private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECTOR_VOLTS);
 
     public CoralSubsystem() {
         vortexTop.configure(
@@ -36,6 +40,11 @@ public class CoralSubsystem extends SubsystemBase {
                 PersistMode.kPersistParameters);
         vortexBottom.configure(
                 new SparkFlexConfig().inverted(true).idleMode(IdleMode.kBrake),
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        ejector.configure(
+                new SparkMaxConfig().idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
@@ -77,6 +86,14 @@ public class CoralSubsystem extends SubsystemBase {
         vortexBottom.setVoltage(0);
     }
 
+    private void eject() {
+        ejector.setVoltage(ejectorVolts.get());
+    }
+
+    private void stopEject() {
+        ejector.setVoltage(0);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("intakeSwitchStatus", getSwitchStatus());
@@ -102,12 +119,12 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     // TODO: implement beam break in hardware & find proper delay
-    public Command feedStageCommand(){
+    public Command feedStageCommand() {
         return runOnce(() -> intakeBottom())
-            .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-            .andThen(runOnce(() -> intakeTop()))
-            .until(beamBreakEngaged())
-            .finallyDo(() -> stop());
+                .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+                .andThen(runOnce(() -> intakeTop()))
+                .until(beamBreakEngaged())
+                .finallyDo(() -> stop());
     }
 
     public Command troughCommand() {
@@ -122,6 +139,14 @@ public class CoralSubsystem extends SubsystemBase {
             branchTop();
             branchBottom();
         }, () -> stop());
+    }
+
+    public Command l4BranchCommand() {
+        return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
+            eject();
+        }, () -> {
+            stopEject();
+        }));
     }
 
     public Command outtakeCommand() {
