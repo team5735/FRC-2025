@@ -3,7 +3,7 @@ package frc.robot.constants;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Constants {
-    public static final DrivetrainType ROBOT_DRIVETRAIN = DrivetrainType.DEVBOT;
+    public static final DrivetrainType ROBOT_DRIVETRAIN = DrivetrainType.COMPBOT;
 
     public static final int ALGAE_FALCON_ID = 57;
 
