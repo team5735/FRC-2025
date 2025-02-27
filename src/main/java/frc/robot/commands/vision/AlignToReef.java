@@ -3,6 +3,7 @@ package frc.robot.commands.vision;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +42,7 @@ public class AlignToReef extends Command {
                 .getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
         this.targetLine = new Line(alignmentTargetTag, "AlignToReef");
 
-        omegaController.setup(alignmentTargetTag.getRotation().unaryMinus().getRadians(), 0.05);
+        omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.05);
         lineController.setup(0, .01); // we want to be 'at' the Line.
 
         SmartDashboard.putBoolean("aligning", true);
