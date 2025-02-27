@@ -110,9 +110,14 @@ public class RobotContainer {
         subsystemController.x().whileTrue(coraler.troughCommand());
         subsystemController.y().onTrue(coraler.branchCommand());
 */
-        subsystemController.leftBumper().onTrue(LEDs.colorAimedCommand());
-        subsystemController.rightBumper().onTrue(LEDs.colorReadyCommand());
+        driveController.leftBumper().onTrue(LEDs.colorAimedCommand());
+        driveController.rightBumper().onTrue(LEDs.colorReadyCommand());
 
+        LEDs.setDefaultCommand(LEDs.manualSetHSV(
+            () -> Math.toDegrees(Math.atan(driveController.getLeftY()/driveController.getLeftX()) * 2), 
+            () -> driveController.getLeftTriggerAxis(), 
+            () -> driveController.getRightTriggerAxis()
+        ));
 
         driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.ALGAE));
     }
