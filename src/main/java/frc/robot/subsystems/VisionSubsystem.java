@@ -39,11 +39,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Command getSeedPigeon() {
-        return runOnce(() -> {
-            double[] inputBuffer = new double[VisionConstants.AVERAGING_WINDOW];
-            Arrays.fill(inputBuffer, drivetrain.getEstimatedPosition().getRotation().getDegrees());
-            mt1RzAverage.reset(inputBuffer, new double[0]);
-        }).andThen(run(() -> seedPigeon()).ignoringDisable(true));
+        return run(() -> seedPigeon()).until(() -> LimelightHelpers.getTV("limelight"));
     }
 
     private void updateVisionMeasurement(String limelight_name) {
