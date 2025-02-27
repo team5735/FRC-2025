@@ -8,17 +8,19 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.constants.Constants;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
+import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -63,6 +65,8 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
 
         SmartDashboard.putData("Choose an Auto", autoChooser);
+        PathfindingCommand.warmupCommand().schedule();
+        DriverStation.silenceJoystickConnectionWarning(true);
         configureBindings();
     }
 
