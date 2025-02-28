@@ -18,27 +18,27 @@ import frc.robot.util.Todo;
 public class CompbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(10, 0);
+        return new PIDConstants(17, 0);
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(15, 0);
+        return new PIDConstants(10, 0);
     }
 
     @Override
     public Distance getRobotTotalWidth() {
-        throw new Todo();
+        return Inches.of(37);
     }
 
     @Override
     public Distance getRobotTotalLength() {
-        throw new Todo();
+        return Inches.of(37);
     }
 
     @Override
     public Distance getPigeonToRobotFront() {
-        throw new Todo();
+        return getRobotTotalLength().div(2);
     }
 
     @Override
@@ -63,17 +63,17 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSpinKs() {
-        return 0.08504;
+        return 0.14875;
     }
 
     @Override
     public double getSpinKv() {
-        return 0.013474;
+        return 0.79025;
     }
 
     @Override
     public double getSpinKa() {
-        return 0.0050825;
+        return 0.078948;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public Mass getRobotMass() {
-        return Kilograms.of(25.35);
+        return Kilograms.of(59.05);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class CompbotConstants implements DrivetrainConstants {
         return config;
     }
 
-    public Translation2d getPigeonToCenterOfRotation(){
+    public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(0), Inches.of(0));
     }
 }

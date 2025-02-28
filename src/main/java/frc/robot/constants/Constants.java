@@ -28,8 +28,6 @@ public class Constants {
     public static final double PID_I = 2;
     public static final double PID_D = 0;
 
-    public static final DrivetrainType DRIVETRAIN_TYPE = DrivetrainType.DEVBOT;
-
     public enum DrivetrainType {
         DEVBOT,
         COMPBOT

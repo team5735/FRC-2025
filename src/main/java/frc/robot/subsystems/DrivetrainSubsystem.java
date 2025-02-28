@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Telemetry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
@@ -44,13 +45,13 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public static final DrivetrainConstants CONSTANTS;
 
     static {
-        switch (Constants.DRIVETRAIN_TYPE) {
-            case COMPBOT:
-                CONSTANTS = new CompbotConstants();
-                break;
+        switch (Constants.ROBOT_DRIVETRAIN) {
             case DEVBOT:
-            default:
                 CONSTANTS = new DevbotConstants();
+                break;
+            case COMPBOT:
+            default:
+                CONSTANTS = new CompbotConstants();
                 break;
         }
     }
@@ -60,6 +61,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double lastSimTime;
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
+
+    private Telemetry logger = new Telemetry(maxSpeed);
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -281,6 +284,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        logger.telemeterize(getState());
     }
 
     public final Pose2d getEstimatedPosition() {
@@ -362,8 +367,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private void setUpAuto() {
         AutoBuilder.configure(
                 () -> getEstimatedPosition(),
-                // this::resetPose,
-                null,
+                this::resetPose,
                 this::getChassisSpeeds,
                 (speeds, ff) -> autoDriveRobotRelative(speeds),
                 new PPHolonomicDriveController(

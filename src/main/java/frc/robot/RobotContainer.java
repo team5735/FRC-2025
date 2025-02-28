@@ -45,17 +45,19 @@ public class RobotContainer {
     public static final DrivetrainSubsystem drivetrain;
 
     static {
-        switch (Constants.DRIVETRAIN_TYPE) {
+        switch (Constants.ROBOT_DRIVETRAIN) {
             case DEVBOT:
                 drivetrain = DevbotTunerConstants.createDrivetrain();
                 break;
             case COMPBOT:
             default:
                 drivetrain = CompbotTunerConstants.createDrivetrain();
+                System.out.println("Making proper drivetrain");
                 break;
         }
     }
-    private static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+    // private static final VisionSubsystem vision = new
+    // VisionSubsystem(drivetrain);
 
     private AlgaeSubsystem algaer = new AlgaeSubsystem();
     private CoralSubsystem coraler = new CoralSubsystem();
@@ -81,17 +83,16 @@ public class RobotContainer {
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis()));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
-
         driveController.a().whileTrue(drivetrain.brakeCommand());
         driveController.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(
                         new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE));
-        driveController.y().onTrue(Commands.runOnce(() -> {
-            vision.seedPigeon();
-        }));
+        // driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () ->
+        // ReefAlignment.ALGAE));
+        // driveController.y().onTrue(Commands.runOnce(() -> {
+        // vision.seedPigeon();
+        // }));
 
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -103,23 +104,19 @@ public class RobotContainer {
         driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        //subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
+        // subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
-        /*subsystemController.a().whileTrue(coraler.simpleFeedCommand());
-        subsystemController.b().whileTrue(coraler.outtakeCommand());
-        subsystemController.x().whileTrue(coraler.troughCommand());
-        subsystemController.y().onTrue(coraler.branchCommand());
-*/
+        /*
+         * subsystemController.a().whileTrue(coraler.simpleFeedCommand());
+         * subsystemController.b().whileTrue(coraler.outtakeCommand());
+         * subsystemController.x().whileTrue(coraler.troughCommand());
+         * subsystemController.y().onTrue(coraler.branchCommand());
+         */
         driveController.leftBumper().onTrue(LEDs.colorAimedCommand());
         driveController.rightBumper().onTrue(LEDs.colorReadyCommand());
 
-        LEDs.setDefaultCommand(LEDs.manualSetHSV(
-            () -> Math.toDegrees(Math.atan(driveController.getLeftY()/driveController.getLeftX()) * 2), 
-            () -> driveController.getLeftTriggerAxis(), 
-            () -> driveController.getRightTriggerAxis()
-        ));
-
-        driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.ALGAE));
+        // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
+        // ReefAlignment.ALGAE));
     }
 
     public Command getAutonomousCommand() {
