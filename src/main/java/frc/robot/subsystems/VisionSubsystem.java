@@ -35,6 +35,9 @@ public class VisionSubsystem extends SubsystemBase {
     int ticksWithNoTv = 0;
 
     public void seedPigeon() {
+        if (!LimelightHelpers.getTV("limelight")) {
+            return;
+        }
         drivetrain.getPigeon2().setYaw(curRot);
         drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
     }
