@@ -57,7 +57,7 @@ public class AlignToReef extends Command {
         double measurement = targetLine.getPIDMeasurement(estimatedPosition.getTranslation());
         double movementTowardsLine = lineController.calculate(measurement);
         Translation2d drivetrainMovement = targetLine.getVectorFrom(estimatedPosition.getTranslation())
-                .times(-movementTowardsLine);
+                .times(movementTowardsLine);
 
         doubles.set("omega", omega);
         doubles.set("deltaX", drivetrainMovement.getX());
