@@ -78,8 +78,8 @@ public class RobotContainer {
                 // both joysticks are combined here so that you only need one at a time to test
                 // anything.
                 drivetrain.joystickDriveCommand(
-                        () -> driveController.getLeftX(),
-                        () -> driveController.getLeftY(),
+                        () -> -driveController.getLeftX(),
+                        () -> -driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis()));
 
