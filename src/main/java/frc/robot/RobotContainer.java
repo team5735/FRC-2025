@@ -77,8 +77,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.joystickDriveCommand(
-                        () -> -driveController.getLeftX(),
-                        () -> -driveController.getLeftY(),
+                        () -> driveController.getLeftX(),
+                        () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis()));
 
