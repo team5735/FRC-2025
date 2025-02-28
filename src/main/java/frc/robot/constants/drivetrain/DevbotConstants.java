@@ -51,10 +51,10 @@ public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PathConstraints getPathFollowConstraints() {
         return new PathConstraints(
-            MetersPerSecond.of(1), 
-            MetersPerSecondPerSecond.of(2), 
-            DegreesPerSecond.of(270), 
-            DegreesPerSecondPerSecond.of(90));
+                MetersPerSecond.of(1),
+                MetersPerSecondPerSecond.of(2),
+                DegreesPerSecond.of(270),
+                DegreesPerSecondPerSecond.of(90));
     }
 
     @Override
@@ -89,12 +89,12 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public LinearVelocity getDefaultSpeed() {
-        return MetersPerSecond.of(4); //TODO
+        return MetersPerSecond.of(2); // TODO
     }
 
     @Override
     public AngularVelocity getDefaultRotationalRate() {
-        return RotationsPerSecond.of(0.25); //TODO
+        return RotationsPerSecond.of(0.25); // TODO
     }
 
     @Override
@@ -138,12 +138,12 @@ public class DevbotConstants implements DrivetrainConstants {
         return config;
     }
 
-    public Translation2d getPigeonToCenterOfRotation(){
+    public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(2.5), Inches.of(0));
     }
 
     @Override
-    public Distance getBumperWidth(){
+    public Distance getBumperWidth() {
         return Inches.of(3.5);
     }
 
