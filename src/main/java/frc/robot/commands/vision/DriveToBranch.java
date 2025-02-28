@@ -59,7 +59,7 @@ public class DriveToBranch extends Command {
             watchdog.addEpoch("create waypoints");
 
             PathPlannerPath path = new PathPlannerPath(waypoints, constraints,
-                    new IdealStartingState(0, scoringPosition.getRotation()),
+                    null,
                     new GoalEndState(0, scoringPosition.getRotation()));
             path.preventFlipping = true;
             watchdog.addEpoch("create path");
