@@ -105,11 +105,11 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void scheduleWaitForApriltagCommand() {
-        Commands.idle() // do nothing
+        Commands.idle(this) // do nothing
                 .until(() -> { // until any limelight sees a tag
                     return Arrays.stream(LIMELIGHTS).anyMatch(limelight -> LimelightHelpers.getTV(limelight));
                 })
-                .andThen(Commands.runOnce(() -> { // and then reset the robot pose
+                .andThen(runOnce(() -> { // and then reset the robot pose
                     for (String limelight : LIMELIGHTS) {
                         if (LimelightHelpers.getTV(limelight)) {
                             drivetrain.resetPose(LimelightHelpers.getBotPose2d(limelight));
