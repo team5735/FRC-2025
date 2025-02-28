@@ -64,9 +64,7 @@ public class DriveToBranch extends Command {
             path.preventFlipping = true;
             watchdog.addEpoch("create path");
 
-            storedCommand = AutoBuilder.pathfindThenFollowPath(
-                    path,
-                    constraints);
+            storedCommand = AutoBuilder.pathfindThenFollowPath(path, constraints);
             watchdog.addEpoch("made new storedCommand");
             storedCommand.schedule();
             watchdog.printEpochs();
