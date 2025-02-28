@@ -67,6 +67,7 @@ public class RobotContainer {
         SmartDashboard.putData("Choose an Auto", autoChooser);
         PathfindingCommand.warmupCommand().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
+        vision.scheduleWaitForApriltagCommand();
         configureBindings();
     }
 
@@ -75,8 +76,6 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                // both joysticks are combined here so that you only need one at a time to test
-                // anything.
                 drivetrain.joystickDriveCommand(
                         () -> -driveController.getLeftX(),
                         () -> -driveController.getLeftY(),
