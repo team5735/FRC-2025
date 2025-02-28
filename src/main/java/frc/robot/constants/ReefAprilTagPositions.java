@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
 
 public class ReefAprilTagPositions {
@@ -66,6 +68,9 @@ public class ReefAprilTagPositions {
         return new Pose2d(trans, in.getRotation());
     }
 
+    private static final StructPublisher<Pose2d> closestPosePublisher = NetworkTableInstance.getDefault()
+            .getTable("sections").getSubTable("closestTag").getStructTopic("pos", Pose2d.struct).publish();
+
     /**
      * Returns the pose of the tag closest to the given position.
      *
@@ -87,6 +92,7 @@ public class ReefAprilTagPositions {
                 closestDistanceSoFar = dist;
             }
         }
+        closestPosePublisher.accept(best);
         return best;
     }
 
