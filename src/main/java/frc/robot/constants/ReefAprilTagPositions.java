@@ -78,13 +78,13 @@ public class ReefAprilTagPositions {
         }
         System.out.println("searching for closest tag to (x, y) = (" + position.getX() + ", " + position.getY() + ")");
 
-        double closest_distance_so_far = Double.MAX_VALUE;
+        double closestDistanceSoFar = Double.MAX_VALUE;
         Pose2d best = null;
         for (Pose2d tag : TAGS) {
             double dist = tag.getTranslation().getDistance(position);
-            if (dist < closest_distance_so_far) {
+            if (dist < closestDistanceSoFar) {
                 best = tag;
-                closest_distance_so_far = dist;
+                closestDistanceSoFar = dist;
             }
         }
         return best;
