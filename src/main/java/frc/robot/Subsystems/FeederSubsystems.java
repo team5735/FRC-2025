@@ -1,15 +1,12 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FeederConstants;
 
@@ -30,6 +27,19 @@ public class FeederSubsystems extends SubsystemBase {
 
     public void stop() {
         falcon.setVoltage(0);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("intakeSwitchStatus", getSwitchStatus());
+    }
+
+    public boolean getSwitchStatus() {
+        return beamBreak.get();
+    }
+
+    public Trigger beamBreakEngaged() {
+        return new Trigger(() -> !getSwitchStatus());
     }
 
     public Command feedCommand() {
