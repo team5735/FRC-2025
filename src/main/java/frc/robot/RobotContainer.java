@@ -6,13 +6,25 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.constants.Constants;
+import frc.robot.subsystems.FeederSubsystem;
+
 
 public class RobotContainer {
+
+  private final CommandXboxController driveController = new CommandXboxController(Constants.DRIVE_CONTROLLER_PORT);
+
+  private final FeederSubsystem feeder = new FeederSubsystem();
+
   public RobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    driveController.a().whileTrue(feeder.feedCommand());
+    driveController.b().whileTrue(feeder.unfeedCommand());
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

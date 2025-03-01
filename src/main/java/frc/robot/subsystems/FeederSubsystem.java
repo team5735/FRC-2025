@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FeederConstants;
 
-public class FeederSubsystems extends SubsystemBase {
+public class FeederSubsystem extends SubsystemBase {
     private final DigitalInput beamBreak = new DigitalInput(Constants.FEEDER_BEAM_ID);
     private final TalonFX falcon = new TalonFX(Constants.FEEDER_FALCON_ID);
 
-    public void FeederSubsystem() {
+    public FeederSubsystem() {
     }
 
     public void feed() {
