@@ -15,16 +15,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class ElevatorConstants {
-    public static final int KP = 0;
-    public static final int KI = 0;
-    public static final int KD = 0;
-    public static final int KS = 0;
-    public static final int KG = 0;
-    public static final int KV = 0;
-    public static final int KA = 0;
-    public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(0);
-    public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(0);
-    public static final double ROTATIONS_TO_FEET = 0;
+    public static final double KP = 3;
+    public static final double KI = 0;
+    public static final double KD = 0;
+    public static final double KS = 0.0925;
+    public static final double KG = 0.1925;
+    public static final double KV = 5.5;
+    public static final double KA = 3.1202;
+    public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1.8);
+    public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(2.5);
+    public static final double ROTATIONS_TO_FEET = 1 / 15.586;
     public static final Distance BASE_HEIGHT = Feet.of(0);
     public static final Distance L1_HEIGHT = Feet.of(0);
     public static final Distance L2_HEIGHT = Feet.of(0);
@@ -32,7 +32,7 @@ public class ElevatorConstants {
     public static final Distance L4_HEIGHT = Feet.of(0);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
 
-    public enum Level{
+    public enum Level {
         BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kAliceBlue),
         PROCESSOR(() -> new State(PROCESS_HEIGHT.in(Units.Meters), 0), Color.kAntiqueWhite),
         L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kAqua),
@@ -40,16 +40,15 @@ public class ElevatorConstants {
         L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kAzure),
         L4(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kBeige),
         SMARTDASHBOARD(() -> new State(
-            Feet.of(
-                SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet))).in(Units.Meters
-            ), 
-            0
-        ), Color.kBisque);
+                Feet.of(
+                        SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet)))
+                        .in(Units.Meters),
+                0), Color.kBisque);
 
         public final Supplier<State> stateSupplier;
         public final Color levelColor;
 
-        private Level(Supplier<State> stateSupplier, Color levelColor){
+        private Level(Supplier<State> stateSupplier, Color levelColor) {
             this.stateSupplier = stateSupplier;
             this.levelColor = levelColor;
         }
