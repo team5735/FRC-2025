@@ -106,12 +106,10 @@ public class RobotContainer {
 
         // subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
-        /*
-         * subsystemController.a().whileTrue(coraler.simpleFeedCommand());
-         * subsystemController.b().whileTrue(coraler.outtakeCommand());
-         * subsystemController.x().whileTrue(coraler.troughCommand());
-         * subsystemController.y().onTrue(coraler.branchCommand());
-         */
+        subsystemController.a().whileTrue(coraler.simpleFeedCommand());
+        subsystemController.b().whileTrue(coraler.outtakeCommand());
+        subsystemController.x().whileTrue(coraler.troughCommand());
+        subsystemController.y().whileTrue(coraler.branchCommand());
 
         driveController.leftBumper().onTrue(LEDs.colorAimedCommand());
         driveController.rightBumper().onTrue(LEDs.colorReadyCommand());
