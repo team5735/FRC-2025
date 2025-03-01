@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
@@ -71,6 +72,8 @@ public class RobotContainer {
         configureBindings();
     }
 
+    private boolean movingForward = false;
+
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -85,24 +88,29 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand());
-        driveController.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(
-                        new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
 
-        driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE));
+        driveController.x()
+                .whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE, () -> movingForward));
         driveController.y().onTrue(Commands.runOnce(() -> {
             vision.seedPigeon();
         }));
+
+        driveController.b().whileTrue(new FunctionalCommand(() -> {
+            movingForward = true;
+        }, () -> {
+        }, (cancelled) -> {
+            movingForward = false;
+        }, () -> false));
 
         // reset the field-centric heading on left bumper press
         driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driveController.back().and(driveController.a()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driveController.back().and(driveController.b()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driveController.start().and(driveController.a()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driveController.start().and(driveController.b()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 

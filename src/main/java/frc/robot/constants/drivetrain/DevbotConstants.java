@@ -45,7 +45,7 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public Distance getPigeonToRobotFront() {
-        return Inches.of(17.5).plus(getBumperWidth());
+        return Inches.of(16).plus(getBumperWidth());
     }
 
     @Override

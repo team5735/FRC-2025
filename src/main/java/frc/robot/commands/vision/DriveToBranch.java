@@ -1,11 +1,12 @@
 package frc.robot.commands.vision;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.List;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
@@ -51,7 +52,7 @@ public class DriveToBranch extends Command {
 
             Pose2d lineUpPathOtherNode = new Pose2d(
                     scoringPosition.getTranslation()
-                            .plus(new Translation2d(VisionConstants.PATH_DIST_FROM_SCOREPOS,
+                            .plus(new Translation2d(VisionConstants.PATH_DIST_FROM_SCOREPOS.in(Meters),
                                     scoringPosition.getRotation().plus(Rotation2d.k180deg))),
                     scoringPosition.getRotation());
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(lineUpPathOtherNode,
