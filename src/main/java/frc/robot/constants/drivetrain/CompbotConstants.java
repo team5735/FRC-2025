@@ -43,7 +43,11 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public PathConstraints getPathFollowConstraints() {
-        throw new Todo();
+        return new PathConstraints(
+                MetersPerSecond.of(0),
+                MetersPerSecondPerSecond.of(0),
+                DegreesPerSecond.of(0),
+                DegreesPerSecondPerSecond.of(0)); // TODO add and test values
     }
 
     @Override
