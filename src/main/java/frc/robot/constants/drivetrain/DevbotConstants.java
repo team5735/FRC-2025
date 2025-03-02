@@ -25,12 +25,12 @@ import frc.robot.util.Todo;
 public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(10, 0);
+        return new PIDConstants(15, 0);
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(16, 0);
+        return new PIDConstants(10, 0);
     }
 
     @Override
