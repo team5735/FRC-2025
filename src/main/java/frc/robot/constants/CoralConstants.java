@@ -20,6 +20,6 @@ public class CoralConstants {
 
     public static final double FEEDER_VOLTS = 2.0;
 
-    public static final double FEED_DELAY_SECONDS = 0;
+    public static final double FEED_DELAY_SECONDS = 1;
     public static final Time L4_EJECTION_TIMEOUT = Seconds.of(1);
 }

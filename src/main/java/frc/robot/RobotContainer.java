@@ -107,11 +107,13 @@ public class RobotContainer {
         // subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
         // Coral manipulator temporary testing bindings
-        subsystemController.a().whileTrue(coraler.simpleFeedCommand());
-        subsystemController.b().whileTrue(coraler.outtakeCommand());
-        subsystemController.x().whileTrue(coraler.troughCommand());
-        subsystemController.y().whileTrue(coraler.branchCommand());
-        // subsystemController.rightBumper().whileTrue(coraler.feedStageCommand()); //
+        subsystemController.a().whileTrue(coraler.simpleManipCommand());
+        subsystemController.b().whileTrue(coraler.simpleFeedCommand());
+        // subsystemController.x().whileTrue(coraler.feedToManipCommand());
+        subsystemController.x().whileTrue(coraler.feedStageCommand());
+
+        subsystemController.y().whileTrue(coraler.l4BranchCommand());
+
         // TODO test feed delay
         subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
         subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());

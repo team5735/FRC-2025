@@ -112,7 +112,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void feed() {
-        falcon.setVoltage(feederVolts.get());
+        falcon.setVoltage(-feederVolts.get());
     }
 
     public void stopFeed() {
@@ -137,11 +137,15 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     // Manipulator feeds out
-    public Command simpleFeedCommand() {
+    public Command simpleManipCommand() {
         return startEnd(() -> {
             intakeTop();
             intakeBottom();
         }, () -> stopManipulator());
+    }
+
+    public Command simpleFeedCommand() {
+        return startEnd(() -> feed(), () -> stopFeed());
     }
 
     public Command simpleEjectOutCommand() {
@@ -167,18 +171,12 @@ public class CoralSubsystem extends SubsystemBase {
                 .finallyDo(() -> stopManipulator());
     }
 
-    public Command feedToManipCommand() {
-        return runOnce(() -> feed()) // Stage 1: Feeder starts running
-                .until(beamBreakEngaged()) // Stage 2: Beam broken, bottom wheel runs, delay starts
-                .andThen(runOnce(() -> intakeBottom()))
-                .andThen(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-                .andThen(runOnce(() -> intakeTop())) // Stage 3: Delay ends, top wheel runs
-                .until(beamBreakEngaged().negate()) // Stage 4: Beam engaged, stop all motors
-                .finallyDo(() -> {
-                    stopFeed();
-                    stopManipulator();
-                });
-    }
+    /*
+     * TODO: fix feedToManipCommand to execute the following
+     * Stage 1: beam engaged, feeder starts running
+     * Stage 2: beam broken, add a beam delay
+     * stage 3: beam engaged, feeder stops
+     */
 
     public Command troughCommand() {
         return startEnd(() -> {
@@ -196,9 +194,11 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command l4BranchCommand() {
         return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
+            intakeTop();
             ejectOut();
         }, () -> {
             stopEject();
+            stopManipulator();
         }));
     }
 
