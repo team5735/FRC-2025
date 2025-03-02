@@ -4,13 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,9 +31,6 @@ import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
 
@@ -87,10 +83,12 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driveController.a().whileTrue(drivetrain.brakeCommand());
-
+        System.out.println(ReefAlignment.LEFT.getParallel().in(Meters));
+        System.out.println(ReefAlignment.RIGHT.getParallel().in(Meters));
         driveController.x()
-                .whileTrue(new AlignToReef(drivetrain, vision, () -> ReefAlignment.ALGAE, () -> movingForward));
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
+        driveController.a()
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
         driveController.y().onTrue(Commands.runOnce(() -> {
             vision.seedPigeon();
         }));
@@ -119,9 +117,12 @@ public class RobotContainer {
         subsystemController.x().whileTrue(coraler.troughCommand());
         subsystemController.y().onTrue(coraler.branchCommand());
 
-        driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.ALGAE));
-        driveController.povRight().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT));
-        driveController.povLeft().whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
+        driveController.povDown().whileTrue(
+                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT, Commands.runOnce(() -> vision.seedPigeon())));
+        driveController.povLeft().whileTrue(
+                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT, Commands.runOnce(() -> vision.seedPigeon())));
+        driveController.povRight().whileTrue(
+                new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT, Commands.runOnce(() -> vision.seedPigeon())));
     }
 
     public Command getAutonomousCommand() {
