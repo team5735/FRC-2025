@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -83,12 +82,12 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        System.out.println(ReefAlignment.LEFT.getParallel().in(Meters));
-        System.out.println(ReefAlignment.RIGHT.getParallel().in(Meters));
         driveController.x()
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
         driveController.a()
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
+        driveController.povDown()
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.ALGAE, () -> movingForward));
         driveController.y().onTrue(Commands.runOnce(() -> {
             vision.seedPigeon();
         }));
@@ -117,8 +116,8 @@ public class RobotContainer {
         subsystemController.x().whileTrue(coraler.troughCommand());
         subsystemController.y().onTrue(coraler.branchCommand());
 
-        driveController.povDown().whileTrue(
-                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
+        // driveController.povDown().whileTrue(
+        // new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
         driveController.povLeft().whileTrue(
                 new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
         driveController.povRight().whileTrue(

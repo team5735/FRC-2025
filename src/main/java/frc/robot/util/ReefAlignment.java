@@ -8,12 +8,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public enum ReefAlignment {
-    LEFT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).minus(Inches.of(3.5))),
-    RIGHT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).unaryMinus().minus(Inches.of(3.5))),
+    LEFT(Inches.of(1)),
+    RIGHT(Inches.of(-14)),
     ALGAE(Meters.of(0));
 
     private Distance parallel;
