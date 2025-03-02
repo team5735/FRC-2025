@@ -12,11 +12,15 @@ import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public enum ReefAlignment {
-    LEFT(Inches.of(3.5).plus(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2))),
-    RIGHT(Inches.of(3.5).plus(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).unaryMinus())),
+    LEFT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).minus(Inches.of(3.5))),
+    RIGHT(ReefAprilTagPositions.DISTANCE_BETWEEN_BRANCHES.div(2).unaryMinus().minus(Inches.of(3.5))),
     ALGAE(Meters.of(0));
 
     private Distance parallel;
+
+    public Distance getParallel() {
+        return parallel;
+    }
 
     ReefAlignment(Distance parallel) {
         this.parallel = parallel;
