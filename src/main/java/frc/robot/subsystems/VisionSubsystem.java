@@ -39,7 +39,7 @@ public class VisionSubsystem extends SubsystemBase {
             return;
         }
         drivetrain.getPigeon2().setYaw(curRot);
-        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
+        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose);
     }
 
     public Command getSeedPigeon() {
