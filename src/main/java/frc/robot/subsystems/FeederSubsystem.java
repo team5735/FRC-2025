@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +17,7 @@ public class FeederSubsystem extends SubsystemBase {
     private final TalonFX falcon = new TalonFX(Constants.FEEDER_FALCON_ID);
 
     public FeederSubsystem() {
+        falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     }
 
     public void feed() {
@@ -22,7 +25,7 @@ public class FeederSubsystem extends SubsystemBase {
     }
 
     public void unfeed() {
-        falcon.setVoltage(-FeederConstants.UNFEED_VOLTS);
+        falcon.setVoltage(-FeederConstants.FEED_VOLTS);
     }
 
     public void stop() {
