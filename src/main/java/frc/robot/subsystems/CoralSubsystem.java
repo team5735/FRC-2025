@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.servohub.config.ServoChannelConfig.PulseRange;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -93,7 +94,7 @@ public class CoralSubsystem extends SubsystemBase {
         vortexBottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
     }
 
-    private void stop() {
+    private void stopManipulator() {
         vortexTop.setVoltage(0);
         vortexBottom.setVoltage(0);
     }
@@ -131,8 +132,8 @@ public class CoralSubsystem extends SubsystemBase {
         return new Trigger(() -> !getSwitchStatus());
     }
 
-    public Command stopCommand() {
-        return runOnce(() -> stop());
+    public Command stopManipCommand() {
+        return runOnce(() -> stopManipulator());
     }
 
     // Manipulator feeds out
@@ -140,7 +141,7 @@ public class CoralSubsystem extends SubsystemBase {
         return startEnd(() -> {
             intakeTop();
             intakeBottom();
-        }, () -> stop());
+        }, () -> stopManipulator());
     }
 
     public Command simpleEjectOutCommand() {
@@ -148,14 +149,13 @@ public class CoralSubsystem extends SubsystemBase {
             intakeBottom();
             ejectOut();
         }, () -> {
-            stop();
+            stopManipulator();
             stopEject();
         });
     }
 
     public Command simpleEjectResetCommand() {
-        return startEnd(() -> ejectResetPose(),
-                () -> stopEject());
+        return startEnd(() -> ejectResetPose(), () -> stopEject());
     }
 
     // TODO: implement beam break in hardware & find proper delay
@@ -164,21 +164,34 @@ public class CoralSubsystem extends SubsystemBase {
                 .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
                 .andThen(runOnce(() -> intakeTop()))
                 .until(beamBreakEngaged())
-                .finallyDo(() -> stop());
+                .finallyDo(() -> stopManipulator());
+    }
+
+    public Command feedToManipCommand() {
+        return runOnce(() -> feed()) // Stage 1: Feeder starts running
+                .until(beamBreakEngaged()) // Stage 2: Beam broken, bottom wheel runs, delay starts
+                .andThen(runOnce(() -> intakeBottom()))
+                .andThen(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+                .andThen(runOnce(() -> intakeTop())) // Stage 3: Delay ends, top wheel runs
+                .until(beamBreakEngaged().negate()) // Stage 4: Beam engaged, stop all motors
+                .finallyDo(() -> {
+                    stopFeed();
+                    stopManipulator();
+                });
     }
 
     public Command troughCommand() {
         return startEnd(() -> {
             troughTop();
             troughBottom();
-        }, () -> stop());
+        }, () -> stopManipulator());
     }
 
     public Command branchCommand() {
         return startEnd(() -> {
             branchTop();
             branchBottom();
-        }, () -> stop());
+        }, () -> stopManipulator());
     }
 
     public Command l4BranchCommand() {
@@ -193,6 +206,6 @@ public class CoralSubsystem extends SubsystemBase {
         return startEnd(() -> {
             outtakeTop();
             outtakeBottom();
-        }, () -> stop());
+        }, () -> stopManipulator());
     }
 }
