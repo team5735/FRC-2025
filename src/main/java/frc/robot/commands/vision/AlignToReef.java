@@ -1,5 +1,7 @@
 package frc.robot.commands.vision;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,12 +37,15 @@ public class AlignToReef extends Command {
 
     private Supplier<Boolean> movingForward;
 
+    private ReefAlignment whichBranch;
+
     /**
      * Positions the robot in order to score a coral.
      */
-    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, Supplier<ReefAlignment> whichBranch,
+    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, ReefAlignment whichBranch,
             Supplier<Boolean> movingForward) {
         this.drivetrain = drivetrain;
+        this.whichBranch = whichBranch;
         this.movingForward = movingForward;
         addRequirements(drivetrain, vision);
     }
@@ -49,7 +54,7 @@ public class AlignToReef extends Command {
     public void initialize() {
         this.alignmentTargetTag = ReefAprilTagPositions
                 .getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
-        this.targetLine = new Line(alignmentTargetTag, "AlignToReef");
+        this.targetLine = new Line(alignmentTargetTag, "AlignToReef").offsetBy(whichBranch.getParallel().in(Meters));
 
         omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.05);
         lineController.setup(0, .01); // we want to be 'at' the Line.
