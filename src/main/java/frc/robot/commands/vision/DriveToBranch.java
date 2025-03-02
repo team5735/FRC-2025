@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
@@ -60,7 +61,7 @@ public class DriveToBranch extends Command {
             watchdog.addEpoch("create waypoints");
 
             PathPlannerPath path = new PathPlannerPath(waypoints, constraints,
-                    null,
+                    new IdealStartingState(0.5, scoringPosition.getRotation()),
                     new GoalEndState(0, scoringPosition.getRotation()));
             path.preventFlipping = true;
             watchdog.addEpoch("create path");
