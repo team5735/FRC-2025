@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -22,8 +25,12 @@ import frc.robot.util.TunableNumber;
 public class CoralSubsystem extends SubsystemBase {
     private final SparkFlex vortexTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
+
     private final SparkMax ejector = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
+
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
+
+    private final TalonFX falcon = new TalonFX(Constants.FEEDER_FALCON_ID);
 
     private TunableNumber outTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
     private TunableNumber outBottomVolts = new TunableNumber("coral", "out_bottom_volts",
@@ -31,7 +38,10 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
     private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
             CoralConstants.INTAKE_BOTTOM_VOLTS);
+
     private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECTOR_VOLTS);
+
+    private TunableNumber feederVolts = new TunableNumber("feeder", "feeder_volts", CoralConstants.FEEDER_VOLTS);
 
     public CoralSubsystem() {
         vortexTop.configure(
@@ -47,14 +57,16 @@ public class CoralSubsystem extends SubsystemBase {
                 new SparkMaxConfig().idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+
+        falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     }
 
     private void intakeTop() {
-        vortexTop.setVoltage(CoralConstants.INTAKE_TOP_VOLTS);
+        vortexTop.setVoltage(inTopVolts.get());
     }
 
     private void intakeBottom() {
-        vortexBottom.setVoltage(CoralConstants.INTAKE_BOTTOM_VOLTS);
+        vortexBottom.setVoltage(inBottomVolts.get());
     }
 
     private void outtakeTop() {
@@ -90,12 +102,20 @@ public class CoralSubsystem extends SubsystemBase {
         ejector.setVoltage(ejectorVolts.get());
     }
 
-    private void ejectReset() {
+    private void ejectResetPose() {
         ejector.setVoltage(-ejectorVolts.get());
     }
 
     private void stopEject() {
         ejector.setVoltage(0);
+    }
+
+    public void feed() {
+        falcon.setVoltage(feederVolts.get());
+    }
+
+    public void stopFeed() {
+        falcon.setVoltage(0);
     }
 
     @Override
@@ -115,6 +135,7 @@ public class CoralSubsystem extends SubsystemBase {
         return runOnce(() -> stop());
     }
 
+    // Manipulator feeds out
     public Command simpleFeedCommand() {
         return startEnd(() -> {
             intakeTop();
@@ -133,7 +154,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command simpleEjectResetCommand() {
-        return startEnd(() -> ejectReset(),
+        return startEnd(() -> ejectResetPose(),
                 () -> stopEject());
     }
 

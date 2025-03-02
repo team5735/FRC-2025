@@ -11,6 +11,8 @@ public class Constants {
     public static final int CORAL_MOTOR_BOTTOM_ID = 27;
     public static final int CORAL_EJECTOR_ID = 25;
 
+    public static final int FEEDER_FALCON_ID = 22;
+
     public static final int INTAKE_BEAM_PIN = 0;
 
     public static final int DRIVE_CONTROLLER_PORT = 0;
