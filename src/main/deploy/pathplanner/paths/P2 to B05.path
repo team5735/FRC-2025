@@ -12,20 +12,20 @@
         "y": 6.15
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "P2"
     },
     {
       "anchor": {
-        "x": 5.548,
+        "x": 5.54775,
         "y": 3.079
       },
       "prevControl": {
-        "x": 7.036782786885246,
+        "x": 7.036532786885246,
         "y": 2.62843237704918
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B5"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "From P2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

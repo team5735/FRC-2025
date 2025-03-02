@@ -86,8 +86,12 @@ public class CoralSubsystem extends SubsystemBase {
         vortexBottom.setVoltage(0);
     }
 
-    private void eject() {
+    private void ejectOut() {
         ejector.setVoltage(ejectorVolts.get());
+    }
+
+    private void ejectReset() {
+        ejector.setVoltage(-ejectorVolts.get());
     }
 
     private void stopEject() {
@@ -118,6 +122,21 @@ public class CoralSubsystem extends SubsystemBase {
         }, () -> stop());
     }
 
+    public Command simpleEjectOutCommand() {
+        return startEnd(() -> {
+            intakeBottom();
+            ejectOut();
+        }, () -> {
+            stop();
+            stopEject();
+        });
+    }
+
+    public Command simpleEjectResetCommand() {
+        return startEnd(() -> ejectReset(),
+                () -> stopEject());
+    }
+
     // TODO: implement beam break in hardware & find proper delay
     public Command feedStageCommand() {
         return runOnce(() -> intakeBottom())
@@ -143,7 +162,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command l4BranchCommand() {
         return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
-            eject();
+            ejectOut();
         }, () -> {
             stopEject();
         }));

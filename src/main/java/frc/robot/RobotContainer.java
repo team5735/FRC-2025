@@ -106,10 +106,15 @@ public class RobotContainer {
 
         // subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
+        // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleFeedCommand());
         subsystemController.b().whileTrue(coraler.outtakeCommand());
         subsystemController.x().whileTrue(coraler.troughCommand());
         subsystemController.y().whileTrue(coraler.branchCommand());
+        // subsystemController.rightBumper().whileTrue(coraler.feedStageCommand()); //
+        // TODO test feed delay
+        subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
+        subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
 
         driveController.leftBumper().onTrue(LEDs.colorAimedCommand());
         driveController.rightBumper().onTrue(LEDs.colorReadyCommand());

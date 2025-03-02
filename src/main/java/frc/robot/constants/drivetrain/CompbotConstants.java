@@ -28,12 +28,12 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public Distance getRobotTotalWidth() {
-        return Inches.of(37);
+        return Inches.of(38);
     }
 
     @Override
     public Distance getRobotTotalLength() {
-        return Inches.of(37);
+        return Inches.of(38);
     }
 
     @Override

@@ -7,8 +7,8 @@ public class Constants {
 
     public static final int ALGAE_FALCON_ID = 57;
 
-    public static final int CORAL_MOTOR_TOP_ID = 5;
-    public static final int CORAL_MOTOR_BOTTOM_ID = 4;
+    public static final int CORAL_MOTOR_TOP_ID = 26;
+    public static final int CORAL_MOTOR_BOTTOM_ID = 27;
     public static final int CORAL_EJECTOR_ID = 25;
 
     public static final int INTAKE_BEAM_PIN = 0;
