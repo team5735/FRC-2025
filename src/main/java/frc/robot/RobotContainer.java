@@ -118,11 +118,11 @@ public class RobotContainer {
         subsystemController.y().onTrue(coraler.branchCommand());
 
         driveController.povDown().whileTrue(
-                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT, Commands.runOnce(() -> vision.seedPigeon())));
+                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
         driveController.povLeft().whileTrue(
-                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT, Commands.runOnce(() -> vision.seedPigeon())));
+                new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT));
         driveController.povRight().whileTrue(
-                new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT, Commands.runOnce(() -> vision.seedPigeon())));
+                new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT));
     }
 
     public Command getAutonomousCommand() {
