@@ -26,6 +26,7 @@ import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.ReefAlignment;
 
@@ -123,4 +124,3 @@ public class RobotContainer {
         return auto;
     }
 }
-
