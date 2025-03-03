@@ -208,4 +208,7 @@ public class CoralSubsystem extends SubsystemBase {
             outtakeBottom();
         }, () -> stopManipulator());
     }
+
+    @Override
+    public void 
 }

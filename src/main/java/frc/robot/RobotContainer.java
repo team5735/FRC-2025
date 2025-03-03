@@ -59,9 +59,9 @@ public class RobotContainer {
     // private static final VisionSubsystem vision = new
     // VisionSubsystem(drivetrain);
 
-    private AlgaeSubsystem algaer = new AlgaeSubsystem();
-    private CoralSubsystem coraler = new CoralSubsystem();
-    private CANdleSubsystem LEDs = new CANdleSubsystem();
+    public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
+    public static final CoralSubsystem coraler = new CoralSubsystem();
+    public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
