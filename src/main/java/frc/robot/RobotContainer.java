@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -74,19 +75,18 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                // both joysticks are combined here so that you only need one at a time to test
-                // anything.
                 drivetrain.joystickDriveCommand(
                         () -> driveController.getLeftX(),
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis()));
 
-        driveController.a().whileTrue(drivetrain.brakeCommand());
-        driveController.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(
-                        new Rotation2d(-driveController.getLeftY(), -driveController.getLeftX()))));
+        driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
+        // drivecontroller.b() slow mode
+        driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        driveController.leftBumper().whileTrue(coraler.feedStageCommand());
+        driveController.rightBumper().whileTrue(coraler.outtakeCommand());
 
         // driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () ->
         // ReefAlignment.ALGAE));
@@ -95,16 +95,6 @@ public class RobotContainer {
         // }));
 
         // reset the field-centric heading on left bumper press
-        driveController.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        driveController.back().and(driveController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driveController.back().and(driveController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driveController.start().and(driveController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driveController.start().and(driveController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-        // subsystemController.rightBumper().whileTrue(algaer.grabStopCommand());
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
@@ -117,9 +107,6 @@ public class RobotContainer {
         // TODO test feed delay
         subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
         subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
-
-        driveController.leftBumper().onTrue(LEDs.colorAimedCommand());
-        driveController.rightBumper().onTrue(LEDs.colorReadyCommand());
 
         // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
         // ReefAlignment.ALGAE));
