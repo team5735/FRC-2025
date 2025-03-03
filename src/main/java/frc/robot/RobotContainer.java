@@ -62,6 +62,7 @@ public class RobotContainer {
 
     public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
     public static final CoralSubsystem coraler = new CoralSubsystem();
+    public static final ElevatorSubsystem elevator = new ElevatorSubsystem();
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
@@ -122,3 +123,4 @@ public class RobotContainer {
         return auto;
     }
 }
+
