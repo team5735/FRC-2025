@@ -318,7 +318,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command brakeCommand() {
-        return runOnce(() -> setControl(brake));
+        return startRun(() -> setControl(brake), () -> {
+            // Please do something else with this to make it do better
+        });
     }
 
     private void startSimThread() {
