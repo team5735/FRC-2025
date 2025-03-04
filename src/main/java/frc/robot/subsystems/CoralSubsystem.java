@@ -42,7 +42,9 @@ public class CoralSubsystem extends SubsystemBase {
 
     private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECTOR_VOLTS);
 
-    private TunableNumber feederVolts = new TunableNumber("feeder", "feeder_volts", CoralConstants.FEEDER_VOLTS);
+    private TunableNumber feederVolts = new TunableNumber("feed", "feed_volts", CoralConstants.FEEDER_VOLTS);
+    private TunableNumber unfeedVolts = new TunableNumber("unfeed", "unfeed_volts", CoralConstants.UNFEED_VOLTS);
+
 
     public CoralSubsystem() {
         vortexTop.configure(
@@ -115,6 +117,10 @@ public class CoralSubsystem extends SubsystemBase {
         falcon.setVoltage(-feederVolts.get());
     }
 
+    public void unfeed() {
+        falcon.setVoltage(unfeedVolts.get());
+    }
+
     public void stopFeed() {
         falcon.setVoltage(0);
     }
@@ -164,11 +170,21 @@ public class CoralSubsystem extends SubsystemBase {
 
     // TODO: implement beam break in hardware & find proper delay
     public Command feedStageCommand() {
-        return runOnce(() -> intakeBottom())
+        return runOnce(() -> feed())
                 .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-                .andThen(runOnce(() -> intakeTop()))
-                .until(beamBreakEngaged())
-                .finallyDo(() -> stopManipulator());
+                .until(beamBreakEngaged().negate())
+                .finallyDo(() -> stopFeed());
+    }
+
+    public Command outtakeCommand() {
+        return startEnd(() -> {
+            outtakeTop();
+            outtakeBottom();
+            unfeed();
+        }, () -> {
+            stopFeed();
+            stopManipulator();
+        });
     }
 
     /*
@@ -200,12 +216,5 @@ public class CoralSubsystem extends SubsystemBase {
             stopEject();
             stopManipulator();
         }));
-    }
-
-    public Command outtakeCommand() {
-        return startEnd(() -> {
-            outtakeTop();
-            outtakeBottom();
-        }, () -> stopManipulator());
     }
 }
