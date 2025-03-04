@@ -140,4 +140,9 @@ public class CompbotConstants implements DrivetrainConstants {
     public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(0), Inches.of(0));
     }
+
+    @Override
+    public double getSlowMultiplier() {
+        return 0.25;
+    }
 }

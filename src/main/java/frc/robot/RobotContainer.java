@@ -73,7 +73,15 @@ public class RobotContainer {
                         () -> driveController.getLeftX(),
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
-                        () -> driveController.getRightTriggerAxis()));
+                        () -> driveController.getRightTriggerAxis(),
+                        () -> {
+                            if (driveController.getHID().getBButton()) {
+                                return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
+                            }
+                            return 1.0;
+                        }));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
         // drivecontroller.b() slow mode
