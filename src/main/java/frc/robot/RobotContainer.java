@@ -6,22 +6,16 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants.Level;
-import frc.robot.commands.vision.AlignToReef;
-import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -29,14 +23,10 @@ import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
 
@@ -83,7 +73,15 @@ public class RobotContainer {
                         () -> driveController.getLeftX(),
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
-                        () -> driveController.getRightTriggerAxis()));
+                        () -> driveController.getRightTriggerAxis(),
+                        () -> {
+                            if (driveController.getHID().getBButton()) {
+                                return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
+                            }
+                            return 1.0;
+                        }));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
         // drivecontroller.b() slow mode

@@ -1,6 +1,13 @@
 package frc.robot.constants.drivetrain;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -13,7 +20,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
-import frc.robot.util.Todo;
 
 public class CompbotConstants implements DrivetrainConstants {
     @Override
@@ -133,5 +139,10 @@ public class CompbotConstants implements DrivetrainConstants {
 
     public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(0), Inches.of(0));
+    }
+
+    @Override
+    public double getSlowMultiplier() {
+        return 0.25;
     }
 }
