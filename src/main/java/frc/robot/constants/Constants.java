@@ -21,7 +21,7 @@ public class Constants {
     public static final int DRIVE_CONTROLLER_PORT = 0;
     public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
 
-    public static final double DEADBAND = 0.15;
+    public static final double DEADBAND = 0.05;
 
     public static final Rotation2d BLUE_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.kZero;
     public static final Rotation2d RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.k180deg;

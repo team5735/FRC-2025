@@ -73,7 +73,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
-            .withDeadband(maxSpeed * 0.1).withRotationalDeadband(maxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(maxSpeed * 0.05).withRotationalDeadband(maxAngularRate * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withCenterOfRotation(CONSTANTS.getPigeonToCenterOfRotation());
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -310,15 +310,19 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             Supplier<Double> stickX,
             Supplier<Double> stickY,
             Supplier<Double> leftTrigger,
-            Supplier<Double> rightTrigger) {
+            Supplier<Double> rightTrigger,
+            Supplier<Double> multiplier) {
         return applyRequest(() -> fieldCentricRequest
-                .withVelocityX(-deadband(stickY.get()) * maxSpeed)
-                .withVelocityY(-deadband(stickX.get()) * maxSpeed)
-                .withRotationalRate(deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate));
+                .withVelocityX(-deadband(stickY.get()) * maxSpeed * multiplier.get())
+                .withVelocityY(-deadband(stickX.get()) * maxSpeed * multiplier.get())
+                .withRotationalRate(
+                        deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate * multiplier.get()));
     }
 
     public Command brakeCommand() {
-        return runOnce(() -> setControl(brake));
+        return startRun(() -> setControl(brake), () -> {
+            // Please do something else with this to make it do better
+        });
     }
 
     private void startSimThread() {

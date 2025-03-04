@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
@@ -26,10 +27,10 @@ public class ElevatorConstants {
     public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(2.5);
     public static final double ROTATIONS_TO_FEET = 1 / 15.586;
     public static final Distance BASE_HEIGHT = Feet.of(0);
-    public static final Distance L1_HEIGHT = Feet.of(0);
-    public static final Distance L2_HEIGHT = Feet.of(0);
-    public static final Distance L3_HEIGHT = Feet.of(0);
-    public static final Distance L4_HEIGHT = Feet.of(0);
+    public static final Distance L1_HEIGHT = Inches.of(10);
+    public static final Distance L2_HEIGHT = Inches.of(18.25);
+    public static final Distance L3_HEIGHT = Inches.of(24.25);
+    public static final Distance L4_HEIGHT = Inches.of(53.5);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
 
     public enum Level {
@@ -38,7 +39,7 @@ public class ElevatorConstants {
         L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kAqua),
         L2(() -> new State(L2_HEIGHT.in(Units.Meters), 0), Color.kAquamarine),
         L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kAzure),
-        L4(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kBeige),
+        L4(() -> new State(L4_HEIGHT.in(Units.Meters), 0), Color.kBeige),
         SMARTDASHBOARD(() -> new State(
                 Feet.of(
                         SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet)))

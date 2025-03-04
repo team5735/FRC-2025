@@ -6,20 +6,16 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.constants.Constants;
-import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
+import frc.robot.constants.Constants;
+import frc.robot.constants.ElevatorConstants.Level;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -27,14 +23,10 @@ import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
 
@@ -81,14 +73,40 @@ public class RobotContainer {
                         () -> driveController.getLeftX(),
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
-                        () -> driveController.getRightTriggerAxis()));
+                        () -> driveController.getRightTriggerAxis(),
+                        () -> {
+                            if (driveController.getHID().getBButton()) {
+                                return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
+                            }
+                            return 1.0;
+                        }));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
         // drivecontroller.b() slow mode
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         driveController.leftBumper().whileTrue(coraler.feedStageCommand());
-        driveController.rightBumper().whileTrue(coraler.outtakeCommand());
+        driveController.rightBumper().whileTrue(coraler.unfeedCommand());
+
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
+        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
+
+        // driveController.povUp().and(driveController.x()) align to source
+        driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povRight().and(driveController.x())
+                .whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT)
+                        .alongWith(LEDs.colorPathingCommand()).andThen(LEDs.colorPathEndCommand()));
+        driveController.povLeft().and(driveController.x())
+                .whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT)
+                        .alongWith(LEDs.colorPathingCommand()).andThen(LEDs.colorPathEndCommand()));
+
+        subsystemController.a().onTrue(coraler.simpleEjectOutCommand().withDeadline(new WaitCommand(1)));
+
+        coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
         // driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () ->
         // ReefAlignment.ALGAE));
@@ -99,12 +117,12 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings
-        subsystemController.a().whileTrue(coraler.simpleManipCommand());
-        subsystemController.b().whileTrue(coraler.simpleFeedCommand());
+        // subsystemController.a().whileTrue(coraler.simpleManipCommand());
+        // subsystemController.b().whileTrue(coraler.simpleFeedCommand());
         // subsystemController.x().whileTrue(coraler.feedToManipCommand());
-        subsystemController.x().whileTrue(coraler.feedStageCommand());
+        // subsystemController.x().whileTrue(coraler.feedStageCommand());
 
-        subsystemController.y().whileTrue(coraler.l4BranchCommand());
+        // subsystemController.y().whileTrue(coraler.l4BranchCommand());
 
         // TODO test feed delay
         subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
