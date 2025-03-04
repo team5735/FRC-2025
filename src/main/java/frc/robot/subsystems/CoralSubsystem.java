@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.servohub.config.ServoChannelConfig.PulseRange;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -40,9 +39,9 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
             CoralConstants.INTAKE_BOTTOM_VOLTS);
 
-    private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECTOR_VOLTS);
+    private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECT_VOLTS);
 
-    private TunableNumber feederVolts = new TunableNumber("feeder", "feeder_volts", CoralConstants.FEEDER_VOLTS);
+    private TunableNumber feederVolts = new TunableNumber("feeder", "feeder_volts", CoralConstants.FEED_VOLTS);
 
     public CoralSubsystem() {
         vortexTop.configure(
@@ -113,6 +112,10 @@ public class CoralSubsystem extends SubsystemBase {
 
     public void feed() {
         falcon.setVoltage(-feederVolts.get());
+    }
+
+    public void unfeed() {
+        falcon.setVoltage(feederVolts.get());
     }
 
     public void stopFeed() {
@@ -207,5 +210,16 @@ public class CoralSubsystem extends SubsystemBase {
             outtakeTop();
             outtakeBottom();
         }, () -> stopManipulator());
+    }
+
+    public Command unfeedCommand() {
+        return startEnd(() -> {
+            outtakeTop();
+            outtakeBottom();
+            unfeed();
+        }, () -> {
+            stopManipulator();
+            stopFeed();
+        });
     }
 }
