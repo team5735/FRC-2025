@@ -16,9 +16,10 @@ public class CoralConstants {
     public static final double BRANCH_TOP_VOLTS = 1.25;
     public static final double BRANCH_BOTTOM_VOLTS = 1.0;
 
-    public static final double EJECTOR_VOLTS = 0.25;
+    public static final double EJECT_VOLTS = 0.25;
 
-    public static final double FEEDER_VOLTS = 2.0;
+    public static final double FEED_VOLTS = 2.0;
+    public static final double UNFEED_VOLTS = 0.0;
 
     public static final double FEED_DELAY_SECONDS = 1;
     public static final Time L4_EJECTION_TIMEOUT = Seconds.of(1);
