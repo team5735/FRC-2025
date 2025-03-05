@@ -31,7 +31,7 @@ public class ElevatorConstants {
     public static final Distance L1_HEIGHT = Inches.of(10);
     public static final Distance L2_HEIGHT = Inches.of(18.25);
     public static final Distance L3_HEIGHT = Inches.of(24.25);
-    public static final Distance L4_HEIGHT = Inches.of(53.5);
+    public static final Distance L4_HEIGHT = Inches.of(0);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
 
     public enum Level {
