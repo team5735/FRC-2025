@@ -132,6 +132,7 @@ public class RobotContainer {
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
         subsystemController.y().onTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
+        subsystemController.b().whileTrue(coraler.unfeedCommand());
 
         // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
         // ReefAlignment.ALGAE));
