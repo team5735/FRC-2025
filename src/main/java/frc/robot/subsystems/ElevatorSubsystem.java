@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -21,16 +20,23 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.ElevatorConstants.Level;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
+
+    private final DutyCycleEncoder encoder = new DutyCycleEncoder(Constants.ELEVATOR_ENCODER_PIN);
+
+    private double encoderOffsetRots;
+    private boolean enabled = true;
 
     private ProfiledPIDController pid = new ProfiledPIDController(
             ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
@@ -43,7 +49,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
 
     private final SysIdRoutine routine = new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.of(0.1).per(Second), Volts.of(1), Seconds.of(30), null),
+            new SysIdRoutine.Config(Volts.of(0.1).per(Second), Volts.of(0.5), Seconds.of(30), null),
             new SysIdRoutine.Mechanism(
                     v -> krakenRight.setVoltage(v.in(Volts)),
                     null,
@@ -71,14 +77,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isAtRest() {
-        return (pid.getGoal().position == ElevatorConstants.BASE_HEIGHT.in(Meters)) && pid.atGoal();
+        return (activeLevel == Level.BASE) && pid.atGoal();
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
         SmartDashboard.putNumber("Elevator/PosFeet", getPosition().in(Feet));
-        SmartDashboard.putNumber("Elevator/KrakenRots", krakenRight.getPosition().getValue().in(Rotations));
+        SmartDashboard.putNumber("Elevator/EncoderRots", encoder.get());
         SmartDashboard.putNumber(
                 "Elevator/VelocityMPS",
                 FeetPerSecond.of(
@@ -91,6 +97,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
         SmartDashboard.putNumber("Elevator/PosSetpointMet", pid.getSetpoint().position);
         SmartDashboard.putNumber("Elevator/VelSetpointMPS", pid.getSetpoint().velocity);
+        if (getPosition().in(Meters) < 0) {
+            resetMeasurement();
+        }
+
+        if (getPosition().in(Meters) > ElevatorConstants.L4_HEIGHT.in(Meters)) {
+            resetMeasurement(ElevatorConstants.L4_HEIGHT);
+        }
     }
 
     private void setPIDVolts() {
@@ -101,11 +114,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (isAtRest())
             voltsToSet = 0; // TODO check if better logic is needed here
 
-        krakenRight.setVoltage(voltsToSet);
+        if (enabled) {
+            krakenRight.setVoltage(voltsToSet);
+        }
     }
 
     public Distance getPosition() {
-        return Feet.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.ROTATIONS_TO_FEET);
+        return Feet.of((encoder.get() - encoderOffsetRots) * ElevatorConstants.ROTATIONS_TO_FEET);
     }
 
     public Command toLevelCommand(ElevatorConstants.Level level) {
@@ -129,6 +144,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetMeasurement(Distance height) {
-        krakenRight.setPosition(Rotations.of(height.in(Feet) / ElevatorConstants.ROTATIONS_TO_FEET));
+        encoderOffsetRots = encoder.get() - height.in(Feet) / ElevatorConstants.ROTATIONS_TO_FEET;
+    }
+
+    public void swapEnableStatus() {
+        enabled = !enabled;
+    }
+
+    public Command manualElevatorUp() {
+        return startEnd(() -> {
+            krakenRight.setVoltage(1);
+            enabled = false;
+        }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
+    }
+
+    public Command manualElevatorDown() {
+        return startEnd(() -> {
+            krakenRight.setVoltage(-1 + ElevatorConstants.KG);
+            enabled = false;
+        }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
 }

@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.RobotContainer;
 
 public class ElevatorConstants {
     public static final double KP = 3;
@@ -23,8 +24,8 @@ public class ElevatorConstants {
     public static final double KG = 0.1925;
     public static final double KV = 5.5;
     public static final double KA = 3.1202;
-    public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1.8);
-    public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(2.5);
+    public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1);
+    public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(1.25);
     public static final double ROTATIONS_TO_FEET = 1 / 15.586;
     public static final Distance BASE_HEIGHT = Feet.of(0);
     public static final Distance L1_HEIGHT = Inches.of(10);
@@ -45,6 +46,8 @@ public class ElevatorConstants {
                         SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet)))
                         .in(Units.Meters),
                 0), Color.kBisque);
+        // IDLE(() -> new State(RobotContainer.elevator.getPosition().in(Units.Meters),
+        // 0), Color.kOrange);
 
         public final Supplier<State> stateSupplier;
         public final Color levelColor;

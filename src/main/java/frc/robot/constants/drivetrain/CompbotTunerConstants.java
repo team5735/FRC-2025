@@ -180,7 +180,7 @@ public class CompbotTunerConstants {
     private static final int BACK_LEFT_DRIVE_MOTOR_ID = 4;
     private static final int BACK_LEFT_STEER_MOTOR_ID = 5;
     private static final int BACK_LEFT_ENCODER_ID = 6;
-    private static final Angle BACK_LEFT_ENCODER_OFFSET = Rotations.of(0.18798828125);
+    private static final Angle BACK_LEFT_ENCODER_OFFSET = Rotations.of(-0.038330);
     private static final boolean BACK_LEFT_STEER_MOTOR_INVERTED = true;
     private static final boolean BACK_LEFT_ENCODER_INVERTED = false;
 

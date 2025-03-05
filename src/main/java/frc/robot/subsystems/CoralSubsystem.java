@@ -16,21 +16,20 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.util.TunableNumber;
 
 public class CoralSubsystem extends SubsystemBase {
-    private final SparkFlex vortexTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
-    private final SparkFlex vortexBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
+    private final SparkFlex vortexManipTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
+    private final SparkFlex vortexManipBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
 
-    private final SparkMax ejector = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
+    private final SparkMax neoFlipper = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
 
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
 
-    private final TalonFX falcon = new TalonFX(Constants.FEEDER_FALCON_ID);
+    private final TalonFX falconFeeder = new TalonFX(Constants.FEEDER_FALCON_ID);
 
     private TunableNumber outTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
     private TunableNumber outBottomVolts = new TunableNumber("coral", "out_bottom_volts",
@@ -45,86 +44,82 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber unfeedVolts = new TunableNumber("unfeed", "unfeed_volts", CoralConstants.UNFEED_VOLTS);
 
     public CoralSubsystem() {
-        vortexTop.configure(
+        vortexManipTop.configure(
                 new SparkFlexConfig().inverted(false).idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        vortexBottom.configure(
+        vortexManipBottom.configure(
                 new SparkFlexConfig().inverted(true).idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        ejector.configure(
+        neoFlipper.configure(
                 new SparkMaxConfig().idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        falconFeeder.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     }
 
     private void intakeTop() {
-        vortexTop.setVoltage(inTopVolts.get());
+        vortexManipTop.setVoltage(inTopVolts.get());
     }
 
     private void intakeBottom() {
-        vortexBottom.setVoltage(inBottomVolts.get());
+        vortexManipBottom.setVoltage(inBottomVolts.get());
     }
 
     private void outtakeTop() {
-        vortexTop.setVoltage(-inTopVolts.get());
+        vortexManipTop.setVoltage(-inTopVolts.get());
     }
 
     private void outtakeBottom() {
-        vortexBottom.setVoltage(-inBottomVolts.get());
+        vortexManipBottom.setVoltage(-inBottomVolts.get());
     }
 
     private void troughTop() {
-        vortexTop.setVoltage(outTopVolts.get());
+        vortexManipTop.setVoltage(outTopVolts.get());
     }
 
     private void troughBottom() {
-        vortexBottom.setVoltage(outBottomVolts.get());
+        vortexManipBottom.setVoltage(outBottomVolts.get());
     }
 
     private void branchTop() {
-        vortexTop.setVoltage(CoralConstants.BRANCH_TOP_VOLTS);
+        vortexManipTop.setVoltage(CoralConstants.BRANCH_TOP_VOLTS);
     }
 
     private void branchBottom() {
-        vortexBottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
+        vortexManipBottom.setVoltage(CoralConstants.BRANCH_BOTTOM_VOLTS);
     }
 
     private void stopManipulator() {
-        vortexTop.setVoltage(0);
-        vortexBottom.setVoltage(0);
+        vortexManipTop.setVoltage(0);
+        vortexManipBottom.setVoltage(0);
     }
 
     private void ejectOut() {
-        ejector.setVoltage(ejectorVolts.get());
+        neoFlipper.setVoltage(ejectorVolts.get());
     }
 
     private void ejectResetPose() {
-        ejector.setVoltage(-ejectorVolts.get());
+        neoFlipper.setVoltage(-ejectorVolts.get());
     }
 
     private void stopEject() {
-        ejector.setVoltage(0);
+        neoFlipper.setVoltage(0);
     }
 
     public void feed() {
-        falcon.setVoltage(-feederVolts.get());
+        falconFeeder.setVoltage(feederVolts.get());
     }
 
     public void unfeed() {
-<<<<<<< HEAD
-        falcon.setVoltage(unfeedVolts.get());
-=======
-        falcon.setVoltage(feederVolts.get());
->>>>>>> 9abd49af487456aff5e86fbafd5839209065485b
+        falconFeeder.setVoltage(-unfeedVolts.get());
     }
 
     public void stopFeed() {
-        falcon.setVoltage(0);
+        falconFeeder.setVoltage(0);
     }
 
     @Override
@@ -144,48 +139,19 @@ public class CoralSubsystem extends SubsystemBase {
         return runOnce(() -> stopManipulator());
     }
 
-    // Manipulator feeds out
-    public Command simpleManipCommand() {
-        return startEnd(() -> {
-            intakeTop();
-            intakeBottom();
-        }, () -> stopManipulator());
-    }
-
-    public Command simpleFeedCommand() {
-        return startEnd(() -> feed(), () -> stopFeed());
-    }
-
-    public Command simpleEjectOutCommand() {
-        return startEnd(() -> {
-            intakeBottom();
-            ejectOut();
-        }, () -> {
-            stopManipulator();
-            stopEject();
-        });
-    }
-
     public Command simpleEjectResetCommand() {
         return startEnd(() -> ejectResetPose(), () -> stopEject());
     }
 
-    // TODO: implement beam break in hardware & find proper delay
     public Command feedStageCommand() {
-        return runOnce(() -> feed())
-                .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-                .until(beamBreakEngaged().negate())
-                .finallyDo(() -> stopFeed());
-    }
-
-    public Command outtakeCommand() {
-        return startEnd(() -> {
-            outtakeTop();
-            outtakeBottom();
-            unfeed();
+        return startRun(() -> {
+            feed();
+            // intakeTop();
+            // intakeBottom();
         }, () -> {
+        }).until(beamBreakEngaged().negate()).finallyDo(() -> {
             stopFeed();
-            stopManipulator();
+            // stopManipulator();
         });
     }
 
@@ -219,15 +185,6 @@ public class CoralSubsystem extends SubsystemBase {
             stopManipulator();
         }));
     }
-<<<<<<< HEAD
-=======
-
-    public Command outtakeCommand() {
-        return startEnd(() -> {
-            outtakeTop();
-            outtakeBottom();
-        }, () -> stopManipulator());
-    }
 
     public Command unfeedCommand() {
         return startEnd(() -> {
@@ -239,5 +196,4 @@ public class CoralSubsystem extends SubsystemBase {
             stopFeed();
         });
     }
->>>>>>> 9abd49af487456aff5e86fbafd5839209065485b
 }

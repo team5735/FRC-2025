@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.constants.ReefAprilTagPositions;
-import frc.robot.util.ReefAlignment;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -164,18 +162,6 @@ public class Telemetry {
         }
 
         sendableField.setRobotPose(state.Pose);
-        int id = 17;
-        for (Pose2d tag : ReefAprilTagPositions.TAGS) {
-            sendableField.getObject("Tag " + id + " Prepose").setPose(
-                    new Pose2d(
-                            ReefAlignment.ALGAE.preAlignmentPosition(tag),
-                            tag.getRotation()));
-            sendableField.getObject("Tag" + id + "Scorepose").setPose(
-                    new Pose2d(
-                            ReefAlignment.ALGAE.scoringPosition(tag),
-                            tag.getRotation()));
-            id++;
-        }
         SmartDashboard.putData(sendableField);
 
         SmartDashboard.putData("Swerve State", sendableState);

@@ -11,7 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
@@ -104,7 +104,7 @@ public class RobotContainer {
                 .whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT)
                         .alongWith(LEDs.colorPathingCommand()).andThen(LEDs.colorPathEndCommand()));
 
-        subsystemController.a().onTrue(coraler.simpleEjectOutCommand().withDeadline(new WaitCommand(1)));
+        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
@@ -125,8 +125,13 @@ public class RobotContainer {
         // subsystemController.y().whileTrue(coraler.l4BranchCommand());
 
         // TODO test feed delay
-        subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
-        subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
+        // subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
+        // subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
+
+        subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
+        subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
+
+        subsystemController.y().onTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
 
         // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
         // ReefAlignment.ALGAE));
