@@ -2,9 +2,12 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -58,6 +61,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
+
         resetMeasurement();
 
         SmartDashboard.putNumber("Elevator/PosMeters", ElevatorConstants.BASE_HEIGHT.in(Meters));
@@ -71,7 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
         SmartDashboard.putNumber("Elevator/HeightTargetFeet", ElevatorConstants.BASE_HEIGHT.in(Units.Feet));
 
-        pid.setTolerance(0.02);
+        pid.setTolerance(0.02); // 2cm
 
         this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
     }
@@ -83,13 +87,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
-        SmartDashboard.putNumber("Elevator/PosFeet", getPosition().in(Feet));
-        SmartDashboard.putNumber("Elevator/EncoderRots", encoder.get());
+        SmartDashboard.putNumber("Elevator/PosInches", getPosition().in(Inches));
+        SmartDashboard.putNumber("Elevator/EncoderRots", krakenRight.getPosition().getValue().in(Rotations));
+        // SmartDashboard.putNumber("Elevator/RawEncoderRots", encoder.get());
         SmartDashboard.putNumber(
                 "Elevator/VelocityMPS",
-                FeetPerSecond.of(
+                InchesPerSecond.of(
                         krakenRight.getVelocity().getValue().in(RotationsPerSecond)
-                                * ElevatorConstants.ROTATIONS_TO_FEET)
+                                * ElevatorConstants.INCHES_PER_ROTATIONS)
                         .in(MetersPerSecond));
         SmartDashboard.putNumber("Elevator/Volts",
                 krakenRight.getMotorVoltage().getValue().in(Volts) + 0.00001 * Math.random()); // I am hacker genius
@@ -101,8 +106,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             resetMeasurement();
         }
 
-        if (getPosition().in(Meters) > ElevatorConstants.L4_HEIGHT.in(Meters)) {
-            resetMeasurement(ElevatorConstants.L4_HEIGHT);
+        if (getPosition().in(Meters) > ElevatorConstants.MAX_HEIGHT.in(Meters)) {
+            resetMeasurement(ElevatorConstants.MAX_HEIGHT);
         }
     }
 
@@ -120,7 +125,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getPosition() {
-        return Feet.of((encoder.get() - encoderOffsetRots) * ElevatorConstants.ROTATIONS_TO_FEET);
+        return Inches.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.INCHES_PER_ROTATIONS);
     }
 
     public Command toLevelCommand(ElevatorConstants.Level level) {
@@ -140,11 +145,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetMeasurement() {
-        resetMeasurement(Feet.of(0));
+        resetMeasurement(ElevatorConstants.BASE_HEIGHT);
     }
 
     public void resetMeasurement(Distance height) {
-        encoderOffsetRots = encoder.get() - height.in(Feet) / ElevatorConstants.ROTATIONS_TO_FEET;
+        krakenRight.setPosition(Rotations.of(height.in(Inches) / ElevatorConstants.INCHES_PER_ROTATIONS));
     }
 
     public void swapEnableStatus() {

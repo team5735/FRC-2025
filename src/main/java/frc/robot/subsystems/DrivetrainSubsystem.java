@@ -284,8 +284,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        logger.telemeterize(getState());
     }
 
     public final Pose2d getEstimatedPosition() {
