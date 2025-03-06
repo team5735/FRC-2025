@@ -119,16 +119,13 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings
-        // subsystemController.a().whileTrue(coraler.simpleManipCommand());
-        // subsystemController.b().whileTrue(coraler.simpleFeedCommand());
-        // subsystemController.x().whileTrue(coraler.feedToManipCommand());
-        // subsystemController.x().whileTrue(coraler.feedStageCommand());
-
+        subsystemController.a().whileTrue(coraler.simpleManipCommand());
+        subsystemController.x().whileTrue(coraler.l4BranchCommand());
         // subsystemController.y().whileTrue(coraler.l4BranchCommand());
 
         // TODO test feed delay
         // subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
-        // subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
+        subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());

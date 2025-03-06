@@ -34,10 +34,12 @@ public class CoralSubsystem extends SubsystemBase {
     private final TalonFX falconFeeder = new TalonFX(Constants.FEEDER_FALCON_ID);
 
     private TunableNumber troughTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
-    private TunableNumber troughBottomVolts = new TunableNumber("coral", "out_bottom_volts", CoralConstants.TROUGH_BOTTOM_VOLTS);
+    private TunableNumber troughBottomVolts = new TunableNumber("coral", "out_bottom_volts",
+            CoralConstants.TROUGH_BOTTOM_VOLTS);
 
     private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
-    private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts", CoralConstants.INTAKE_BOTTOM_VOLTS);
+    private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
+            CoralConstants.INTAKE_BOTTOM_VOLTS);
 
     private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECT_VOLTS);
 
@@ -61,8 +63,8 @@ public class CoralSubsystem extends SubsystemBase {
 
         falconFeeder.getConfigurator()
                 .apply(new MotorOutputConfigs()
-                .withNeutralMode(NeutralModeValue.Brake)
-                .withInverted(InvertedValue.CounterClockwise_Positive));
+                        .withNeutralMode(NeutralModeValue.Brake)
+                        .withInverted(InvertedValue.Clockwise_Positive));
     }
 
     private void intakeTop() {
@@ -139,6 +141,13 @@ public class CoralSubsystem extends SubsystemBase {
         return new Trigger(() -> !getSwitchStatus());
     }
 
+    public Command simpleManipCommand() {
+        return startEnd(() -> {
+            intakeTop();
+            intakeBottom();
+        }, () -> stopManipulator());
+    }
+
     public Command stopManipCommand() {
         return runOnce(() -> stopManipulator());
     }
@@ -148,8 +157,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command simpleFeedOutCommand() {
-        return startEnd(() -> feed()
-        , () -> stopFeed());
+        return startEnd(() -> feed(), () -> stopFeed());
     }
 
     public Command feedWithBeamCommand() {
@@ -166,8 +174,8 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command feedStageCommand() {
         return run(() -> feed())
-        .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-        .finallyDo(() -> stopFeed());
+                .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+                .finallyDo(() -> stopFeed());
     }
 
     /*
@@ -194,6 +202,7 @@ public class CoralSubsystem extends SubsystemBase {
     public Command l4BranchCommand() {
         return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
             intakeTop();
+            intakeBottom();
             ejectOut();
         }, () -> {
             stopEject();
