@@ -4,15 +4,31 @@
     {
       "anchor": {
         "x": 8.0,
-        "y": 7.25
+        "y": 5.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.376388252393674,
-        "y": 7.42480598443318
+        "x": 7.259318181818182,
+        "y": 4.149644886363635
       },
       "isLocked": false,
-      "linkedName": "P1"
+      "linkedName": "P3"
+    },
+    {
+      "anchor": {
+        "x": 5.743636363636364,
+        "y": 2.7835369318181815
+      },
+      "prevControl": {
+        "x": 6.511448863636365,
+        "y": 3.252201704545454
+      },
+      "nextControl": {
+        "x": 4.849989495494314,
+        "y": 2.2380641681470608
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,15 +36,20 @@
         "y": 3.581264204545454
       },
       "prevControl": {
-        "x": 2.283766766020864,
-        "y": 4.957316505216094
+        "x": 2.8319318181818183,
+        "y": 2.4644460227272726
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "B9"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,7 +66,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "From P1",
+  "folder": "From P3",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
