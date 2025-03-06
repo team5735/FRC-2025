@@ -205,9 +205,9 @@ public class CoralSubsystem extends SubsystemBase {
             stopManipulator();
         }))
         .andThen(new WaitCommand(CoralConstants.FLIPPER_RESET_DELAY))
-        .andThen(startEnd(() -> flipperResetPose()
-        , () -> stopFlipper()));
-    }
+        .andThen(flipperResetCommand()).withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT); 
+        // TODO test flipper times OR create a setpoint to return to
+    } 
 
     // public Command feedWithBeamCommand() {
     //     return startRun(() -> {
