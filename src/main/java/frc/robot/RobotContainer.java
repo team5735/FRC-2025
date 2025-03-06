@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
@@ -122,8 +120,9 @@ public class RobotContainer {
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
-        subsystemController.x().whileTrue(coraler.l4BranchCommand());
-        // subsystemController.y().whileTrue(coraler.l4BranchCommand());
+        subsystemController.b().whileTrue(coraler.unfeedCommand());
+        subsystemController.x().onTrue(coraler.l4BranchCommand());
+        subsystemController.y().onTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
 
         // TODO test feed delay
         // subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
@@ -131,9 +130,6 @@ public class RobotContainer {
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
-
-        subsystemController.y().onTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
-        subsystemController.b().whileTrue(coraler.unfeedCommand());
 
         // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
         // ReefAlignment.ALGAE));

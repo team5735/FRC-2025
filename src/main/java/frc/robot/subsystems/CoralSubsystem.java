@@ -16,6 +16,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -175,6 +177,10 @@ public class CoralSubsystem extends SubsystemBase {
         return runOnce(() -> stopManipulator());
     }
 
+    public Command flipOutCommand() {
+        return startEnd(() -> flipOut(), () -> stopFlipper());
+    }
+
     public Command flipperResetCommand() {
         return startEnd(() -> flipperResetPose(), () -> stopFlipper());
     }
@@ -194,31 +200,29 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command l4BranchCommand() {
-        return branchCommand()
-        .withTimeout(CoralConstants.L4_EJECTION_TIMEOUT)
-        .andThen(startEnd(() -> {
-            intakeTop();
-            intakeBottom();
-            flipOut();
-        }, () -> {
-            stopFlipper();
-            stopManipulator();
-        }))
-        .andThen(new WaitCommand(CoralConstants.FLIPPER_RESET_DELAY))
-        .andThen(flipperResetCommand()).withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT); 
-        // TODO test flipper times OR create a setpoint to return to
-    } 
+        return new SequentialCommandGroup(branchCommand(),
+                Commands.waitTime(CoralConstants.L4_EJECTION_TIMEOUT), startEnd(() -> {
+                    intakeTop();
+                    intakeBottom();
+                    flipOut();
+                }, () -> {
+                    stopFlipper();
+                    stopManipulator();
+                }).withTimeout(CoralConstants.L4_EJECTION_TIMEOUT),
+                new WaitCommand(CoralConstants.FLIPPER_RESET_DELAY),
+                flipperResetCommand().withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT));
+    } // TODO test flipper times OR create a setpoint to return to
 
     // public Command feedWithBeamCommand() {
-    //     return startRun(() -> {
-    //         feed();
-    //         // intakeTop();
-    //         // intakeBottom();
-    //     }, () -> {
-    //     }).until(beamBreakEngaged().negate()).finallyDo(() -> {
-    //         stopFeed();
-    //         // stopManipulator();
-    //     });
+    // return startRun(() -> {
+    // feed();
+    // // intakeTop();
+    // // intakeBottom();
+    // }, () -> {
+    // }).until(beamBreakEngaged().negate()).finallyDo(() -> {
+    // stopFeed();
+    // // stopManipulator();
+    // });
     // }
 
 }
