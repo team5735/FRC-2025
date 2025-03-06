@@ -23,6 +23,7 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -56,6 +57,7 @@ public class RobotContainer {
 
     private AlgaeSubsystem algaer = new AlgaeSubsystem();
     private CoralSubsystem coraler = new CoralSubsystem();
+    private CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
