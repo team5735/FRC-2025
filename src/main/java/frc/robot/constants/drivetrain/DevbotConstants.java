@@ -35,17 +35,17 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public Distance getRobotTotalWidth() {
-        return Inches.of(30);
+        return Inches.of(30).plus(getBumperWidth().times(2));
     }
 
     @Override
     public Distance getRobotTotalLength() {
-        return Inches.of(30);
+        return Inches.of(30).plus(getBumperWidth().times(2));
     }
 
     @Override
     public Distance getPigeonToRobotFront() {
-        return Inches.of(17.5);
+        return Inches.of(16).plus(getBumperWidth());
     }
 
     @Override
@@ -145,5 +145,9 @@ public class DevbotConstants implements DrivetrainConstants {
     @Override
     public double getSlowMultiplier() {
         return 0.25;
+    }
+
+    public Distance getBumperWidth() {
+        return Inches.of(3.5);
     }
 }

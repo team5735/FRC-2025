@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -144,5 +143,9 @@ public class CompbotConstants implements DrivetrainConstants {
     @Override
     public double getSlowMultiplier() {
         return 0.25;
+    }
+
+    public Distance getBumperWidth() {
+        return Inches.of(3.5); // TODO
     }
 }

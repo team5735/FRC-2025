@@ -1,10 +1,12 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
 
 public class ReefAprilTagPositions {
@@ -66,6 +68,9 @@ public class ReefAprilTagPositions {
         return new Pose2d(trans, in.getRotation());
     }
 
+    private static final StructPublisher<Pose2d> closestPosePublisher = NetworkTableInstance.getDefault()
+            .getTable("sections").getSubTable("closestTag").getStructTopic("pos", Pose2d.struct).publish();
+
     /**
      * Returns the pose of the tag closest to the given position.
      *
@@ -78,18 +83,18 @@ public class ReefAprilTagPositions {
         }
         System.out.println("searching for closest tag to (x, y) = (" + position.getX() + ", " + position.getY() + ")");
 
-        double closest_distance_so_far = Double.MAX_VALUE;
+        double closestDistanceSoFar = Double.MAX_VALUE;
         Pose2d best = null;
         for (Pose2d tag : TAGS) {
             double dist = tag.getTranslation().getDistance(position);
-            if (dist < closest_distance_so_far) {
+            if (dist < closestDistanceSoFar) {
                 best = tag;
-                closest_distance_so_far = dist;
+                closestDistanceSoFar = dist;
             }
         }
+        closestPosePublisher.accept(best);
         return best;
     }
 
-    // TODO: find actual distance
-    public static final Distance DISTANCE_BETWEEN_BRANCHES = Meters.of(0);
+    public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); // exact from field diagram
 }
