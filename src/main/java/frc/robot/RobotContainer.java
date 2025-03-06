@@ -106,6 +106,8 @@ public class RobotContainer {
 
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
+        driveController.start().whileTrue(elevator.toLevelCommand(Level.SMARTDASHBOARD));
+
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
         // driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () ->

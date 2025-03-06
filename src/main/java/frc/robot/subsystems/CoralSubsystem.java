@@ -115,7 +115,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void unfeed() {
-        falconFeeder.setVoltage(-unfeedVolts.get());
+        falconFeeder.setVoltage(unfeedVolts.get());
     }
 
     public void stopFeed() {

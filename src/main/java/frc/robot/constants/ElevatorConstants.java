@@ -26,13 +26,14 @@ public class ElevatorConstants {
     public static final double KA = 3.1202;
     public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1);
     public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(1.25);
-    public static final double ROTATIONS_TO_FEET = 1 / 15.586;
-    public static final Distance BASE_HEIGHT = Feet.of(0);
+    public static final double INCHES_PER_ROTATIONS = 0.80474;
+    public static final Distance BASE_HEIGHT = Inches.of(1.375);
     public static final Distance L1_HEIGHT = Inches.of(10);
     public static final Distance L2_HEIGHT = Inches.of(18.25);
     public static final Distance L3_HEIGHT = Inches.of(24.25);
     public static final Distance L4_HEIGHT = Inches.of(53.5);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
+    public static final Distance MAX_HEIGHT = Inches.of(53.25);
 
     public enum Level {
         BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kAliceBlue),
