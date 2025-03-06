@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -31,16 +33,15 @@ public class CoralSubsystem extends SubsystemBase {
 
     private final TalonFX falconFeeder = new TalonFX(Constants.FEEDER_FALCON_ID);
 
-    private TunableNumber outTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
-    private TunableNumber outBottomVolts = new TunableNumber("coral", "out_bottom_volts",
-            CoralConstants.TROUGH_BOTTOM_VOLTS);
+    private TunableNumber troughTopVolts = new TunableNumber("coral", "out_top_volts", CoralConstants.TROUGH_TOP_VOLTS);
+    private TunableNumber troughBottomVolts = new TunableNumber("coral", "out_bottom_volts", CoralConstants.TROUGH_BOTTOM_VOLTS);
+
     private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
-    private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts",
-            CoralConstants.INTAKE_BOTTOM_VOLTS);
+    private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts", CoralConstants.INTAKE_BOTTOM_VOLTS);
 
     private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECT_VOLTS);
 
-    private TunableNumber feederVolts = new TunableNumber("feed", "feed_volts", CoralConstants.FEEDER_VOLTS);
+    private TunableNumber feedVolts = new TunableNumber("feed", "feed_volts", CoralConstants.FEEDER_VOLTS);
     private TunableNumber unfeedVolts = new TunableNumber("unfeed", "unfeed_volts", CoralConstants.UNFEED_VOLTS);
 
     public CoralSubsystem() {
@@ -58,7 +59,10 @@ public class CoralSubsystem extends SubsystemBase {
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        falconFeeder.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        falconFeeder.getConfigurator()
+                .apply(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake)
+                .withInverted(InvertedValue.CounterClockwise_Positive));
     }
 
     private void intakeTop() {
@@ -78,11 +82,11 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     private void troughTop() {
-        vortexManipTop.setVoltage(outTopVolts.get());
+        vortexManipTop.setVoltage(troughTopVolts.get());
     }
 
     private void troughBottom() {
-        vortexManipBottom.setVoltage(outBottomVolts.get());
+        vortexManipBottom.setVoltage(troughBottomVolts.get());
     }
 
     private void branchTop() {
@@ -111,7 +115,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public void feed() {
-        falconFeeder.setVoltage(feederVolts.get());
+        falconFeeder.setVoltage(feedVolts.get());
     }
 
     public void unfeed() {
@@ -143,7 +147,12 @@ public class CoralSubsystem extends SubsystemBase {
         return startEnd(() -> ejectResetPose(), () -> stopEject());
     }
 
-    public Command feedStageCommand() {
+    public Command simpleFeedOutCommand() {
+        return startEnd(() -> feed()
+        , () -> stopFeed());
+    }
+
+    public Command feedWithBeamCommand() {
         return startRun(() -> {
             feed();
             // intakeTop();
@@ -153,6 +162,12 @@ public class CoralSubsystem extends SubsystemBase {
             stopFeed();
             // stopManipulator();
         });
+    }
+
+    public Command feedStageCommand() {
+        return run(() -> feed())
+        .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+        .finallyDo(() -> stopFeed());
     }
 
     /*
