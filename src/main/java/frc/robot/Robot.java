@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
 
-        RobotContainer.coraler.simpleEjectResetCommand().schedule();
+        RobotContainer.coraler.flipperResetCommand().schedule();
     }
 
     @Override

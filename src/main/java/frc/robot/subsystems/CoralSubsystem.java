@@ -39,7 +39,7 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber inTopVolts = new TunableNumber("coral", "in_top_volts", CoralConstants.INTAKE_TOP_VOLTS);
     private TunableNumber inBottomVolts = new TunableNumber("coral", "in_bottom_volts", CoralConstants.INTAKE_BOTTOM_VOLTS);
 
-    private TunableNumber ejectorVolts = new TunableNumber("coral", "ejector_volts", CoralConstants.EJECT_VOLTS);
+    private TunableNumber flipperVolts = new TunableNumber("coral", "flipper_volts", CoralConstants.FLIPPER_VOLTS);
 
     private TunableNumber feedVolts = new TunableNumber("feed", "feed_volts", CoralConstants.FEEDER_VOLTS);
     private TunableNumber unfeedVolts = new TunableNumber("unfeed", "unfeed_volts", CoralConstants.UNFEED_VOLTS);
@@ -102,15 +102,15 @@ public class CoralSubsystem extends SubsystemBase {
         vortexManipBottom.setVoltage(0);
     }
 
-    private void ejectOut() {
-        neoFlipper.setVoltage(ejectorVolts.get());
+    private void flipOut() {
+        neoFlipper.setVoltage(flipperVolts.get());
     }
 
-    private void ejectResetPose() {
-        neoFlipper.setVoltage(-ejectorVolts.get());
+    private void flipperResetPose() {
+        neoFlipper.setVoltage(-flipperVolts.get());
     }
 
-    private void stopEject() {
+    private void stopFlipper() {
         neoFlipper.setVoltage(0);
     }
 
@@ -139,12 +139,14 @@ public class CoralSubsystem extends SubsystemBase {
         return new Trigger(() -> !getSwitchStatus());
     }
 
+    // COMMANDS:
+
     public Command stopManipCommand() {
         return runOnce(() -> stopManipulator());
     }
 
-    public Command simpleEjectResetCommand() {
-        return startEnd(() -> ejectResetPose(), () -> stopEject());
+    public Command flipperResetCommand() {
+        return startEnd(() -> flipperResetPose(), () -> stopFlipper());
     }
 
     public Command simpleFeedOutCommand() {
@@ -152,30 +154,11 @@ public class CoralSubsystem extends SubsystemBase {
         , () -> stopFeed());
     }
 
-    public Command feedWithBeamCommand() {
-        return startRun(() -> {
-            feed();
-            // intakeTop();
-            // intakeBottom();
-        }, () -> {
-        }).until(beamBreakEngaged().negate()).finallyDo(() -> {
-            stopFeed();
-            // stopManipulator();
-        });
-    }
-
     public Command feedStageCommand() {
         return run(() -> feed())
         .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
         .finallyDo(() -> stopFeed());
     }
-
-    /*
-     * TODO: fix feedToManipCommand to execute the following
-     * Stage 1: beam engaged, feeder starts running
-     * Stage 2: beam broken, add a beam delay
-     * stage 3: beam engaged, feeder stops
-     */
 
     public Command troughCommand() {
         return startEnd(() -> {
@@ -194,9 +177,9 @@ public class CoralSubsystem extends SubsystemBase {
     public Command l4BranchCommand() {
         return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
             intakeTop();
-            ejectOut();
+            flipOut();
         }, () -> {
-            stopEject();
+            stopFlipper();
             stopManipulator();
         }));
     }
@@ -211,4 +194,17 @@ public class CoralSubsystem extends SubsystemBase {
             stopFeed();
         });
     }
+
+    // public Command feedWithBeamCommand() {
+    //     return startRun(() -> {
+    //         feed();
+    //         // intakeTop();
+    //         // intakeBottom();
+    //     }, () -> {
+    //     }).until(beamBreakEngaged().negate()).finallyDo(() -> {
+    //         stopFeed();
+    //         // stopManipulator();
+    //     });
+    // }
+
 }

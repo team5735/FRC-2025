@@ -87,13 +87,13 @@ public class RobotContainer {
         // drivecontroller.b() slow mode
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driveController.leftBumper().whileTrue(coraler.feedStageCommand());
+        driveController.leftBumper().onTrue(coraler.feedStageCommand());
         driveController.rightBumper().whileTrue(coraler.unfeedCommand());
 
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
         driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
         driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
 
         // driveController.povUp().and(driveController.x()) align to source
         driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));
