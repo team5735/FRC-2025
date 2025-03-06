@@ -27,7 +27,7 @@ public class ElevatorConstants {
     public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1);
     public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(1.25);
     public static final double INCHES_PER_ROTATIONS = 0.80474;
-    public static final Distance BASE_HEIGHT = Inches.of(1.375);
+    public static final Distance BASE_HEIGHT = Inches.of(0);
     public static final Distance L1_HEIGHT = Inches.of(10);
     public static final Distance L2_HEIGHT = Inches.of(18.25);
     public static final Distance L3_HEIGHT = Inches.of(24.25);
