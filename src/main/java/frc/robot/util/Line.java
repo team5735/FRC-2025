@@ -28,21 +28,13 @@ public class Line {
      * Modifies the current line, moving it in the direction by d
      * units.
      * 
-     * <p>
-     * I know you can do the same thing with the constructor Translation2d(double,
-     * Rotation2d), but this is easier to check and more descriptive.
-     * 
-     * deltaVectorTheta is the angle of the vector between the old and new center
-     * points for the Line.
-     * 
      * @return this Line
      */
     public Line offsetBy(double d) {
-        double deltaVectorTheta = Math.atan(slope) + Math.PI / 2;
-        double deltaX = Math.cos(deltaVectorTheta) * d;
-        double deltaY = Math.sin(deltaVectorTheta) * d;
-        this.centerX += deltaX;
-        this.centerY += deltaY;
+        Translation2d trans = new Translation2d(d,
+                Rotation2d.fromRadians(Math.atan(slope)).plus(Rotation2d.kCCW_90deg));
+        this.centerX += trans.getX();
+        this.centerY += trans.getY();
 
         doubles.set("centerX", centerX);
         doubles.set("centerY", centerY);

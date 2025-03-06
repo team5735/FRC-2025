@@ -52,4 +52,6 @@ public interface DrivetrainConstants {
     public Translation2d getPigeonToCenterOfRotation();
 
     public double getSlowMultiplier();
+
+    public Distance getBumperWidth();
 }

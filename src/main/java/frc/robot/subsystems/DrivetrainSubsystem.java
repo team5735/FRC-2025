@@ -45,13 +45,13 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public static final DrivetrainConstants CONSTANTS;
 
     static {
-        switch (Constants.ROBOT_DRIVETRAIN) {
-            case DEVBOT:
-                CONSTANTS = new DevbotConstants();
-                break;
+        switch (Constants.DRIVETRAIN_TYPE) {
             case COMPBOT:
-            default:
                 CONSTANTS = new CompbotConstants();
+                break;
+            case DEVBOT:
+            default:
+                CONSTANTS = new DevbotConstants();
                 break;
         }
     }

@@ -7,12 +7,16 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants.Level;
@@ -23,6 +27,7 @@ import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
@@ -39,19 +44,17 @@ public class RobotContainer {
     public static final DrivetrainSubsystem drivetrain;
 
     static {
-        switch (Constants.ROBOT_DRIVETRAIN) {
+        switch (Constants.DRIVETRAIN_TYPE) {
             case DEVBOT:
                 drivetrain = DevbotTunerConstants.createDrivetrain();
                 break;
             case COMPBOT:
             default:
                 drivetrain = CompbotTunerConstants.createDrivetrain();
-                System.out.println("Making proper drivetrain");
                 break;
         }
     }
-    // private static final VisionSubsystem vision = new
-    // VisionSubsystem(drivetrain);
+    private static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
     public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
     public static final CoralSubsystem coraler = new CoralSubsystem();
@@ -62,13 +65,19 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
 
         SmartDashboard.putData("Choose an Auto", autoChooser);
+        PathfindingCommand.warmupCommand().schedule();
+        DriverStation.silenceJoystickConnectionWarning(true);
+        vision.scheduleWaitForApriltagCommand();
         configureBindings();
     }
+
+    private boolean movingForward = false;
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
+                // Drivetrain will execute this command periodically
                 drivetrain.joystickDriveCommand(
                         () -> driveController.getLeftX(),
                         () -> driveController.getLeftY(),
@@ -110,11 +119,22 @@ public class RobotContainer {
 
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
-        // driveController.x().whileTrue(new AlignToReef(drivetrain, vision, () ->
-        // ReefAlignment.ALGAE));
-        // driveController.y().onTrue(Commands.runOnce(() -> {
-        // vision.seedPigeon();
-        // }));
+        driveController.x()
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
+        driveController.a()
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
+        driveController.povDown()
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.ALGAE, () -> movingForward));
+        driveController.y().onTrue(Commands.runOnce(() -> {
+            vision.seedPigeon();
+        }));
+
+        driveController.b().whileTrue(new FunctionalCommand(() -> {
+            movingForward = true;
+        }, () -> {
+        }, (cancelled) -> {
+            movingForward = false;
+        }, () -> false));
 
         // reset the field-centric heading on left bumper press
 
