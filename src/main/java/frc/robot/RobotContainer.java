@@ -125,7 +125,7 @@ public class RobotContainer {
 
         // TODO test feed delay
         // subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
-        subsystemController.rightBumper().whileTrue(coraler.simpleEjectResetCommand());
+        subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());

@@ -143,6 +143,27 @@ public class CoralSubsystem extends SubsystemBase {
 
     // COMMANDS:
 
+    public Command simpleFeedOutCommand() {
+        return startEnd(() -> feed(), () -> stopFeed());
+    }
+
+    public Command feedStageCommand() {
+        return run(() -> feed())
+                .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
+                .finallyDo(() -> stopFeed());
+    }
+
+    public Command unfeedCommand() {
+        return startEnd(() -> {
+            outtakeTop();
+            outtakeBottom();
+            unfeed();
+        }, () -> {
+            stopManipulator();
+            stopFeed();
+        });
+    }
+
     public Command simpleManipCommand() {
         return startEnd(() -> {
             intakeTop();
@@ -156,16 +177,6 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command flipperResetCommand() {
         return startEnd(() -> flipperResetPose(), () -> stopFlipper());
-    }
-
-    public Command simpleFeedOutCommand() {
-        return startEnd(() -> feed(), () -> stopFeed());
-    }
-
-    public Command feedStageCommand() {
-        return run(() -> feed())
-                .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-                .finallyDo(() -> stopFeed());
     }
 
     public Command troughCommand() {
@@ -183,25 +194,19 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     public Command l4BranchCommand() {
-        return branchCommand().withTimeout(CoralConstants.L4_EJECTION_TIMEOUT).andThen(startEnd(() -> {
+        return branchCommand()
+        .withTimeout(CoralConstants.L4_EJECTION_TIMEOUT)
+        .andThen(startEnd(() -> {
             intakeTop();
             intakeBottom();
             flipOut();
         }, () -> {
             stopFlipper();
             stopManipulator();
-        }));
-    }
-
-    public Command unfeedCommand() {
-        return startEnd(() -> {
-            outtakeTop();
-            outtakeBottom();
-            unfeed();
-        }, () -> {
-            stopManipulator();
-            stopFeed();
-        });
+        }))
+        .andThen(new WaitCommand(CoralConstants.FLIPPER_RESET_DELAY))
+        .andThen(startEnd(() -> flipperResetPose()
+        , () -> stopFlipper()));
     }
 
     // public Command feedWithBeamCommand() {
