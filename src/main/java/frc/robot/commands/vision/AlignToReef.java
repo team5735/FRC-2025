@@ -39,12 +39,15 @@ public class AlignToReef extends Command {
 
     private ReefAlignment whichBranch;
 
+    private VisionSubsystem vision;
+
     /**
      * Positions the robot in order to score a coral.
      */
     public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, ReefAlignment whichBranch,
             Supplier<Boolean> movingForward) {
         this.drivetrain = drivetrain;
+        this.vision = vision;
         this.whichBranch = whichBranch;
         this.movingForward = movingForward;
         addRequirements(drivetrain, vision);
@@ -58,6 +61,8 @@ public class AlignToReef extends Command {
 
         omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.05);
         lineController.setup(0, .01); // we want to be 'at' the Line.
+
+        vision.seedPigeon();
 
         SmartDashboard.putBoolean("aligning", true);
     }
