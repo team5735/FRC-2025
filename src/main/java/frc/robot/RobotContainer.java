@@ -92,24 +92,25 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
-        // drivecontroller.b() slow mode anddriving forward
+        // drivecontroller.b() slow mode and driving forward
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driveController.x().whileTrue(drivetrain.run(() -> drivetrain.pidDrive(1, 0, 0)));
 
-        driveController.leftBumper().onTrue(coraler.feedStageCommand());
-        driveController.rightBumper().whileTrue(coraler.unfeedCommand());
+        driveController.leftBumper().whileTrue(coraler.unfeedCommand());
+        driveController.rightBumper().onTrue(coraler.feedStageCommand());
 
-        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L1, coraler));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L2, coraler));
-        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L3, coraler));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L4, coraler));
+        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
 
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
-        driveController.start().whileTrue(elevator.toLevelCommand(Level.SMARTDASHBOARD));
+        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
 
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
-        driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povDown().onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft()
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
         driveController.povRight()
@@ -126,12 +127,12 @@ public class RobotContainer {
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
-        subsystemController.b().whileTrue(coraler.unfeedCommand());
-        subsystemController.x().onTrue(coraler.l4BranchCommand());
-        subsystemController.y().onTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
+        subsystemController.b().whileTrue(coraler.branchCommand());
+        subsystemController.x().whileTrue(coraler.l4BranchCommand());
+        subsystemController.y().whileTrue(coraler.troughCommand());
 
         // TODO test feed delay
-        // subsystemController.leftBumper().whileTrue(coraler.simpleEjectOutCommand());
+        subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
         subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
