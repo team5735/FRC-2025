@@ -34,7 +34,6 @@ import frc.robot.Telemetry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
-import frc.robot.constants.drivetrain.DevbotConstants;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
@@ -45,15 +44,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public static final DrivetrainConstants CONSTANTS;
 
     static {
-        switch (Constants.DRIVETRAIN_TYPE) {
-            case COMPBOT:
-                CONSTANTS = new CompbotConstants();
-                break;
-            case DEVBOT:
-            default:
-                CONSTANTS = new DevbotConstants();
-                break;
-        }
+        CONSTANTS = new CompbotConstants();
     }
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
