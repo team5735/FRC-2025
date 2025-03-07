@@ -80,9 +80,7 @@ public class RobotContainer {
         commandsForAuto.put("l4", elevator.toLevelCommand(Level.L1));
 
         commandsForAuto.put("intake", coraler.feedStageCommand());
-        commandsForAuto.put("outtakeTrough", coraler.unfeedCommand()).withTimeout(Seconds.of(1.5));
-
-        commandsForAuto.put("", getAutonomousCommand());
+        commandsForAuto.put("outtakeTrough", coraler.unfeedCommand().withTimeout(Seconds.of(1.5)));
 
         NamedCommands.registerCommands(commandsForAuto);
 
