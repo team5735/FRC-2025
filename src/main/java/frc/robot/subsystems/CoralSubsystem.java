@@ -213,6 +213,21 @@ public class CoralSubsystem extends SubsystemBase {
                 flipperResetCommand().withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT));
     } // TODO test flipper times OR create a setpoint to return to
 
+
+    public Command outputBasedOnLevel(ElevatorSubsystem elevator){
+        switch(elevator.getActiveLevel()){
+            case L1:
+                return troughCommand().withTimeout(CoralConstants.TROUGH_TIMEOUT);
+            case L2:
+            case L3:
+                return branchCommand().withTimeout(CoralConstants.BRANCH_TIMEOUT);
+            case L4:
+                return l4BranchCommand();
+            case BASE:
+            default:
+                return Commands.none();
+        }
+    }
     // public Command feedWithBeamCommand() {
     // return startRun(() -> {
     // feed();

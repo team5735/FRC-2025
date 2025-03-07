@@ -99,10 +99,10 @@ public class RobotContainer {
         driveController.leftBumper().onTrue(coraler.feedStageCommand());
         driveController.rightBumper().whileTrue(coraler.unfeedCommand());
 
-        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
-        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L1, coraler));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L2, coraler));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L3, coraler));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L4, coraler));
 
         // driveController.povUp().and(driveController.x()) align to source
         driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));

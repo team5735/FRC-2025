@@ -167,4 +167,15 @@ public class ElevatorSubsystem extends SubsystemBase {
             enabled = false;
         }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
+
+    public Level getActiveLevel(){
+        return activeLevel;
+
+
+    }
+
+    public Command toLevelAndCoral(Level level, CoralSubsystem coral){
+        return toLevelCommand(level).until(() -> pid.atGoal())
+            .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(this));
+    }
 }
