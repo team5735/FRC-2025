@@ -11,8 +11,8 @@ import edu.wpi.first.units.measure.Distance;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public enum ReefAlignment {
-    LEFT(Inches.of(1)),
-    RIGHT(Inches.of(-14)),
+    LEFT(Inches.of(0)),
+    RIGHT(Inches.of(-16)),
     ALGAE(Meters.of(0));
 
     private Distance parallel;

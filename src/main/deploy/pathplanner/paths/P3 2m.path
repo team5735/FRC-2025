@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.040250000000001,
-        "y": 1.5124999999999993
+        "x": 6.25,
+        "y": 2.0
       },
       "isLocked": false,
       "linkedName": "P3"
     },
     {
       "anchor": {
-        "x": 5.8305,
-        "y": 4.444249999999999
+        "x": 5.25,
+        "y": 2.0
       },
       "prevControl": {
-        "x": 6.122999999999999,
-        "y": 4.532
+        "x": 6.25,
+        "y": 1.9999999999999998
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "B3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

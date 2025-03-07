@@ -59,7 +59,7 @@ public class AlignToReef extends Command {
                 .getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
         this.targetLine = new Line(alignmentTargetTag, "AlignToReef").offsetBy(whichBranch.getParallel().in(Meters));
 
-        omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.05);
+        omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
         lineController.setup(0, .01); // we want to be 'at' the Line.
 
         vision.seedPigeon();
@@ -82,7 +82,7 @@ public class AlignToReef extends Command {
         doubles.set("deltaX", drivetrainMovement.getX());
         doubles.set("deltaY", drivetrainMovement.getY());
 
-        if (movingForward.get()) {
+        if (lineController.getController().getError() < 0.05 && lineController.getController().getError() < 0.02) {
             drivetrainMovement = drivetrainMovement
                     .plus(targetLine.getVectorAlongLine().times(VisionConstants.ALONG_LINE_SPEED));
         }

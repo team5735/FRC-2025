@@ -5,8 +5,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -61,6 +66,26 @@ public class RobotContainer {
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
+        Map<String, Command> commandsForAuto = new HashMap<>();
+
+        commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));
+        commandsForAuto.put("l2AndScore", elevator.toLevelAndCoral(Level.L2, coraler));
+        commandsForAuto.put("l3AndScore", elevator.toLevelAndCoral(Level.L3, coraler));
+        commandsForAuto.put("l4AndScore", elevator.toLevelAndCoral(Level.L4, coraler));
+
+        commandsForAuto.put("elevatorBase", elevator.toLevelCommand(Level.BASE));
+        commandsForAuto.put("l1", elevator.toLevelCommand(Level.L1));
+        commandsForAuto.put("l2", elevator.toLevelCommand(Level.L1));
+        commandsForAuto.put("l3", elevator.toLevelCommand(Level.L1));
+        commandsForAuto.put("l4", elevator.toLevelCommand(Level.L1));
+
+        commandsForAuto.put("intake", coraler.feedStageCommand());
+        commandsForAuto.put("outtakeTrough", coraler.unfeedCommand()).withTimeout(Seconds.of(1.5));
+
+        commandsForAuto.put("", getAutonomousCommand());
+
+        NamedCommands.registerCommands(commandsForAuto);
+
         autoChooser = AutoBuilder.buildAutoChooser();
 
         SmartDashboard.putData("Choose an Auto", autoChooser);
@@ -91,10 +116,12 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
+        // driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for
+        // branch scoring
+        driveController.rightStick().whileTrue(coraler.branchCommand());
         // drivecontroller.b() slow mode and driving forward
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-        driveController.x().whileTrue(drivetrain.run(() -> drivetrain.pidDrive(1, 0, 0)));
+        driveController.x().whileTrue(drivetrain.brakeCommand());
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());
@@ -102,7 +129,7 @@ public class RobotContainer {
         driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
         driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
         driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        // driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
 
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
@@ -110,11 +137,12 @@ public class RobotContainer {
 
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
-        driveController.povDown().onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povLeft()
+        driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povLeft().and(driveController.a().negate())
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
-        driveController.povRight()
+        driveController.povRight().and(driveController.a().negate())
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
+        driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
         driveController.b().whileTrue(new FunctionalCommand(() -> {
             movingForward = true;
@@ -127,11 +155,10 @@ public class RobotContainer {
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
-        subsystemController.b().whileTrue(coraler.branchCommand());
+        // subsystemController.b().whileTrue(coraler.branchCommand());
         subsystemController.x().whileTrue(coraler.l4BranchCommand());
         subsystemController.y().whileTrue(coraler.troughCommand());
 
-        // TODO test feed delay
         subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
         subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
 

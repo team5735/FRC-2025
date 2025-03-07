@@ -100,6 +100,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
         SmartDashboard.putNumber("Elevator/PosSetpointMet", pid.getSetpoint().position);
         SmartDashboard.putNumber("Elevator/VelSetpointMPS", pid.getSetpoint().velocity);
+        SmartDashboard.putBoolean("Elevator/IsEnable", enabled);
         if (getPosition().in(Meters) < 0) {
             resetMeasurement();
         }
@@ -168,14 +169,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
 
-    public Level getActiveLevel(){
+    public Level getActiveLevel() {
         return activeLevel;
-
 
     }
 
-    public Command toLevelAndCoral(Level level, CoralSubsystem coral){
+    public Command toLevelAndCoral(Level level, CoralSubsystem coral) {
         return toLevelCommand(level).until(() -> pid.atGoal())
-            .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(this));
+                .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(this));
     }
 }
