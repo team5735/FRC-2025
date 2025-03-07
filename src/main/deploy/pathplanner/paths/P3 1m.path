@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 7.25,
-        "y": 6.15
+        "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.25,
-        "y": 6.15
+        "y": 2.0
       },
       "isLocked": false,
-      "linkedName": "P1"
+      "linkedName": "P3"
     },
     {
       "anchor": {
-        "x": 5.25,
-        "y": 6.15
+        "x": 6.25,
+        "y": 2.0
       },
       "prevControl": {
-        "x": 6.25,
-        "y": 6.15
+        "x": 7.25,
+        "y": 1.9999999999999998
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "From P1",
+  "folder": "From P3",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
