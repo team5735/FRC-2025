@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.AlignToReef;
-import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants.Level;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
@@ -83,7 +82,7 @@ public class RobotContainer {
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis(),
-                        () -> {
+                        () -> { // multiplier
                             if (driveController.getHID().getBButton()) {
                                 return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
                             }
@@ -93,7 +92,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for branch scoring
-        // drivecontroller.b() slow mode
+        // drivecontroller.b() slow mode anddriving forward
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         driveController.leftBumper().onTrue(coraler.feedStageCommand());
@@ -104,30 +103,17 @@ public class RobotContainer {
         driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L3, coraler));
         driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelAndCoral(Level.L4, coraler));
 
-        // driveController.povUp().and(driveController.x()) align to source
-        driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povRight().and(driveController.x())
-                .whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.RIGHT)
-                        .alongWith(LEDs.colorPathingCommand()).andThen(LEDs.colorPathEndCommand()));
-        driveController.povLeft().and(driveController.x())
-                .whileTrue(new DriveToBranch(drivetrain, () -> ReefAlignment.LEFT)
-                        .alongWith(LEDs.colorPathingCommand()).andThen(LEDs.colorPathEndCommand()));
-
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
         driveController.start().whileTrue(elevator.toLevelCommand(Level.SMARTDASHBOARD));
 
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
-        driveController.x()
+        driveController.povDown().and(driveController.x()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povLeft()
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
-        driveController.a()
+        driveController.povRight()
                 .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
-        driveController.povDown()
-                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.ALGAE, () -> movingForward));
-        driveController.y().onTrue(Commands.runOnce(() -> {
-            vision.seedPigeon();
-        }));
 
         driveController.b().whileTrue(new FunctionalCommand(() -> {
             movingForward = true;
