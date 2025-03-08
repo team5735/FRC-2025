@@ -157,14 +157,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command manualElevatorUp() {
         return startEnd(() -> {
-            krakenRight.setVoltage(1);
+            krakenRight.setVoltage(1.75);
             enabled = false;
         }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
 
     public Command manualElevatorDown() {
         return startEnd(() -> {
-            krakenRight.setVoltage(-1 + ElevatorConstants.KG);
+            krakenRight.setVoltage(-2.5 + ElevatorConstants.KG);
             enabled = false;
         }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
