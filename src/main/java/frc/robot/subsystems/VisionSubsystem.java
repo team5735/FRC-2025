@@ -51,12 +51,12 @@ public class VisionSubsystem extends SubsystemBase {
                 drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0,
                 0, 0, 0);
 
-        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight_name);
-        if (mt1 == null) {
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight_name);
+        if (mt2 == null) {
             // failed to get mt2 or it's not new
             SmartDashboard.putNumber("poseestimator_status", -1);
             return;
-        } else if (mt1.tagCount == 0) {
+        } else if (mt2.tagCount == 0) {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
             return;
@@ -69,8 +69,8 @@ public class VisionSubsystem extends SubsystemBase {
         double mt2ydev = stddevs[7];
         drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
         drivetrain.addVisionMeasurement(
-                mt1.pose,
-                mt1.timestampSeconds);
+                mt2.pose,
+                mt2.timestampSeconds);
     }
 
     private void addMt1Reading() {

@@ -165,18 +165,6 @@ public class Telemetry {
         }
 
         sendableField.setRobotPose(AutoBuilder.getCurrentPose());
-        int id = 17;
-        for (Pose2d tag : ReefAprilTagPositions.TAGS) {
-            sendableField.getObject("Tag " + id + " Prepose").setPose(
-                    new Pose2d(
-                            ReefAlignment.ALGAE.preAlignmentPosition(tag),
-                            tag.getRotation()));
-            sendableField.getObject("Tag" + id + "Scorepose").setPose(
-                    new Pose2d(
-                            ReefAlignment.ALGAE.scoringPosition(tag),
-                            tag.getRotation()));
-            id++;
-        }
         SmartDashboard.putData(sendableField);
 
         SmartDashboard.putData("Swerve State", sendableState);

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.Constants;
+import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
@@ -75,12 +76,16 @@ public class RobotContainer {
 
         commandsForAuto.put("elevatorBase", elevator.toLevelCommand(Level.BASE));
         commandsForAuto.put("l1", elevator.toLevelCommand(Level.L1));
-        commandsForAuto.put("l2", elevator.toLevelCommand(Level.L1));
-        commandsForAuto.put("l3", elevator.toLevelCommand(Level.L1));
-        commandsForAuto.put("l4", elevator.toLevelCommand(Level.L1));
+        commandsForAuto.put("l2", elevator.toLevelCommand(Level.L2));
+        commandsForAuto.put("l3", elevator.toLevelCommand(Level.L3));
+        commandsForAuto.put("l4", elevator.toLevelCommand(Level.L4));
+
+        commandsForAuto.put("troughScore", coraler.troughCommand().withTimeout(CoralConstants.TROUGH_TIMEOUT));
+        commandsForAuto.put("branchScore", coraler.branchCommand().withTimeout(CoralConstants.BRANCH_TIMEOUT));
+        commandsForAuto.put("l4Score", coraler.l4BranchCommand());
 
         commandsForAuto.put("intake", coraler.feedStageCommand());
-        commandsForAuto.put("outtakeTrough", coraler.unfeedCommand().withTimeout(Seconds.of(1.5)));
+        commandsForAuto.put("backTrough", coraler.unfeedCommand().withTimeout(Seconds.of(1.5)));
 
         NamedCommands.registerCommands(commandsForAuto);
 
@@ -136,11 +141,13 @@ public class RobotContainer {
         coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
 
         driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povLeft().and(driveController.a().negate())
-                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
-        driveController.povRight().and(driveController.a().negate())
-                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
-        driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
+        // driveController.povLeft().and(driveController.a().negate())
+        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () ->
+        // movingForward));
+        // driveController.povRight().and(driveController.a().negate())
+        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
+        // movingForward));
+        // driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
         driveController.b().whileTrue(new FunctionalCommand(() -> {
             movingForward = true;
@@ -162,9 +169,6 @@ public class RobotContainer {
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
-
-        // driveController.povDown().whileTrue(new DriveToBranch(drivetrain, () ->
-        // ReefAlignment.ALGAE));
     }
 
     public Command getAutonomousCommand() {
