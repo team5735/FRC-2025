@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.util.ReefAlignment;
 
 public class ReefAprilTagPositions {
     /**
@@ -58,6 +60,23 @@ public class ReefAprilTagPositions {
                     new Translation2d(-3.869358, -0.719482),
                     Rotation2d.fromDegrees(-60))),
     };
+
+    public static final Pose2d BRANCHES[] = new Pose2d[12];
+    static {
+        int i = 0;
+        for (Pose2d pose : TAGS) {
+            BRANCHES[i] = new Pose2d(
+                    pose.getTranslation()
+                            .plus(new Translation2d(ReefAlignment.LEFT.getParallel().in(Meters),
+                                    pose.getRotation().plus(Rotation2d.kCCW_Pi_2))),
+                    pose.getRotation());
+            BRANCHES[i++] = new Pose2d(
+                    pose.getTranslation()
+                            .plus(new Translation2d(ReefAlignment.RIGHT.getParallel().in(Meters),
+                                    pose.getRotation().plus(Rotation2d.kCW_Pi_2))),
+                    pose.getRotation());
+        }
+    }
 
     private static final double FIELD_LENGTH = 17.5483;
     private static final double FIELD_WIDTH = 8.0519;
