@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.8975,
-        "y": 3.082684659090909
+        "x": 6.34,
+        "y": 4.103
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.901665819511595,
-        "y": 3.5779801254685752
+        "x": 6.09,
+        "y": 4.103
       },
       "isLocked": false,
-      "linkedName": "P4"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.840250000000001,
+        "x": 5.8,
         "y": 4.103
       },
       "prevControl": {
-        "x": 6.921166530582658,
-        "y": 3.568753097981217
+        "x": 6.05,
+        "y": 4.103
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "From P4",
+  "folder": "Calibration",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

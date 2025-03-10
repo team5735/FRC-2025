@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,6 +68,7 @@ public class RobotContainer {
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
+        // CameraServer.startAutomaticCapture();
         Map<String, Command> commandsForAuto = new HashMap<>();
 
         commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));

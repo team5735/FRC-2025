@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7507499999999999,
-        "y": 1.3925
+        "x": 0.7117500000000001,
+        "y": 1.4217499999999996
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6964999999999986,
-        "y": 1.7629999999999997
+        "x": 1.6574999999999989,
+        "y": 1.7922499999999992
       },
       "isLocked": false,
       "linkedName": "S2.1"
     },
     {
       "anchor": {
-        "x": 3.9585000000000004,
-        "y": 2.767249999999999
+        "x": 3.9389999999999996,
+        "y": 2.80625
       },
       "prevControl": {
-        "x": 2.93475,
-        "y": 2.3284999999999987
+        "x": 2.9152499999999995,
+        "y": 2.3674999999999997
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "From S2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 144.0
+    "rotation": 54.0
   },
   "useDefaultConstraints": true
 }

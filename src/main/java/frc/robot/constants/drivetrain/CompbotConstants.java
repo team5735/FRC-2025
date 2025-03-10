@@ -92,7 +92,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public AngularVelocity getDefaultRotationalRate() {
-        return DegreesPerSecond.of(120);
+        return DegreesPerSecond.of(180);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSlowMultiplier() {
-        return 0.25;
+        return 0.15;
     }
 
     public Distance getBumperWidth() {
