@@ -89,12 +89,22 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public LinearVelocity getDefaultSpeed() {
-        return MetersPerSecond.of(4); // TODO
+        return MetersPerSecond.of(4);
+    }
+
+    @Override
+    public LinearVelocity getSlowSpeed() {
+        return MetersPerSecond.of(1);
     }
 
     @Override
     public AngularVelocity getDefaultRotationalRate() {
-        return RotationsPerSecond.of(0.25); // TODO
+        return RotationsPerSecond.of(0.25);
+    }
+
+    @Override
+    public AngularVelocity getSlowRotationalRate() {
+        return RotationsPerSecond.of(0.0625);
     }
 
     @Override
@@ -140,11 +150,6 @@ public class DevbotConstants implements DrivetrainConstants {
 
     public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(2.5), Inches.of(0));
-    }
-
-    @Override
-    public double getSlowMultiplier() {
-        return 0.25;
     }
 
     public Distance getBumperWidth() {

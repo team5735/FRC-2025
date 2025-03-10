@@ -37,7 +37,11 @@ public interface DrivetrainConstants {
 
     public LinearVelocity getDefaultSpeed();
 
+    public LinearVelocity getSlowSpeed();
+
     public AngularVelocity getDefaultRotationalRate();
+
+    public AngularVelocity getSlowRotationalRate();
 
     public Mass getRobotMass();
 
@@ -50,8 +54,6 @@ public interface DrivetrainConstants {
     public RobotConfig getConfig();
 
     public Translation2d getPigeonToCenterOfRotation();
-
-    public double getSlowMultiplier();
 
     public Distance getBumperWidth();
 }
