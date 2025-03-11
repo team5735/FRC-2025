@@ -23,12 +23,12 @@ import edu.wpi.first.units.measure.Mass;
 public class CompbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(17, 0);
+        return new PIDConstants(17.5, 0);
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(10, 0);
+        return new PIDConstants(12, 0);
     }
 
     @Override
@@ -72,17 +72,17 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSpinKs() {
-        return 0.14875;
+        return 0.16327;
     }
 
     @Override
     public double getSpinKv() {
-        return 0.79025;
+        return 0.80246;
     }
 
     @Override
     public double getSpinKa() {
-        return 0.078948;
+        return 0.165;
     }
 
     @Override

@@ -107,9 +107,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             resetMeasurement();
         }
 
-        if (getPosition().in(Meters) > ElevatorConstants.MAX_HEIGHT.in(Meters)) {
-            resetMeasurement(ElevatorConstants.MAX_HEIGHT);
-        }
+        // if (getPosition().in(Meters) > ElevatorConstants.MAX_HEIGHT.in(Meters)) {
+        // resetMeasurement(ElevatorConstants.MAX_HEIGHT);
+        // }
     }
 
     private void setPIDVolts() {
