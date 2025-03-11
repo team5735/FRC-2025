@@ -90,7 +90,7 @@ public class Telemetry {
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
 
-    private final Field2d sendableField = new Field2d();
+    public static final Field2d field = new Field2d();
 
     private final Sendable sendableState = new Sendable() {
         @Override
@@ -162,8 +162,8 @@ public class Telemetry {
             m_moduleTargetsArray[i * 2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
         }
 
-        sendableField.setRobotPose(AutoBuilder.getCurrentPose());
-        SmartDashboard.putData(sendableField);
+        field.setRobotPose(AutoBuilder.getCurrentPose());
+        SmartDashboard.putData("Field", field);
 
         SmartDashboard.putData("Swerve State", sendableState);
 

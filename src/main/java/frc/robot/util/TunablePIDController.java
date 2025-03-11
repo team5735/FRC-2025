@@ -23,12 +23,11 @@ public class TunablePIDController {
      * @param requirements      the subsystems required by this command
      */
     public TunablePIDController(
-            String name,
-            Subsystem... requirements) {
-        this(name, Constants.PID_P, Constants.PID_I, Constants.PID_D, requirements);
+            String name) {
+        this(name, Constants.PID_P, Constants.PID_I, Constants.PID_D);
     }
 
-    public TunablePIDController(String name, double _p, double _i, double _d, Subsystem... requirements) {
+    public TunablePIDController(String name, double _p, double _i, double _d) {
         p = new TunableNumber("tunable_pid_commands", name + "_p", _p);
         i = new TunableNumber("tunable_pid_commands", name + "_i", _i);
         d = new TunableNumber("tunable_pid_commands", name + "_d", _d);
