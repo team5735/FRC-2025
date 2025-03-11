@@ -91,8 +91,18 @@ public class CompbotConstants implements DrivetrainConstants {
     }
 
     @Override
+    public LinearVelocity getSlowSpeed() {
+        return MetersPerSecond.of(0.6);
+    }
+
+    @Override
     public AngularVelocity getDefaultRotationalRate() {
         return DegreesPerSecond.of(180);
+    }
+
+    @Override
+    public AngularVelocity getSlowRotationalRate() {
+        return DegreesPerSecond.of(27);
     }
 
     @Override
@@ -138,11 +148,6 @@ public class CompbotConstants implements DrivetrainConstants {
 
     public Translation2d getPigeonToCenterOfRotation() {
         return new Translation2d(Inches.of(0), Inches.of(0));
-    }
-
-    @Override
-    public double getSlowMultiplier() {
-        return 0.15;
     }
 
     public Distance getBumperWidth() {

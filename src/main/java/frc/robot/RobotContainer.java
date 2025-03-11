@@ -115,12 +115,7 @@ public class RobotContainer {
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis(),
-                        () -> { // multiplier
-                            if (driveController.getHID().getBButton()) {
-                                return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
-                            }
-                            return 1.0;
-                        }));
+                        () -> driveController.getHID().getBButton()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
