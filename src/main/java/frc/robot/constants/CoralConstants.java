@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.units.measure.Time;
 
 public class CoralConstants {
-    // TODO FIND ACTUAL VOLTAGES FOR INTAKE
-    // TODO FIND ACTUAL DELAY
     public static final double INTAKE_TOP_VOLTS = .75;
     public static final double INTAKE_BOTTOM_VOLTS = .75;
 

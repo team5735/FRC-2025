@@ -49,7 +49,7 @@ public class CompbotTunerConstants {
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
-            .withKP(1.3577).withKI(0).withKD(0)
+            .withKP(1.1).withKI(0).withKD(0)
             .withKS(0.058773).withKV(1.6217).withKA(0.78491);
 
     // The closed-loop output type to use for the steer motors;
