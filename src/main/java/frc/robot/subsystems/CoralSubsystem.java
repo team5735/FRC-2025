@@ -107,7 +107,7 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     private void flipOut() {
-        neoFlipper.setVoltage(flipperVolts.get());
+        neoFlipper.setVoltage(CoralConstants.UNFLIP_VOLTS);
     }
 
     private void flipperResetPose() {

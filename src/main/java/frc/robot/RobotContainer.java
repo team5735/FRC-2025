@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -46,6 +47,8 @@ public class RobotContainer {
     private final CommandXboxController driveController = new CommandXboxController(Constants.DRIVE_CONTROLLER_PORT);
     private final CommandXboxController subsystemController = new CommandXboxController(
             Constants.SUBSYSTEM_CONTROLLER_PORT);
+
+    private final CommandXboxController testController = new CommandXboxController(2);
 
     public static final DrivetrainSubsystem drivetrain;
 
@@ -171,6 +174,12 @@ public class RobotContainer {
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
+
+        testController.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        testController.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        testController.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        testController.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
     }
 
     public Command getAutonomousCommand() {
