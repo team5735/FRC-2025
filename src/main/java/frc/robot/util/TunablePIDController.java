@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.constants.Constants;
 
 public class TunablePIDController {

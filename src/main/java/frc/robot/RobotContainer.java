@@ -14,17 +14,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.PIDToNearestBranch;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
@@ -103,8 +100,6 @@ public class RobotContainer {
         configureBindings();
     }
 
-    private boolean movingForward = false;
-
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -145,13 +140,13 @@ public class RobotContainer {
         driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
-        driveController.b().whileTrue(new FunctionalCommand(() -> {
-            movingForward = true;
-        }, () -> {
-        }, (cancelled) -> {
-            movingForward = false;
-        }, () -> false));
-
+        // driveController.b().whileTrue(new FunctionalCommand(() -> {
+        // movingForward = true;
+        // }, () -> {
+        // }, (cancelled) -> {
+        // movingForward = false;
+        // }, () -> false));
+        //
         // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings

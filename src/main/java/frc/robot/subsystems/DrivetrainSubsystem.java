@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Telemetry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
@@ -53,8 +52,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
 
-    private Telemetry logger = new Telemetry(maxSpeed);
-
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
 
@@ -62,7 +59,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-    private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
     private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.05).withRotationalDeadband(maxAngularRate * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
