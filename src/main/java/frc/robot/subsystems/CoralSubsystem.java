@@ -232,16 +232,4 @@ public class CoralSubsystem extends SubsystemBase {
                 return Commands.none();
         }
     }
-    // public Command feedWithBeamCommand() {
-    // return startRun(() -> {
-    // feed();
-    // // intakeTop();
-    // // intakeBottom();
-    // }, () -> {
-    // }).until(beamBreakEngaged().negate()).finallyDo(() -> {
-    // stopFeed();
-    // // stopManipulator();
-    // });
-    // }
-
 }

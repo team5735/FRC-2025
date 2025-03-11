@@ -21,8 +21,8 @@ public class CoralConstants {
     public static final double FLIPPER_VOLTS = 2.0;
     public static final double UNFLIP_VOLTS = 1.5;
 
-    public static final double FEEDER_VOLTS = 2.5;
-    public static final double UNFEED_VOLTS = -3.0;
+    public static final double FEEDER_VOLTS = 0.5;
+    public static final double UNFEED_VOLTS = -1.0;
 
     public static final Time FEED_DELAY_SECONDS = Seconds.of(1.5);
     public static final Time L4_EJECTION_TIMEOUT = Seconds.of(1.5);
