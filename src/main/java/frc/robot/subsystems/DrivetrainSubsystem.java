@@ -300,12 +300,19 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             Supplier<Double> stickY,
             Supplier<Double> leftTrigger,
             Supplier<Double> rightTrigger,
-            Supplier<Double> multiplier) {
-        return applyRequest(() -> fieldCentricRequest
-                .withVelocityX(-deadband(stickY.get()) * maxSpeed * multiplier.get())
-                .withVelocityY(-deadband(stickX.get()) * maxSpeed * multiplier.get())
-                .withRotationalRate(
-                        deadband(leftTrigger.get() - rightTrigger.get()) * maxAngularRate * multiplier.get()));
+            Supplier<Boolean> isSlowMode) {
+        return applyRequest(() -> {
+            double speedMPS = (isSlowMode.get().booleanValue()) ? CONSTANTS.getSlowSpeed().in(MetersPerSecond)
+                    : maxSpeed;
+            double rotationMPS = (isSlowMode.get().booleanValue())
+                    ? CONSTANTS.getSlowRotationalRate().in(RadiansPerSecond)
+                    : maxAngularRate;
+            return fieldCentricRequest
+                    .withVelocityX(-deadband(stickY.get()) * speedMPS)
+                    .withVelocityY(-deadband(stickX.get()) * speedMPS)
+                    .withRotationalRate(
+                            deadband(leftTrigger.get() - rightTrigger.get()) * rotationMPS);
+        });
     }
 
     public Command brakeCommand() {

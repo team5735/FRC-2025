@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.vision.PIDToNearestBranch;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
@@ -45,6 +48,8 @@ public class RobotContainer {
     private final CommandXboxController subsystemController = new CommandXboxController(
             Constants.SUBSYSTEM_CONTROLLER_PORT);
 
+    private final CommandXboxController testController = new CommandXboxController(2);
+
     public static final DrivetrainSubsystem drivetrain;
 
     static {
@@ -66,6 +71,7 @@ public class RobotContainer {
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
+        // CameraServer.startAutomaticCapture();
         Map<String, Command> commandsForAuto = new HashMap<>();
 
         commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));
@@ -109,12 +115,7 @@ public class RobotContainer {
                         () -> driveController.getLeftY(),
                         () -> driveController.getLeftTriggerAxis(),
                         () -> driveController.getRightTriggerAxis(),
-                        () -> { // multiplier
-                            if (driveController.getHID().getBButton()) {
-                                return DrivetrainSubsystem.CONSTANTS.getSlowMultiplier();
-                            }
-                            return 1.0;
-                        }));
+                        () -> driveController.getHID().getBButton()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -164,6 +165,12 @@ public class RobotContainer {
 
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
+
+        testController.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        testController.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        testController.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        testController.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
     }
 
     public Command getAutonomousCommand() {

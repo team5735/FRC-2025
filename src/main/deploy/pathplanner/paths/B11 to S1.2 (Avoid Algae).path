@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 0.73125,
+        "x": 0.71175,
         "y": 6.66725
       },
       "prevControl": {
-        "x": 1.7842500000000001,
+        "x": 1.7647500000000003,
         "y": 7.27175
       },
       "nextControl": null,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 36.0
+    "rotation": -54.0
   },
   "reversed": false,
   "folder": "To S1",

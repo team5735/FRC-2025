@@ -15,6 +15,8 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -34,7 +36,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
 
-    private final DutyCycleEncoder encoder = new DutyCycleEncoder(Constants.ELEVATOR_ENCODER_PIN);
+    private final SparkMax dummyMax = new SparkMax(Constants.ELEVATOR_ENCODER_ID, MotorType.kBrushed);
 
     private double encoderOffsetRots;
     private boolean enabled = true;
@@ -87,7 +89,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
         SmartDashboard.putNumber("Elevator/PosInches", getPosition().in(Inches));
         SmartDashboard.putNumber("Elevator/EncoderRots", krakenRight.getPosition().getValue().in(Rotations));
-        // SmartDashboard.putNumber("Elevator/RawEncoderRots", encoder.get());
+        SmartDashboard.putNumber("Elevator/NewEncoderRots", dummyMax.getEncoder().getPosition());
         SmartDashboard.putNumber(
                 "Elevator/VelocityMPS",
                 InchesPerSecond.of(
