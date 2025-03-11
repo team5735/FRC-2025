@@ -29,7 +29,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final SparkFlex vortexManipTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexManipBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
 
-    private final SparkMax neoFlipper = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
+    // private final SparkMax neoFlipper = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
+    private final TalonFX krakenFlipper = new TalonFX(Constants.CORAL_EJECTOR_ID);
 
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
 
@@ -58,10 +59,14 @@ public class CoralSubsystem extends SubsystemBase {
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        neoFlipper.configure(
-                new SparkMaxConfig().idleMode(IdleMode.kBrake),
-                ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        // neoFlipper.configure(
+        //         new SparkMaxConfig().idleMode(IdleMode.kBrake),
+        //         ResetMode.kResetSafeParameters,
+        //         PersistMode.kPersistParameters);
+
+        krakenFlipper.getConfigurator()
+                .apply(new MotorOutputConfigs()
+                        .withNeutralMode(NeutralModeValue.Brake));
 
         falconFeeder.getConfigurator()
                 .apply(new MotorOutputConfigs()
@@ -107,15 +112,15 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     private void flipOut() {
-        neoFlipper.setVoltage(CoralConstants.UNFLIP_VOLTS);
+        krakenFlipper.setVoltage(CoralConstants.UNFLIP_VOLTS);
     }
 
     private void flipperResetPose() {
-        neoFlipper.setVoltage(-flipperVolts.get());
+        krakenFlipper.setVoltage(-flipperVolts.get());
     }
 
     private void stopFlipper() {
-        neoFlipper.setVoltage(0);
+        krakenFlipper.setVoltage(0);
     }
 
     public void feed() {
