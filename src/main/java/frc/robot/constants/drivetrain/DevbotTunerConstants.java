@@ -27,8 +27,8 @@ public class DevbotTunerConstants {
             .withKP(54.02).withKI(0).withKD(0.3)
             .withKS(0.052654).withKV(2.4095).withKA(0.49012)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
-    // When using closed-loop control, the drive motor uses the control
-    // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
+    // When using closed-loop control, the drive motor uses the control output type
+    // specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
             .withKP(1.9207).withKI(0).withKD(0)
             .withKS(0.11139).withKV(2.4769).withKA(0.1416);
@@ -54,27 +54,26 @@ public class DevbotTunerConstants {
     private static final Current kSlipCurrent = Amps.of(120.0);
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these
-    // cannot be null.
-    // Some configs will be overwritten; check the `with*InitialConfigs()` API
-    // documentation.
+    // cannot be null. Some configs will be overwritten; check the
+    // `with*InitialConfigs()` API documentation.
     private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(
                     new CurrentLimitsConfigs()
                             // Swerve azimuth does not require much torque output, so we can set a
-                            // relatively low
-                            // stator current limit to help avoid brownouts without impacting performance.
+                            // relatively low stator current limit to help avoid brownouts without impacting
+                            // performance.
                             .withStatorCurrentLimit(Amps.of(60))
                             .withStatorCurrentLimitEnable(true));
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
     private static final Pigeon2Configuration pigeonConfigs = null;
 
-    // CAN bus that the devices are located on;
+    // CAN bus that the devices are located on.
     // All swerve devices must share the same CAN bus
     public static final CANBus kCANBus = new CANBus("squab", "./logs/example.hoot");
 
-    // Theoretical free speed (m/s) at 12 V applied output;
+    // Theoretical free speed (m/s) at 12 V applied output.
     // This needs to be tuned to your individual robot
     public static final LinearVelocity SPEED_AT_12_VOLTS = MetersPerSecond.of(12 / DRIVE_GAINS.kV);
 
@@ -231,10 +230,8 @@ public class DevbotTunerConstants {
          * Constructs a CTRE SwerveDrivetrain using the specified constants.
          * <p>
          * This constructs the underlying hardware devices, so users should not
-         * construct
-         * the devices themselves. If they need the devices, they can access them
-         * through
-         * getters in the classes.
+         * construct the devices themselves. If they need the devices, they can access
+         * them through getters in the classes.
          *
          * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
          * @param modules             Constants for each specific module
@@ -251,10 +248,8 @@ public class DevbotTunerConstants {
          * Constructs a CTRE SwerveDrivetrain using the specified constants.
          * <p>
          * This constructs the underlying hardware devices, so users should not
-         * construct
-         * the devices themselves. If they need the devices, they can access them
-         * through
-         * getters in the classes.
+         * construct the devices themselves. If they need the devices, they can access
+         * them through getters in the classes.
          *
          * @param drivetrainConstants     Drivetrain-wide constants for the swerve drive
          * @param odometryUpdateFrequency The frequency to run the odometry loop. If
@@ -275,10 +270,8 @@ public class DevbotTunerConstants {
          * Constructs a CTRE SwerveDrivetrain using the specified constants.
          * <p>
          * This constructs the underlying hardware devices, so users should not
-         * construct
-         * the devices themselves. If they need the devices, they can access them
-         * through
-         * getters in the classes.
+         * construct the devices themselves. If they need the devices, they can access
+         * them through getters in the classes.
          *
          * @param drivetrainConstants       Drivetrain-wide constants for the swerve
          *                                  drive
