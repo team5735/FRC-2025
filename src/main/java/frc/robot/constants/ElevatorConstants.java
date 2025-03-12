@@ -32,15 +32,15 @@ public class ElevatorConstants {
     public static final Distance L3_HEIGHT = Inches.of(32);
     public static final Distance L4_HEIGHT = Inches.of(0);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
-    public static final Distance MAX_HEIGHT = Inches.of(53.25);
+    public static final Distance MAX_HEIGHT = Inches.of(53.25); // TODO
 
     public enum Level {
-        BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kAliceBlue),
-        PROCESSOR(() -> new State(PROCESS_HEIGHT.in(Units.Meters), 0), Color.kAntiqueWhite),
-        L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kAqua),
-        L2(() -> new State(L2_HEIGHT.in(Units.Meters), 0), Color.kAquamarine),
-        L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kAzure),
-        L4(() -> new State(L4_HEIGHT.in(Units.Meters), 0), Color.kBeige),
+        BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kRed),
+        PROCESSOR(() -> new State(PROCESS_HEIGHT.in(Units.Meters), 0), Color.kTurquoise),
+        L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kOrange),
+        L2(() -> new State(L2_HEIGHT.in(Units.Meters), 0), Color.kYellow),
+        L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kGreen),
+        L4(() -> new State(L4_HEIGHT.in(Units.Meters), 0), Color.kBlue),
         SMARTDASHBOARD(() -> new State(
                 Feet.of(
                         SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet)))
