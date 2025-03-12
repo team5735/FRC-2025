@@ -103,7 +103,7 @@ public class CompbotTunerConstants {
 
     public static final double DRIVE_GEAR_RATIO = 4.725;
     private static final double STEER_GEAR_RATIO = 12.1;
-    public static final Distance WHEEL_RADIUS = Inches.of(2);
+    public static final Distance WHEEL_RADIUS = Inches.of(1.95);
 
     private static final boolean INVERT_LEFT_SIDE = false;
     private static final boolean INVERT_RIGHT_SIDE = true;

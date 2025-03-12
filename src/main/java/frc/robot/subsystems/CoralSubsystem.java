@@ -29,7 +29,8 @@ public class CoralSubsystem extends SubsystemBase {
     private final SparkFlex vortexManipTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexManipBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
 
-    // private final SparkMax neoFlipper = new SparkMax(Constants.CORAL_EJECTOR_ID, MotorType.kBrushless);
+    // private final SparkMax neoFlipper = new SparkMax(Constants.CORAL_EJECTOR_ID,
+    // MotorType.kBrushless);
     private final TalonFX krakenFlipper = new TalonFX(Constants.CORAL_EJECTOR_ID);
 
     private final DigitalInput beam = new DigitalInput(Constants.INTAKE_BEAM_PIN);
@@ -60,9 +61,9 @@ public class CoralSubsystem extends SubsystemBase {
                 PersistMode.kPersistParameters);
 
         // neoFlipper.configure(
-        //         new SparkMaxConfig().idleMode(IdleMode.kBrake),
-        //         ResetMode.kResetSafeParameters,
-        //         PersistMode.kPersistParameters);
+        // new SparkMaxConfig().idleMode(IdleMode.kBrake),
+        // ResetMode.kResetSafeParameters,
+        // PersistMode.kPersistParameters);
 
         krakenFlipper.getConfigurator()
                 .apply(new MotorOutputConfigs()
@@ -188,6 +189,10 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command flipperResetCommand() {
         return startEnd(() -> flipperResetPose(), () -> stopFlipper());
+    }
+
+    public Command flipperTimedReset() {
+        return startEnd(() -> flipperResetPose(), () -> stopFlipper()).withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT);
     }
 
     public Command troughCommand() {
