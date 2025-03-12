@@ -56,15 +56,15 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-    private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
+    public final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
+    public final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    public final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    public final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.05).withRotationalDeadband(maxAngularRate * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withCenterOfRotation(CONSTANTS.getPigeonToCenterOfRotation());
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
+    public final SwerveRequest.SwerveDriveBrake brakeRequest = new SwerveRequest.SwerveDriveBrake();
+    public final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -282,7 +282,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      */
     public void pidDrive(double vx, double vy, double omega) {
         if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
-            setControl(brake);
+            setControl(brakeRequest);
         }
         setControl(fieldCentricRequest.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
     }
@@ -312,7 +312,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command brakeCommand() {
-        return startRun(() -> setControl(brake), () -> {
+        return startRun(() -> setControl(brakeRequest), () -> {
             // Please do something else with this to make it do better
         });
     }

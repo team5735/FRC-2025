@@ -8,4 +8,6 @@ public class VisionConstants {
     public static final int AVERAGING_WINDOW = 5;
     public static final Distance PATH_DIST_FROM_SCOREPOS = Meters.of(0.3);
     public static final double ALONG_LINE_SPEED = 1;
+
+    public static final double MAX_PID_ERROR = 5;
 }
