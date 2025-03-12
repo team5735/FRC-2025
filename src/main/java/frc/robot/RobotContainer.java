@@ -146,8 +146,6 @@ public class RobotContainer {
         // }, (cancelled) -> {
         // movingForward = false;
         // }, () -> false));
-        //
-        // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
