@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.constants.ReefAprilTagPositions;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -163,6 +164,16 @@ public class Telemetry {
         }
 
         field.setRobotPose(AutoBuilder.getCurrentPose());
+
+        // If Elastic sees >= 8 poses in one object, it gets angry (turns it into a
+        // path).
+        for (int i = 0; i < ReefAprilTagPositions.SCORING_POSES.length / 6; i++) {
+            Pose2d[] poses = new Pose2d[6];
+            for (int j = 0; j < 6; j++) {
+                poses[j] = ReefAprilTagPositions.SCORING_POSES[i * 6 + j];
+            }
+            Telemetry.field.getObject("scoringPositions_" + i).setPoses(poses);
+        }
         SmartDashboard.putData("Field", field);
 
         SmartDashboard.putData("Swerve State", sendableState);
