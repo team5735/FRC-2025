@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.Telemetry;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class ReefAprilTagPositions {
@@ -70,31 +70,30 @@ public class ReefAprilTagPositions {
     static {
         int i = 0;
         for (Pose2d pose : TAGS) {
-            SCORING_POSES[i] = new Pose2d(
+            SCORING_POSES[i++] = new Pose2d(
                     pose.getTranslation()
                             .plus(new Translation2d(ReefAlignment.LEFT.getParallel().in(Meters),
                                     pose.getRotation().plus(Rotation2d.kCCW_Pi_2))),
-                    pose.getRotation().plus(Rotation2d.kPi));
+                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
+                            new Transform2d(
+                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                            0),
+                                    new Rotation2d()));
             SCORING_POSES[i++] = new Pose2d(
                     pose.getTranslation()
                             .plus(new Translation2d(ReefAlignment.RIGHT.getParallel().in(Meters),
                                     pose.getRotation().plus(Rotation2d.kCW_Pi_2))),
-                    pose.getRotation().plus(Rotation2d.kPi));
+                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
+                            new Transform2d(
+                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                            0),
+                                    new Rotation2d()));
         }
-        int length = SCORING_POSES.length;
+        int length = SCORING_POSES.length / 2;
         for (i = 0; i < length; i++) {
-            SCORING_POSES[length + i] = SCORING_POSES[i]
-                    .plus(new Transform2d(new Translation2d(FIELD_LENGTH / 2, 0), Rotation2d.kZero));
-        }
-
-        // If Elastic sees >= 8 poses in one object, it gets angry (turns it into a
-        // path).
-        for (i = 0; i < SCORING_POSES.length / 6; i++) {
-            Pose2d[] poses = new Pose2d[6];
-            for (int j = 0; j < 6; j++) {
-                poses[j] = SCORING_POSES[i * 6 + j];
-            }
-            Telemetry.field.getObject("scoringPositions_" + i).setPoses(poses);
+            SCORING_POSES[length + i] = new Pose2d(
+                    SCORING_POSES[i].getTranslation().plus(new Translation2d(FIELD_LENGTH / 2, 0)),
+                    SCORING_POSES[i].getRotation());
         }
     }
 
