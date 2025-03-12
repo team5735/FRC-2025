@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 6.575,
-        "y": 0.5
+        "y": 0.5000000000000001
       },
       "isLocked": false,
       "linkedName": "P3"

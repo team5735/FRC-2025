@@ -82,7 +82,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getSpinKa() {
-        return 0.165;
+        return 0.185;
     }
 
     @Override
