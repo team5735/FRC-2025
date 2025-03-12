@@ -39,7 +39,9 @@ public class VisionSubsystem extends SubsystemBase {
             return;
         }
         drivetrain.getPigeon2().setYaw(curRot);
-        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose);
+        LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0, 0,
+                0, 0);
+        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
     }
 
     public Command getSeedPigeon() {
