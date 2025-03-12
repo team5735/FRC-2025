@@ -27,5 +27,5 @@ public class CoralConstants {
     public static final Time FEED_DELAY_SECONDS = Seconds.of(1.5);
     public static final Time L4_EJECTION_TIMEOUT = Seconds.of(1.5);
     public static final Time FLIPPER_RESET_DELAY = Seconds.of(1); // TODO test this value
-    public static final Time FLIPPER_RESET_TIMOUT = Seconds.of(2); // TODO test this value
+    public static final Time FLIPPER_RESET_TIMOUT = Seconds.of(0.5);
 }
