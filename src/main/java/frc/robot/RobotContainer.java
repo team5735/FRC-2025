@@ -138,7 +138,7 @@ public class RobotContainer {
 
         driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
 
-        coraler.beamBreakEngaged().onTrue(LEDs.colorFedCommand());
+        coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
         driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
         // driveController.povLeft().and(driveController.a().negate())
@@ -170,11 +170,8 @@ public class RobotContainer {
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
-        testController.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        testController.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        testController.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        testController.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
+        // testController.a().whileTrue(elevator.toLevelCommand(Level.SMARTDASHBOARD));
+        testController.start().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
     }
 
     public Command getAutonomousCommand() {

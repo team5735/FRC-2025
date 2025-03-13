@@ -16,7 +16,12 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,7 +43,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private final SparkMax dummyMax = new SparkMax(Constants.ELEVATOR_ENCODER_ID, MotorType.kBrushed);
 
-    private double encoderOffsetRots;
     private boolean enabled = true;
 
     private ProfiledPIDController pid = new ProfiledPIDController(
@@ -61,6 +65,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
+
+        dummyMax.configure(new SparkMaxConfig().apply(new EncoderConfig().inverted(true).positionConversionFactor(1)),
+                ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         resetMeasurement();
 
@@ -94,7 +101,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 "Elevator/VelocityMPS",
                 InchesPerSecond.of(
                         krakenRight.getVelocity().getValue().in(RotationsPerSecond)
-                                * ElevatorConstants.INCHES_PER_ROTATIONS)
+                                * ElevatorConstants.INCHES_PER_ENCODER_COUNTS)
                         .in(MetersPerSecond));
         SmartDashboard.putNumber("Elevator/Volts",
                 krakenRight.getMotorVoltage().getValue().in(Volts) + 0.00001 * Math.random()); // I am hacker genius
@@ -126,7 +133,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getPosition() {
-        return Inches.of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.INCHES_PER_ROTATIONS);
+        return Inches
+                .of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.INCHES_PER_ENCODER_COUNTS);
     }
 
     public Command toLevelCommand(ElevatorConstants.Level level) {
@@ -147,10 +155,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void resetMeasurement() {
         resetMeasurement(ElevatorConstants.BASE_HEIGHT);
+        dummyMax.getEncoder().setPosition(0);
     }
 
     public void resetMeasurement(Distance height) {
-        krakenRight.setPosition(Rotations.of(height.in(Inches) / ElevatorConstants.INCHES_PER_ROTATIONS));
+        krakenRight.setPosition(Rotations.of(height.in(Inches) / ElevatorConstants.INCHES_PER_ENCODER_COUNTS));
     }
 
     public void swapEnableStatus() {

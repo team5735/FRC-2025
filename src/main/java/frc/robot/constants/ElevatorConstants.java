@@ -25,7 +25,7 @@ public class ElevatorConstants {
     public static final double KA = 3.1202;
     public static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(1);
     public static final LinearAcceleration MAX_ACCELERATION = MetersPerSecondPerSecond.of(1.25);
-    public static final double INCHES_PER_ROTATIONS = 0.80474;
+    public static final double INCHES_PER_ENCODER_COUNTS = 0.80474;
     public static final Distance BASE_HEIGHT = Inches.of(0);
     public static final Distance L1_HEIGHT = Inches.of(5);
     public static final Distance L2_HEIGHT = Inches.of(14);
@@ -42,8 +42,8 @@ public class ElevatorConstants {
         L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kGreen),
         L4(() -> new State(L4_HEIGHT.in(Units.Meters), 0), Color.kBlue),
         SMARTDASHBOARD(() -> new State(
-                Feet.of(
-                        SmartDashboard.getNumber("Elevator/HeightTargetFeet", BASE_HEIGHT.in(Units.Feet)))
+                Inches.of(
+                        SmartDashboard.getNumber("Elevator/HeightTargetInches", BASE_HEIGHT.in(Units.Inches)))
                         .in(Units.Meters),
                 0), Color.kBisque);
         // IDLE(() -> new State(RobotContainer.elevator.getPosition().in(Units.Meters),
