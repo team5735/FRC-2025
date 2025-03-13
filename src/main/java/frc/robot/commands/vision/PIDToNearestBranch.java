@@ -30,6 +30,7 @@ public class PIDToNearestBranch extends Command {
         this.xController.setup(targetPos.getTranslation().getX(), 0.01);
         this.yController.setup(targetPos.getTranslation().getY(), 0.01);
         this.omegaController.setup(targetPos.getRotation().getDegrees(), 0.015);
+        this.omegaController.getController().enableContinuousInput(-180, 180);
     }
 
     @Override
