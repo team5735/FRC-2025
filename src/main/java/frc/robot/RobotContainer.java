@@ -143,7 +143,7 @@ public class RobotContainer {
         // driveController.povRight().and(driveController.a().negate())
         // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
         // movingForward));
-        // driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
+        driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
         driveController.b().whileTrue(new FunctionalCommand(() -> {
             movingForward = true;
