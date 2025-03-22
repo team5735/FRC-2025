@@ -16,9 +16,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -53,6 +56,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
 
+
+    private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
+    private SwerveDrivePoseEstimator poseEstimator;
     private Telemetry logger = new Telemetry(maxSpeed);
 
     /* Keep track if we've ever applied the operator perspective before or not */
@@ -150,6 +156,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpPoseEst();
         setUpAuto();
     }
 
@@ -176,6 +183,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpPoseEst();
         setUpAuto();
     }
 
@@ -217,6 +225,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setUpPoseEst();
         setUpAuto();
     }
 
@@ -275,12 +284,28 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        super.resetPose(getEstimatedPosition());
     }
 
     public final Pose2d getEstimatedPosition() {
-        return getState().Pose;
+        return poseEstimator.getEstimatedPosition();
     }
 
+    @Override
+    public void resetPose(Pose2d pose){
+        poseEstimator.resetPose(pose);
+    }
+
+    @Override
+    public void setVisionMeasurementStdDevs(Matrix<N3, N1>  visionMeasurementStdDevs){
+        poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
+    }
+
+    @Override
+    public void addVisionMeasurement(Pose2d visionPoseMeters, double timestampSeconds){
+        poseEstimator.addVisionMeasurement(visionPoseMeters, timestampSeconds);
+    }
     /**
      * For use by PIDs. Speed limited for safety.
      */
@@ -364,6 +389,20 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                         .withRotationalRate(discrete.omegaRadiansPerSecond));
     }
 
+    private void setUpPoseEst(){
+        for(int i = 0; i < 4; i++){
+            modulePositions[i] = new SwerveModulePosition(
+                Math.hypot(getModuleLocations()[i].getX(), getModuleLocations()[i].getY()), 
+                getModuleLocations()[i].getAngle()
+            );
+        }
+        poseEstimator = new SwerveDrivePoseEstimator(
+            getKinematics(), 
+            Rotation2d.kZero, 
+            modulePositions,
+            Pose2d.kZero
+        );
+    }
     private void setUpAuto() {
         AutoBuilder.configure(
                 () -> getEstimatedPosition(),
