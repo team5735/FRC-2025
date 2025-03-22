@@ -70,7 +70,11 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("poseestimator_status", 0);
         }
 
-        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
+        double[] stddevs = NetworkTableInstance.getDefault().getTable(limelight_name).getEntry("stddevs")
+                .getDoubleArray(new double[12]);
+        double mt2xdev = stddevs[6];
+        double mt2ydev = stddevs[7];
+        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
         drivetrain.addVisionMeasurement(
                 mt2.pose,
                 mt2.timestampSeconds);
