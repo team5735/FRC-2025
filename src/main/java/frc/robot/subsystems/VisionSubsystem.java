@@ -60,8 +60,9 @@ public class VisionSubsystem extends SubsystemBase {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
             return;
-        } else
+        } else {
             SmartDashboard.putNumber("poseestimator_status", 0);
+        }
 
         double[] stddevs = NetworkTableInstance.getDefault().getTable(limelight_name).getEntry("stddevs")
                 .getDoubleArray(new double[12]);
