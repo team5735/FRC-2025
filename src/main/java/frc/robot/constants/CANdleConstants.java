@@ -5,8 +5,7 @@ import java.awt.Color;
 public class CANdleConstants {
     public enum LedState {
         FED(Color.GREEN),
-        PATHING(Color.ORANGE),
-        PATHEND(Color.RED);
+        IDLE(new Color(255, 100, 0)); // Orange-y maybe??
 
         public final Color ledColor;
 

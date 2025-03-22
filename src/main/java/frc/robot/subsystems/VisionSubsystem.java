@@ -63,9 +63,11 @@ public class VisionSubsystem extends SubsystemBase {
             return;
         } else if (drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble() > 360) {
             // something has probably gone very wrong or this measurement will not be great
+            SmartDashboard.putNumber("poseestimator_status", -3);
             return;
-        } else
+        } else {
             SmartDashboard.putNumber("poseestimator_status", 0);
+        }
 
         drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
         drivetrain.addVisionMeasurement(

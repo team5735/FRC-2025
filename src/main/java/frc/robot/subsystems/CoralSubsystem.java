@@ -156,7 +156,7 @@ public class CoralSubsystem extends SubsystemBase {
     public Command feedStageCommand() {
         return run(() -> feed())
                 .withDeadline(new WaitCommand(CoralConstants.FEED_DELAY_SECONDS))
-                .finallyDo(() -> stopFeed());
+                .finallyDo(() -> stopFeed())/* .andThen(simpleManipCommand().withTimeout(.5)) */;
     }
 
     public Command unfeedCommand() {

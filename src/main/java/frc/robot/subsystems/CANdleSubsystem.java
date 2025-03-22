@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
-import com.ctre.phoenix.led.RainbowAnimation;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,30 +27,18 @@ public class CANdleSubsystem extends SubsystemBase {
         this.setDefaultCommand(idling());
     }
 
-    public void setIdle() {
-        candle.animate(new RainbowAnimation(0.5, 1.0, 8));
-    }
-
     public Command idling() {
-        return runOnce(() -> setIdle());
+        return setToColorByState(LedState.IDLE);
     }
 
     public Command colorFedCommand() {
         return setToColorByState(LedState.FED);
     }
 
-    public Command colorPathingCommand() {
-        return setToColorByState(LedState.PATHING);
-    }
-
-    public Command colorPathEndCommand() {
-        return setToColorByState(LedState.PATHEND);
-    }
-
     private Command setToColorByState(LedState state) {
-        return runOnce(() -> {
+        return startEnd(() -> {
             setToColor(state.ledColor);
-        });
+        }, () -> setToColor(new Color(0, 0, 0)));
     }
 
     public Command manualSetRGB(Supplier<Double> r, Supplier<Double> g, Supplier<Double> b) {

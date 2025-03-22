@@ -44,7 +44,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
     static {
         CONSTANTS = new CompbotConstants();
-    }
+    } // TODO add missing switch case for devbot
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
