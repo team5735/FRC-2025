@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.constants.ReefAprilTagPositions;
+import frc.robot.util.LimelightHelpers;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -173,6 +174,15 @@ public class Telemetry {
                 poses[j] = ReefAprilTagPositions.SCORING_POSES[i * 6 + j];
             }
             Telemetry.field.getObject("scoringPositions_" + i).setPoses(poses);
+        }
+        LimelightHelpers.PoseEstimate mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        if (mt1Estimate != null) {
+            field.getObject("limelightMt1Pos").setPose(mt1Estimate.pose);
+        }
+
+        LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if (mt2Estimate != null) {
+            field.getObject("limelightMt2Pos").setPose(mt2Estimate.pose);
         }
         SmartDashboard.putData("Field", field);
 
