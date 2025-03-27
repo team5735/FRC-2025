@@ -99,8 +99,6 @@ public class RobotContainer {
         configureBindings();
     }
 
-    private boolean movingForward = false;
-
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -144,13 +142,6 @@ public class RobotContainer {
         // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
         // movingForward));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
-
-        driveController.b().whileTrue(new FunctionalCommand(() -> {
-            movingForward = true;
-        }, () -> {
-        }, (cancelled) -> {
-            movingForward = false;
-        }, () -> false));
 
         // reset the field-centric heading on left bumper press
 
