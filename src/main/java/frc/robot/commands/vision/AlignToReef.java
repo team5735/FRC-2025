@@ -2,8 +2,6 @@ package frc.robot.commands.vision;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -35,8 +33,6 @@ public class AlignToReef extends Command {
 
     private static boolean infinite = true;
 
-    private Supplier<Boolean> movingForward;
-
     private ReefAlignment whichBranch;
 
     private VisionSubsystem vision;
@@ -44,12 +40,10 @@ public class AlignToReef extends Command {
     /**
      * Positions the robot in order to score a coral.
      */
-    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, ReefAlignment whichBranch,
-            Supplier<Boolean> movingForward) {
+    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, ReefAlignment whichBranch) {
         this.drivetrain = drivetrain;
         this.vision = vision;
         this.whichBranch = whichBranch;
-        this.movingForward = movingForward;
         addRequirements(drivetrain, vision);
     }
 
