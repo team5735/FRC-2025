@@ -145,13 +145,6 @@ public class RobotContainer {
         // movingForward));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
-        // driveController.b().whileTrue(new FunctionalCommand(() -> {
-        // movingForward = true;
-        // }, () -> {
-        // }, (cancelled) -> {
-        // movingForward = false;
-        // }, () -> false));
-
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
         // subsystemController.b().whileTrue(coraler.branchCommand());
