@@ -75,10 +75,7 @@ public class VisionSubsystem extends SubsystemBase {
                 .getDoubleArray(new double[12]);
         double mt2xdev = stddevs[6];
         double mt2ydev = stddevs[7];
-        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
-        drivetrain.addVisionMeasurement(
-                mt2.pose,
-                mt2.timestampSeconds);
+        drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(0.01, 0.01, 9999999));
     }
 
     private void addMt1Reading() {
