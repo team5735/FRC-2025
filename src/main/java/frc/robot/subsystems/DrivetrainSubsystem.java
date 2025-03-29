@@ -53,7 +53,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
 
-    private NTDoubleSection doubles = new NTDoubleSection("drivetrain", "timestampIn", "timestampOut");
+    private NTDoubleSection doubles = new NTDoubleSection("drivetrain", "timestampIn", "timestampOut", "timestampDiff");
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -451,6 +451,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             Matrix<N3, N1> visionMeasurementStdDevs) {
         doubles.set("timestampIn", timestampSeconds);
         doubles.set("timestampOut", Utils.fpgaToCurrentTime(timestampSeconds));
+        doubles.set("timestampDiff", Utils.fpgaToCurrentTime(timestampSeconds) - Utils.getCurrentTimeSeconds());
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
                 visionMeasurementStdDevs);
     }
