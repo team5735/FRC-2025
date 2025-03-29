@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.NTDoubleSection;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
@@ -51,6 +52,8 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double lastSimTime;
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
+
+    private NTDoubleSection doubles = new NTDoubleSection("drivetrain", "timestampIn", "timestampOut");
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
@@ -394,21 +397,19 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      *                              camera.
      * @param timestampSeconds      The timestamp of the vision measurement in
      *                              seconds. Note that you must use a timestamp with
-     *                              an
-     *                              epoch since system startup (i.e., the epoch of
-     *                              this
-     *                              timestamp is the same epoch as
-     *                              {@link Utils#getCurrentTimeSeconds}).
-     *                              This means that you should use
-     *                              {@link Utils#getCurrentTimeSeconds}
-     *                              as your time source or sync the epochs.
-     *                              An FPGA timestamp can be converted to the
-     *                              correct
-     *                              timebase using {@link Utils#fpgaToCurrentTime}.
+     *                              an epoch since system startup (i.e., the epoch
+     *                              of this timestamp is the same epoch as
+     *                              {@link Utils#getCurrentTimeSeconds}). This means
+     *                              that you should use
+     *                              {@link Utils#getCurrentTimeSeconds} as your time
+     *                              source or sync the epochs. An FPGA timestamp can
+     *                              be converted to the correct timebase using
+     *                              {@link Utils#fpgaToCurrentTime}.
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        // TODO Auto-generated method stub
+        doubles.set("timestampIn", timestampSeconds);
+        doubles.set("timestampOut", Utils.fpgaToCurrentTime(timestampSeconds));
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
@@ -430,28 +431,26 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      *                                 vision camera.
      * @param timestampSeconds         The timestamp of the vision measurement in
      *                                 seconds. Note that you must use a timestamp
-     *                                 with an
-     *                                 epoch since system startup (i.e., the epoch
-     *                                 of this
-     *                                 timestamp is the same epoch as
-     *                                 {@link Utils#getCurrentTimeSeconds}).
-     *                                 This means that you should use
-     *                                 {@link Utils#getCurrentTimeSeconds}
-     *                                 as your time source or sync the epochs.
-     *                                 An FPGA timestamp can be converted to the
-     *                                 correct
+     *                                 with an epoch since system startup (i.e., the
+     *                                 epoch of this timestamp is the same epoch as
+     *                                 {@link Utils#getCurrentTimeSeconds}). This
+     *                                 means that you should use
+     *                                 {@link Utils#getCurrentTimeSeconds} as your
+     *                                 time source or sync the epochs. An FPGA
+     *                                 timestamp can be converted to the correct
      *                                 timebase using
      *                                 {@link Utils#fpgaToCurrentTime}.
      * @param visionMeasurementStdDevs Standard deviations of the vision pose
-     *                                 measurement (x position
-     *                                 in meters, y position in meters, and heading
-     *                                 in radians). Increase these numbers to trust
-     *                                 the vision pose measurement less.
+     *                                 measurement (x position in meters, y position
+     *                                 in meters, and heading in radians). Increase
+     *                                 these numbers to trust the vision pose
+     *                                 measurement less.
      */
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
-        // TODO Auto-generated method stub
+        doubles.set("timestampIn", timestampSeconds);
+        doubles.set("timestampOut", Utils.fpgaToCurrentTime(timestampSeconds));
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
                 visionMeasurementStdDevs);
     }
