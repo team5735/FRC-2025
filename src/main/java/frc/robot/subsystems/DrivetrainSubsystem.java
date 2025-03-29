@@ -379,4 +379,80 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                 },
                 this);
     }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the
+     * odometry pose estimate while still accounting for measurement noise.
+     * <p>
+     * This method can be called as infrequently as you want.
+     * <p>
+     * To promote stability of the pose estimate and make it robust to bad vision
+     * data, we recommend only adding vision measurements that are already within
+     * one meter or so of the current pose estimate.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision
+     *                              camera.
+     * @param timestampSeconds      The timestamp of the vision measurement in
+     *                              seconds. Note that you must use a timestamp with
+     *                              an
+     *                              epoch since system startup (i.e., the epoch of
+     *                              this
+     *                              timestamp is the same epoch as
+     *                              {@link Utils#getCurrentTimeSeconds}).
+     *                              This means that you should use
+     *                              {@link Utils#getCurrentTimeSeconds}
+     *                              as your time source or sync the epochs.
+     *                              An FPGA timestamp can be converted to the
+     *                              correct
+     *                              timebase using {@link Utils#fpgaToCurrentTime}.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        // TODO Auto-generated method stub
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the
+     * odometry pose estimate while still accounting for measurement noise.
+     * <p>
+     * This method can be called as infrequently as you want.
+     * <p>
+     * To promote stability of the pose estimate and make it robust to bad vision
+     * data, we recommend only adding vision measurements that are already within
+     * one meter or so of the current pose estimate.
+     * <p>
+     * Note that the vision measurement standard deviations passed into this method
+     * will continue to apply to future measurements until a subsequent call to
+     * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
+     *
+     * @param visionRobotPoseMeters    The pose of the robot as measured by the
+     *                                 vision camera.
+     * @param timestampSeconds         The timestamp of the vision measurement in
+     *                                 seconds. Note that you must use a timestamp
+     *                                 with an
+     *                                 epoch since system startup (i.e., the epoch
+     *                                 of this
+     *                                 timestamp is the same epoch as
+     *                                 {@link Utils#getCurrentTimeSeconds}).
+     *                                 This means that you should use
+     *                                 {@link Utils#getCurrentTimeSeconds}
+     *                                 as your time source or sync the epochs.
+     *                                 An FPGA timestamp can be converted to the
+     *                                 correct
+     *                                 timebase using
+     *                                 {@link Utils#fpgaToCurrentTime}.
+     * @param visionMeasurementStdDevs Standard deviations of the vision pose
+     *                                 measurement (x position
+     *                                 in meters, y position in meters, and heading
+     *                                 in radians). Increase these numbers to trust
+     *                                 the vision pose measurement less.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        // TODO Auto-generated method stub
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
+                visionMeasurementStdDevs);
+    }
 }
