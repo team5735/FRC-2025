@@ -24,13 +24,15 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.constants.ReefAprilTagPositions;
+import frc.robot.util.LimelightHelpers;
 
 public class Telemetry {
     private final double MaxSpeed;
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
-     * 
+     *
      * @param maxSpeed Maximum speed in meters per second
      */
     public Telemetry(double maxSpeed) {
@@ -90,7 +92,7 @@ public class Telemetry {
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
 
-    private final Field2d sendableField = new Field2d();
+    public static final Field2d field = new Field2d();
 
     private final Sendable sendableState = new Sendable() {
         @Override
@@ -162,8 +164,27 @@ public class Telemetry {
             m_moduleTargetsArray[i * 2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
         }
 
-        sendableField.setRobotPose(AutoBuilder.getCurrentPose());
-        SmartDashboard.putData(sendableField);
+        field.setRobotPose(AutoBuilder.getCurrentPose());
+
+        // If Elastic sees >= 8 poses in one object, it gets angry (turns it into a
+        // path).
+        for (int i = 0; i < ReefAprilTagPositions.SCORING_POSES.length / 6; i++) {
+            Pose2d[] poses = new Pose2d[6];
+            for (int j = 0; j < 6; j++) {
+                poses[j] = ReefAprilTagPositions.SCORING_POSES[i * 6 + j];
+            }
+            Telemetry.field.getObject("scoringPositions_" + i).setPoses(poses);
+        }
+        LimelightHelpers.PoseEstimate mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        if (mt1Estimate != null) {
+            field.getObject("limelightMt1Pos").setPose(mt1Estimate.pose);
+        }
+
+        LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if (mt2Estimate != null) {
+            field.getObject("limelightMt2Pos").setPose(mt2Estimate.pose);
+        }
+        SmartDashboard.putData("Field", field);
 
         SmartDashboard.putData("Swerve State", sendableState);
 

@@ -31,9 +31,11 @@ public class VisionSubsystem extends SubsystemBase {
         if (!LimelightHelpers.getTV("limelight")) {
             return;
         }
-        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-        drivetrain.getPigeon2().setYaw(mt1.pose.getRotation().getDegrees());
-        drivetrain.resetPose(mt1.pose);
+        drivetrain.getPigeon2()
+                .setYaw(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose.getRotation().getDegrees());
+        LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0, 0,
+                0, 0);
+        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
     }
 
     public Command getSeedPigeon() {
@@ -54,6 +56,10 @@ public class VisionSubsystem extends SubsystemBase {
             // no tags
             SmartDashboard.putNumber("poseestimator_status", -2);
             return;
+        } else if (drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble() > 360) {
+            // something has probably gone very wrong or this measurement will not be great
+            SmartDashboard.putNumber("poseestimator_status", -3);
+            return;
         } else {
             SmartDashboard.putNumber("poseestimator_status", 0);
         }
@@ -62,10 +68,7 @@ public class VisionSubsystem extends SubsystemBase {
                 .getDoubleArray(new double[12]);
         double mt2xdev = stddevs[6];
         double mt2ydev = stddevs[7];
-        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
-        drivetrain.addVisionMeasurement(
-                mt2.pose,
-                mt2.timestampSeconds);
+        drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
     }
 
     // all in deg

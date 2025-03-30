@@ -1,13 +1,17 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.util.ReefAlignment;
 
 public class ReefAprilTagPositions {
     /**
@@ -62,6 +66,37 @@ public class ReefAprilTagPositions {
     private static final double FIELD_LENGTH = 17.5483;
     private static final double FIELD_WIDTH = 8.0519;
 
+    public static final Pose2d SCORING_POSES[] = new Pose2d[TAGS.length * 4];
+    static {
+        int i = 0;
+        for (Pose2d pose : TAGS) {
+            SCORING_POSES[i++] = new Pose2d(
+                    pose.getTranslation()
+                            .plus(new Translation2d(ReefAlignment.LEFT.getParallel().in(Meters),
+                                    pose.getRotation().plus(Rotation2d.kCCW_Pi_2))),
+                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
+                            new Transform2d(
+                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                            0),
+                                    new Rotation2d()));
+            SCORING_POSES[i++] = new Pose2d(
+                    pose.getTranslation()
+                            .plus(new Translation2d(ReefAlignment.RIGHT.getParallel().in(Meters),
+                                    pose.getRotation().plus(Rotation2d.kCW_Pi_2))),
+                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
+                            new Transform2d(
+                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                            0),
+                                    new Rotation2d()));
+        }
+        int length = SCORING_POSES.length / 2;
+        for (i = 0; i < length; i++) {
+            SCORING_POSES[length + i] = new Pose2d(
+                    SCORING_POSES[i].getTranslation().plus(new Translation2d(FIELD_LENGTH / 2, 0)),
+                    SCORING_POSES[i].getRotation());
+        }
+    }
+
     private static Pose2d fieldSpaceToBlueAllianceSpace(Pose2d in) {
         Translation2d trans = new Translation2d(in.getTranslation().getX() + FIELD_LENGTH / 2,
                 in.getTranslation().getY() + FIELD_WIDTH / 2);
@@ -70,6 +105,20 @@ public class ReefAprilTagPositions {
 
     private static final StructPublisher<Pose2d> closestPosePublisher = NetworkTableInstance.getDefault()
             .getTable("sections").getSubTable("closestTag").getStructTopic("pos", Pose2d.struct).publish();
+
+    private static Pose2d getClosest(Translation2d position, Pose2d[] poses) {
+        double closestDistanceSoFar = Double.MAX_VALUE;
+        Pose2d best = null;
+        for (Pose2d tag : TAGS) {
+            double dist = tag.getTranslation().getDistance(position);
+            if (dist < closestDistanceSoFar) {
+                best = tag;
+                closestDistanceSoFar = dist;
+            }
+        }
+        closestPosePublisher.accept(best);
+        return best;
+    }
 
     /**
      * Returns the pose of the tag closest to the given position.
@@ -82,18 +131,11 @@ public class ReefAprilTagPositions {
             System.out.println("shifted");
         }
         System.out.println("searching for closest tag to (x, y) = (" + position.getX() + ", " + position.getY() + ")");
+        return getClosest(position, TAGS);
+    }
 
-        double closestDistanceSoFar = Double.MAX_VALUE;
-        Pose2d best = null;
-        for (Pose2d tag : TAGS) {
-            double dist = tag.getTranslation().getDistance(position);
-            if (dist < closestDistanceSoFar) {
-                best = tag;
-                closestDistanceSoFar = dist;
-            }
-        }
-        closestPosePublisher.accept(best);
-        return best;
+    public static Pose2d getClosestScorePosition(Translation2d position) {
+        return getClosest(position, SCORING_POSES);
     }
 
     public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); // exact from field diagram

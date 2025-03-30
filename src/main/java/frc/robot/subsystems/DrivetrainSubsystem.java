@@ -30,10 +30,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Telemetry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.NTDoubleSection;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
 
 /**
@@ -45,7 +45,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
     static {
         CONSTANTS = new CompbotConstants();
-    } //TODO add missing switch case for devbot
+    } // TODO add missing switch case for devbot
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
@@ -53,22 +53,21 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private double maxSpeed = CONSTANTS.getDefaultSpeed().in(MetersPerSecond);
     private double maxAngularRate = CONSTANTS.getDefaultRotationalRate().in(RadiansPerSecond);
 
-    private Telemetry logger = new Telemetry(maxSpeed);
+    private NTDoubleSection doubles = new NTDoubleSection("drivetrain", "timestampIn", "timestampOut", "timestampDiff");
 
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /* Swerve requests to apply during SysId characterization */
-    private final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-    private final SwerveRequest.FieldCentricFacingAngle facingAngleRequest = new SwerveRequest.FieldCentricFacingAngle();
-    private final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
+    public final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
+    public final SwerveRequest.SysIdSwerveSteerGains steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    public final SwerveRequest.SysIdSwerveRotation rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    public final SwerveRequest.FieldCentric fieldCentricRequest = new SwerveRequest.FieldCentric()
             .withDeadband(maxSpeed * 0.05).withRotationalDeadband(maxAngularRate * 0.05) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withCenterOfRotation(CONSTANTS.getPigeonToCenterOfRotation());
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
+    public final SwerveRequest.SwerveDriveBrake brakeRequest = new SwerveRequest.SwerveDriveBrake();
+    public final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
@@ -286,7 +285,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      */
     public void pidDrive(double vx, double vy, double omega) {
         if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
-            setControl(brake);
+            setControl(brakeRequest);
         }
         setControl(fieldCentricRequest.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
     }
@@ -316,7 +315,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 
     public Command brakeCommand() {
-        return startRun(() -> setControl(brake), () -> {
+        return startRun(() -> setControl(brakeRequest), () -> {
             // Please do something else with this to make it do better
         });
     }
@@ -382,5 +381,78 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     return false;
                 },
                 this);
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the
+     * odometry pose estimate while still accounting for measurement noise.
+     * <p>
+     * This method can be called as infrequently as you want.
+     * <p>
+     * To promote stability of the pose estimate and make it robust to bad vision
+     * data, we recommend only adding vision measurements that are already within
+     * one meter or so of the current pose estimate.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision
+     *                              camera.
+     * @param timestampSeconds      The timestamp of the vision measurement in
+     *                              seconds. Note that you must use a timestamp with
+     *                              an epoch since system startup (i.e., the epoch
+     *                              of this timestamp is the same epoch as
+     *                              {@link Utils#getCurrentTimeSeconds}). This means
+     *                              that you should use
+     *                              {@link Utils#getCurrentTimeSeconds} as your time
+     *                              source or sync the epochs. An FPGA timestamp can
+     *                              be converted to the correct timebase using
+     *                              {@link Utils#fpgaToCurrentTime}.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        doubles.set("timestampIn", timestampSeconds);
+        doubles.set("timestampOut", Utils.fpgaToCurrentTime(timestampSeconds));
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the
+     * odometry pose estimate while still accounting for measurement noise.
+     * <p>
+     * This method can be called as infrequently as you want.
+     * <p>
+     * To promote stability of the pose estimate and make it robust to bad vision
+     * data, we recommend only adding vision measurements that are already within
+     * one meter or so of the current pose estimate.
+     * <p>
+     * Note that the vision measurement standard deviations passed into this method
+     * will continue to apply to future measurements until a subsequent call to
+     * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
+     *
+     * @param visionRobotPoseMeters    The pose of the robot as measured by the
+     *                                 vision camera.
+     * @param timestampSeconds         The timestamp of the vision measurement in
+     *                                 seconds. Note that you must use a timestamp
+     *                                 with an epoch since system startup (i.e., the
+     *                                 epoch of this timestamp is the same epoch as
+     *                                 {@link Utils#getCurrentTimeSeconds}). This
+     *                                 means that you should use
+     *                                 {@link Utils#getCurrentTimeSeconds} as your
+     *                                 time source or sync the epochs. An FPGA
+     *                                 timestamp can be converted to the correct
+     *                                 timebase using
+     *                                 {@link Utils#fpgaToCurrentTime}.
+     * @param visionMeasurementStdDevs Standard deviations of the vision pose
+     *                                 measurement (x position in meters, y position
+     *                                 in meters, and heading in radians). Increase
+     *                                 these numbers to trust the vision pose
+     *                                 measurement less.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        doubles.set("timestampIn", timestampSeconds);
+        doubles.set("timestampOut", Utils.fpgaToCurrentTime(timestampSeconds));
+        doubles.set("timestampDiff", Utils.fpgaToCurrentTime(timestampSeconds) - Utils.getCurrentTimeSeconds());
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
+                visionMeasurementStdDevs);
     }
 }

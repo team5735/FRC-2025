@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
@@ -113,12 +113,14 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // driveController.a().whileTrue(drivetrain.brakeCommand()); // also used for
-        // branch scoring
+        // also used for branch scoring
+        // driveController.a().whileTrue(drivetrain.brakeCommand());
         driveController.rightStick().whileTrue(coraler.branchCommand());
         // drivecontroller.b() slow mode and driving forward
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         driveController.x().whileTrue(drivetrain.brakeCommand());
+
+        driveController.x().and(driveController.b()).whileTrue(new PIDToNearestBranch(drivetrain));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());
@@ -142,8 +144,6 @@ public class RobotContainer {
         // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
         // movingForward));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
-
-        // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());

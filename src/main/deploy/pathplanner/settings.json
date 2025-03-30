@@ -16,7 +16,7 @@
     "To S2"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 4.0,
+  "defaultMaxVel": 2.0,
   "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 120.0,
   "defaultMaxAngAccel": 90.0,
