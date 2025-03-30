@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -128,7 +129,7 @@ public class RobotContainer {
         driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
         driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
         driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        // driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
 
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
@@ -148,7 +149,7 @@ public class RobotContainer {
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
         // subsystemController.b().whileTrue(coraler.branchCommand());
-        subsystemController.x().whileTrue(coraler.l4BranchCommand());
+        // subsystemController.x().whileTrue(coraler.l4BranchCommand());
         subsystemController.y().whileTrue(coraler.troughCommand());
 
         subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
@@ -157,8 +158,10 @@ public class RobotContainer {
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
-        // testController.a().whileTrue(elevator.toLevelCommand(Level.SMARTDASHBOARD));
-        testController.start().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
+        testController.a().whileTrue(elevator.sysIdDynamic(Direction.kForward));
+        testController.b().whileTrue(elevator.sysIdDynamic(Direction.kReverse));
+        testController.x().whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
+        testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
     }
 
     public Command getAutonomousCommand() {

@@ -80,7 +80,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
         SmartDashboard.putNumber("Elevator/HeightTargetFeet", ElevatorConstants.BASE_HEIGHT.in(Units.Feet));
 
-        pid.setTolerance(0.02); // 2cm
+        pid.setTolerance(0.005); // 0.5cm
 
         this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
     }
@@ -136,11 +136,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction).andThen(runOnce(() -> krakenRight.setVoltage(ElevatorConstants.KG)));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction).andThen(runOnce(() -> krakenRight.setVoltage(ElevatorConstants.KG)));
     }
 
     private void setLevel(ElevatorConstants.Level level) {
@@ -149,7 +149,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void resetMeasurement() {
         resetMeasurement(ElevatorConstants.BASE_HEIGHT);
-        dummyMax.getEncoder().setPosition(0);
     }
 
     public void resetMeasurement(Distance height) {
