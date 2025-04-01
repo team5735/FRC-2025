@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     private void updateVisionMeasurement(String limelight_name) {
         LimelightHelpers.SetRobotOrientation(limelight_name,
-                drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0,
+                drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
                 0, 0, 0);
 
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight_name);
