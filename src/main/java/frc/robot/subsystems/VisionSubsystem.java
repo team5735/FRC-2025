@@ -61,6 +61,8 @@ public class VisionSubsystem extends SubsystemBase {
             // something has probably gone very wrong or this measurement will not be great
             SmartDashboard.putNumber("poseestimator_status", -3);
             return;
+        } else if (mt2.pose.getTranslation().getDistance(drivetrain.getEstimatedPosition().getTranslation()) > 1) {
+            SmartDashboard.putNumber("poseestimator_status", -4);
         } else {
             SmartDashboard.putNumber("poseestimator_status", 0);
         }
