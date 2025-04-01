@@ -39,12 +39,15 @@ public class PIDToNearestBranch extends Command {
         double y = yController.calculate(drivetrain.getEstimatedPosition().getTranslation().getY());
         double omega = omegaController.calculate(drivetrain.getEstimatedPosition().getRotation().getDegrees());
 
-        if (Math.sqrt(xController.getController().getError()
-                * yController.getController().getError()) > VisionConstants.MAX_PID_ERROR) {
+        double error = Math.sqrt(xController.getController().getError()
+                * yController.getController().getError());
+        if (error > VisionConstants.MAX_PID_ERROR) {
             drivetrain.setControl(drivetrain.brakeRequest);
+            System.out.println("error too big: " + error);
             cancel();
             return;
         }
+
         drivetrain.pidDrive(x, y, omega);
     }
 
