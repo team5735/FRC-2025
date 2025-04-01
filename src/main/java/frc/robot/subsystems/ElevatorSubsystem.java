@@ -15,12 +15,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,8 +32,6 @@ import frc.robot.constants.ElevatorConstants.Level;
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
-
-    private final SparkMax dummyMax = new SparkMax(Constants.ELEVATOR_ENCODER_ID, MotorType.kBrushed);
 
     private boolean enabled = true;
 
@@ -63,9 +55,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
-
-        dummyMax.configure(new SparkMaxConfig().apply(new EncoderConfig().inverted(true).positionConversionFactor(1)),
-                ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         resetMeasurement();
 
@@ -94,7 +83,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
         SmartDashboard.putNumber("Elevator/PosInches", getPosition().in(Inches));
         SmartDashboard.putNumber("Elevator/EncoderRots", krakenRight.getPosition().getValue().in(Rotations));
-        SmartDashboard.putNumber("Elevator/NewEncoderRots", dummyMax.getEncoder().getPosition());
         SmartDashboard.putNumber(
                 "Elevator/VelocityMPS",
                 InchesPerSecond.of(

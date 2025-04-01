@@ -13,7 +13,6 @@ public class Constants {
 
     public static final int ELEVATOR_KRAKEN_RIGHT_ID = 24;
     public static final int ELEVATOR_KRAKEN_LEFT_ID = 23;
-    public static final int ELEVATOR_ENCODER_ID = 40;
 
     public static final int FEEDER_FALCON_ID = 22;
 
