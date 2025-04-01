@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,9 +34,9 @@ public class VisionSubsystem extends SubsystemBase {
         }
         drivetrain.getPigeon2()
                 .setYaw(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight").pose.getRotation().getDegrees());
-        LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getPigeon2().getRotation2d().getDegrees(), 0, 0, 0,
-                0, 0);
-        drivetrain.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose);
+        drivetrain.resetPose(
+                new Pose2d(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight").pose.getTranslation(),
+                        drivetrain.getPigeon2().getRotation2d()));
     }
 
     public Command getSeedPigeon() {
