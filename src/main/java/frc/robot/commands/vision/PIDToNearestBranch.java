@@ -35,9 +35,9 @@ public class PIDToNearestBranch extends Command {
 
     @Override
     public void execute() {
-        double x = xController.calculate(-drivetrain.getEstimatedPosition().getTranslation().getX());
-        double y = yController.calculate(-drivetrain.getEstimatedPosition().getTranslation().getY());
-        double omega = omegaController.calculate(-drivetrain.getEstimatedPosition().getRotation().getDegrees());
+        double x = xController.calculate(drivetrain.getEstimatedPosition().getTranslation().getX());
+        double y = yController.calculate(drivetrain.getEstimatedPosition().getTranslation().getY());
+        double omega = omegaController.calculate(drivetrain.getEstimatedPosition().getRotation().getDegrees());
 
         if (Math.sqrt(xController.getController().getError()
                 * yController.getController().getError()) > VisionConstants.MAX_PID_ERROR) {
