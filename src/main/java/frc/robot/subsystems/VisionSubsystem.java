@@ -63,6 +63,10 @@ public class VisionSubsystem extends SubsystemBase {
             // something has probably gone very wrong or this measurement will not be great
             SmartDashboard.putNumber("poseestimator_status", -3);
             return;
+        } else if (mt2.pose.getTranslation().getDistance(drivetrain.getEstimatedPosition().getTranslation()) > 1) {
+            // limelight estimation is more than 1 meter away from the robot
+            SmartDashboard.putNumber("poseestimator_status", -4);
+            return;
         } else if (targetPose_CameraSpace != null && targetPose_CameraSpace.length == 6
                 && (Math.sqrt(targetPose_CameraSpace[0] * targetPose_CameraSpace[0]
                         + targetPose_CameraSpace[1] * targetPose_CameraSpace[1]) > 1)) {
