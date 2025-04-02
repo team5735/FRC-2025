@@ -366,10 +366,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     private void setUpAuto() {
         AutoBuilder.configure(
                 () -> getEstimatedPosition(),
-                (pose) -> {
-                    this.getPigeon2().setYaw(pose.getRotation().getDegrees());
-                    this.resetPose(pose);
-                },
+                this::resetPose,
                 this::getChassisSpeeds,
                 (speeds, ff) -> autoDriveRobotRelative(speeds),
                 new PPHolonomicDriveController(
