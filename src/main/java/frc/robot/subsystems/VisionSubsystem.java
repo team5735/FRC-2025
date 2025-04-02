@@ -48,6 +48,8 @@ public class VisionSubsystem extends SubsystemBase {
                 drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
                 0, 0, 0);
 
+        double[] targetPose_CameraSpace = LimelightHelpers.getTargetPose_CameraSpace(limelight_name);
+
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight_name);
         if (mt2 == null) {
             // failed to get mt2 or it's not new
@@ -61,7 +63,10 @@ public class VisionSubsystem extends SubsystemBase {
             // something has probably gone very wrong or this measurement will not be great
             SmartDashboard.putNumber("poseestimator_status", -3);
             return;
-        } else if (mt2.pose.getTranslation().getDistance(drivetrain.getEstimatedPosition().getTranslation()) > 1) {
+        } else if (targetPose_CameraSpace != null && targetPose_CameraSpace.length == 6
+                && (Math.sqrt(targetPose_CameraSpace[0] * targetPose_CameraSpace[0]
+                        + targetPose_CameraSpace[1] * targetPose_CameraSpace[1]) > 1)) {
+            // limelight is more than 1 meter away from the target
             SmartDashboard.putNumber("poseestimator_status", -4);
             return;
         } else {
