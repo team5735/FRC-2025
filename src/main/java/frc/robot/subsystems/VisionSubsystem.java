@@ -78,6 +78,14 @@ public class VisionSubsystem extends SubsystemBase {
         double mt2xdev = stddevs[6];
         double mt2ydev = stddevs[7];
         drivetrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
+
+        if (Double.isNaN(drivetrain.getEstimatedPosition().getX())
+                || Double.isInfinite(drivetrain.getEstimatedPosition().getX()) ||
+                Double.isNaN(drivetrain.getEstimatedPosition().getY())
+                || Double.isInfinite(drivetrain.getEstimatedPosition().getY())) {
+            drivetrain.resetPose(LimelightHelpers.getBotPose2d_wpiBlue(limelight_name));
+            System.out.println("had to reset pose estimator due to detected NaN");
+        }
     }
 
     // all in deg
