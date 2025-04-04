@@ -35,6 +35,10 @@ public class CANdleSubsystem extends SubsystemBase {
         return setToColorByState(LedState.FED);
     }
 
+    public Command colorAngryCommand() {
+        return setToColorByState(LedState.ANGRY);
+    }
+
     private Command setToColorByState(LedState state) {
         return startEnd(() -> {
             setToColor(state.ledColor);

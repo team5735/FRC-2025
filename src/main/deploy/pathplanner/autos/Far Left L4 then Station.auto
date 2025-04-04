@@ -62,9 +62,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "elevatorBase"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "elevatorBase"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B02 to S1.1"
           }
         }
       ]

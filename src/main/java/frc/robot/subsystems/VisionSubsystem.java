@@ -67,7 +67,7 @@ public class VisionSubsystem extends SubsystemBase {
             // limelight estimation is more than 1 meter away from the robot
             SmartDashboard.putNumber("poseestimator_status", -4);
             return;
-        } else if (targetPose_CameraSpace != null && targetPose_CameraSpace.length == 6
+        } else if (targetPose_CameraSpace != null && targetPose_CameraSpace.length > 2
                 && (Math.sqrt(targetPose_CameraSpace[0] * targetPose_CameraSpace[0]
                         + targetPose_CameraSpace[1] * targetPose_CameraSpace[1]) > 1)) {
             // limelight is more than 1 meter away from the target

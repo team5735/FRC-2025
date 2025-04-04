@@ -155,6 +155,9 @@ public class RobotContainer {
         subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
         subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
 
+        subsystemController.rightTrigger(0.1).or(subsystemController.leftTrigger(0.1))
+                .whileTrue(LEDs.colorAngryCommand());
+
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 

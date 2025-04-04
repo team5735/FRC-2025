@@ -16,7 +16,7 @@ public class CoralConstants {
 
     public static final double BRANCH_TOP_VOLTS = 1.0;
     public static final double BRANCH_BOTTOM_VOLTS = 1.0;
-    public static final Time BRANCH_TIMEOUT = Seconds.of(2);
+    public static final Time BRANCH_TIMEOUT = Seconds.of(1);
 
     public static final double FLIPPER_VOLTS = 2.0;
     public static final double UNFLIP_VOLTS = 1.0;

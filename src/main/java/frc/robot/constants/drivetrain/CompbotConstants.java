@@ -87,12 +87,12 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public LinearVelocity getDefaultSpeed() {
-        return MetersPerSecond.of(4);
+        return MetersPerSecond.of(4.5);
     }
 
     @Override
     public LinearVelocity getSlowSpeed() {
-        return MetersPerSecond.of(0.6);
+        return MetersPerSecond.of(0.5);
     }
 
     @Override

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4027499999999997,
-        "y": 4.931749999999999
+        "x": 7.575,
+        "y": 7.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0614999999999997,
-        "y": 5.63375
+        "x": 6.449326782804459,
+        "y": 6.7551163106647
       },
       "isLocked": false,
-      "linkedName": "B11"
+      "linkedName": "P1"
     },
     {
       "anchor": {
-        "x": 1.3627840909090911,
-        "y": 7.290696022727272
+        "x": 5.039,
+        "y": 5.152
       },
       "prevControl": {
-        "x": 1.9867840909090908,
-        "y": 6.491196022727272
+        "x": 5.462593470228953,
+        "y": 5.9410860103351295
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "S1.1"
+      "linkedName": "B2"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 120.0,
     "maxAngularAcceleration": 90.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 36.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "To S1",
+  "folder": "From P1",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
