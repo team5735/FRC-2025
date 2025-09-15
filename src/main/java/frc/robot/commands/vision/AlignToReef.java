@@ -35,8 +35,6 @@ public class AlignToReef extends Command {
 
     private static boolean infinite = true;
 
-    private Supplier<Boolean> movingForward;
-
     private ReefAlignment whichBranch;
 
     private VisionSubsystem vision;
@@ -49,7 +47,6 @@ public class AlignToReef extends Command {
         this.drivetrain = drivetrain;
         this.vision = vision;
         this.whichBranch = whichBranch;
-        this.movingForward = movingForward;
         addRequirements(drivetrain, vision);
     }
 
@@ -57,7 +54,8 @@ public class AlignToReef extends Command {
     public void initialize() {
         this.alignmentTargetTag = ReefAprilTagPositions
                 .getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
-        this.targetLine = new Line(alignmentTargetTag, "AlignToReef").offsetBy(whichBranch.getParallel().in(Meters));
+        this.targetLine = new Line(alignmentTargetTag.getRotation(), alignmentTargetTag.getTranslation(), "AlignToReef")
+                .offsetBy(whichBranch.getParallel());
 
         omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
         lineController.setup(0, .01); // we want to be 'at' the Line.
@@ -73,7 +71,7 @@ public class AlignToReef extends Command {
 
         double omega = omegaController.calculate(estimatedPosition.getRotation().getRadians());
 
-        double measurement = targetLine.getPIDMeasurement(estimatedPosition.getTranslation());
+        double measurement = targetLine.getPIDMeasurement(estimatedPosition.getTranslation()).in(Meters);
         double movementTowardsLine = lineController.calculate(measurement);
         Translation2d drivetrainMovement = targetLine.getVectorFrom(estimatedPosition.getTranslation())
                 .times(-movementTowardsLine);
@@ -82,7 +80,8 @@ public class AlignToReef extends Command {
         doubles.set("deltaX", drivetrainMovement.getX());
         doubles.set("deltaY", drivetrainMovement.getY());
 
-        if (lineController.getController().getError() < VisionConstants.PATH_DIST_FROM_SCOREPOS) {
+        if (Meters.of(lineController.getController().getError())
+                .compareTo(VisionConstants.PATH_DIST_FROM_SCOREPOS) < 0) {
             drivetrainMovement = drivetrainMovement
                     .plus(targetLine.getVectorAlongLine().times(VisionConstants.ALONG_LINE_SPEED));
         }
