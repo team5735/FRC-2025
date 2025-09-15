@@ -14,15 +14,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -71,7 +68,6 @@ public class RobotContainer {
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
-        // CameraServer.startAutomaticCapture();
         Map<String, Command> commandsForAuto = new HashMap<>();
 
         commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));
@@ -132,7 +128,7 @@ public class RobotContainer {
         driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
         driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
         driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        // driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
 
         driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
 
@@ -141,20 +137,13 @@ public class RobotContainer {
         coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
         driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
-        // driveController.povLeft().and(driveController.a().negate())
-        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () ->
-        // movingForward));
-        // driveController.povRight().and(driveController.a().negate())
-        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
-        // movingForward));
-        // driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
-        driveController.b().whileTrue(new FunctionalCommand(() -> {
-            movingForward = true;
-        }, () -> {
-        }, (cancelled) -> {
-            movingForward = false;
-        }, () -> false));
+        // Vision bindings
+        driveController.povLeft().and(driveController.a().negate())
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () -> movingForward));
+        driveController.povRight().and(driveController.a().negate())
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () -> movingForward));
+        driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
         // reset the field-centric heading on left bumper press
 

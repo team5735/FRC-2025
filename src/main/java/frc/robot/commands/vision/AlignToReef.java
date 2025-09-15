@@ -82,7 +82,7 @@ public class AlignToReef extends Command {
         doubles.set("deltaX", drivetrainMovement.getX());
         doubles.set("deltaY", drivetrainMovement.getY());
 
-        if (lineController.getController().getError() < 0.05 && lineController.getController().getError() < 0.02) {
+        if (lineController.getController().getError() < VisionConstants.PATH_DIST_FROM_SCOREPOS) {
             drivetrainMovement = drivetrainMovement
                     .plus(targetLine.getVectorAlongLine().times(VisionConstants.ALONG_LINE_SPEED));
         }
