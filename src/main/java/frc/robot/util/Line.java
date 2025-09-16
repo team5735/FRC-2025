@@ -1,27 +1,29 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
+
+import static edu.wpi.first.units.Units.Meters;
 
 public class Line {
     private double slope;
 
-    private double centerX;
-    private double centerY;
+    private Distance centerX;
+    private Distance centerY;
 
     NTDoubleSection doubles;
 
-    public Line(Pose2d pose, String name) {
-        slope = Math.tan(pose.getRotation().getRadians());
-        centerX = pose.getTranslation().getX();
-        centerY = pose.getTranslation().getY();
+    public Line(Rotation2d angle, Translation2d position, String name) {
+        slope = Math.tan(angle.getRadians());
+        centerX = position.getMeasureX();
+        centerY = position.getMeasureY();
 
         this.doubles = new NTDoubleSection(name + "_line", "slope", "centerX", "centerY");
 
         doubles.set("slope", slope);
-        doubles.set("centerX", centerX);
-        doubles.set("centerY", centerY);
+        doubles.set("centerX", centerX.in(Meters));
+        doubles.set("centerY", centerY.in(Meters));
     }
 
     /**
@@ -30,14 +32,14 @@ public class Line {
      * 
      * @return this Line
      */
-    public Line offsetBy(double d) {
-        Translation2d trans = new Translation2d(d,
+    public Line offsetBy(Distance d) {
+        Translation2d trans = new Translation2d(d.in(Meters), // unit is required to be meters
                 Rotation2d.fromRadians(Math.atan(slope)).plus(Rotation2d.kCCW_90deg));
-        this.centerX += trans.getX();
-        this.centerY += trans.getY();
+        this.centerX = this.centerX.plus(trans.getMeasureX());
+        this.centerY = this.centerY.plus(trans.getMeasureY());
 
-        doubles.set("centerX", centerX);
-        doubles.set("centerY", centerY);
+        doubles.set("centerX", centerX.in(Meters));
+        doubles.set("centerY", centerY.in(Meters));
         return this;
     }
 
@@ -53,9 +55,11 @@ public class Line {
      * However, the absolute value is removed, in order to not accelerate towards
      * infinity when the line is passed.
      */
-    public double getPIDMeasurement(Translation2d position) {
-        return slope * position.getX() - position.getY() + centerY - slope * centerX
-                / Math.sqrt(1 + slope * slope);
+    public Distance getPIDMeasurement(Translation2d position) {
+        return Meters
+                .of(slope * position.getMeasureX().in(Meters) - position.getMeasureY().in(Meters) + centerY.in(Meters)
+                        - slope * centerX.in(Meters)
+                                / Math.sqrt(1 + slope * slope));
     }
 
     /**

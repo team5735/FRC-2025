@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
@@ -68,7 +70,6 @@ public class RobotContainer {
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
-        // CameraServer.startAutomaticCapture();
         Map<String, Command> commandsForAuto = new HashMap<>();
 
         commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));
@@ -138,13 +139,15 @@ public class RobotContainer {
         coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
         driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
-        // driveController.povLeft().and(driveController.a().negate())
-        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT, () ->
-        // movingForward));
-        // driveController.povRight().and(driveController.a().negate())
-        // .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT, () ->
-        // movingForward));
+
+        // Vision bindings
+        driveController.povLeft().and(driveController.a().negate())
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT));
+        driveController.povRight().and(driveController.a().negate())
+                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
+
+        // reset the field-centric heading on left bumper press
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
