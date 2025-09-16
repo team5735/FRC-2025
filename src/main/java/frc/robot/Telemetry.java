@@ -99,46 +99,28 @@ public class Telemetry {
         public void initSendable(SendableBuilder builder) {
             builder.setSmartDashboardType("SwerveDrive");
 
-            builder.addDoubleProperty(
-                    "Front Left Angle",
-                    () -> RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRadians(),
-                    null);
-            builder.addDoubleProperty(
-                    "Front Left Velocity",
-                    () -> RobotContainer.drivetrain.getModule(0).getCurrentState().speedMetersPerSecond,
-                    null);
+            builder.addDoubleProperty("Front Left Angle",
+                    () -> RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRadians(), null);
+            builder.addDoubleProperty("Front Left Velocity",
+                    () -> RobotContainer.drivetrain.getModule(0).getCurrentState().speedMetersPerSecond, null);
 
-            builder.addDoubleProperty(
-                    "Front Right Angle",
-                    () -> RobotContainer.drivetrain.getModule(1).getCurrentState().angle.getRadians(),
-                    null);
-            builder.addDoubleProperty(
-                    "Front Right Velocity",
-                    () -> RobotContainer.drivetrain.getModule(1).getCurrentState().speedMetersPerSecond,
-                    null);
+            builder.addDoubleProperty("Front Right Angle",
+                    () -> RobotContainer.drivetrain.getModule(1).getCurrentState().angle.getRadians(), null);
+            builder.addDoubleProperty("Front Right Velocity",
+                    () -> RobotContainer.drivetrain.getModule(1).getCurrentState().speedMetersPerSecond, null);
 
-            builder.addDoubleProperty(
-                    "Back Left Angle",
-                    () -> RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRadians(),
-                    null);
-            builder.addDoubleProperty(
-                    "Back Left Velocity",
-                    () -> RobotContainer.drivetrain.getModule(2).getCurrentState().speedMetersPerSecond,
-                    null);
+            builder.addDoubleProperty("Back Left Angle",
+                    () -> RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRadians(), null);
+            builder.addDoubleProperty("Back Left Velocity",
+                    () -> RobotContainer.drivetrain.getModule(2).getCurrentState().speedMetersPerSecond, null);
 
-            builder.addDoubleProperty(
-                    "Back Right Angle",
-                    () -> RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRadians(),
-                    null);
-            builder.addDoubleProperty(
-                    "Back Right Velocity",
-                    () -> RobotContainer.drivetrain.getModule(3).getCurrentState().speedMetersPerSecond,
-                    null);
+            builder.addDoubleProperty("Back Right Angle",
+                    () -> RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRadians(), null);
+            builder.addDoubleProperty("Back Right Velocity",
+                    () -> RobotContainer.drivetrain.getModule(3).getCurrentState().speedMetersPerSecond, null);
 
-            builder.addDoubleProperty(
-                    "Robot Angle",
-                    () -> RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians),
-                    null);
+            builder.addDoubleProperty("Robot Angle",
+                    () -> RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians), null);
         }
     };
 
@@ -196,80 +178,56 @@ public class Telemetry {
         SmartDashboard.putNumber("translation_position", state.Pose.getY());
         SmartDashboard.putNumber("translation_velocity", state.ModuleStates[0].speedMetersPerSecond);
 
-        SmartDashboard.putNumber(
-                "FL_steer_position",
+        SmartDashboard.putNumber("FL_steer_position",
                 (RobotContainer.drivetrain.getModule(0).getCurrentState().angle.getRotations() + 1) % 1);
-        SmartDashboard.putNumber(
-                "FL_steer_velocity",
+        SmartDashboard.putNumber("FL_steer_velocity",
                 RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "FR_steer_position",
+        SmartDashboard.putNumber("FR_steer_position",
                 (RobotContainer.drivetrain.getModule(1).getCurrentState().angle.getRotations() + 1) % 1);
-        SmartDashboard.putNumber(
-                "FR_steer_velocity",
+        SmartDashboard.putNumber("FR_steer_velocity",
                 RobotContainer.drivetrain.getModule(1).getSteerMotor().getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "BL_steer_position",
+        SmartDashboard.putNumber("BL_steer_position",
                 (RobotContainer.drivetrain.getModule(2).getCurrentState().angle.getRotations() + 1) % 1);
-        SmartDashboard.putNumber(
-                "BL_steer_velocity",
+        SmartDashboard.putNumber("BL_steer_velocity",
                 RobotContainer.drivetrain.getModule(2).getSteerMotor().getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "BR_steer_position",
+        SmartDashboard.putNumber("BR_steer_position",
                 (RobotContainer.drivetrain.getModule(3).getCurrentState().angle.getRotations() + 1) % 1);
-        SmartDashboard.putNumber(
-                "BR_steer_velocity",
+        SmartDashboard.putNumber("BR_steer_velocity",
                 RobotContainer.drivetrain.getModule(3).getSteerMotor().getVelocity().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "rotation_position",
-                MathUtil.inputModulus(
-                        RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians),
-                        -Math.PI, Math.PI));
-        SmartDashboard.putNumber(
-                "rotation_velocity",
-                RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValue()
-                        .in(Units.RadiansPerSecond));
+        SmartDashboard.putNumber("rotation_position", MathUtil.inputModulus(
+                RobotContainer.drivetrain.getPigeon2().getYaw().getValue().in(Units.Radians), -Math.PI, Math.PI));
+        SmartDashboard.putNumber("rotation_velocity", RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld()
+                .getValue().in(Units.RadiansPerSecond));
 
-        SmartDashboard.putNumber(
-                "FL_steer_setpoint",
+        SmartDashboard.putNumber("FL_steer_setpoint",
                 (RobotContainer.drivetrain.getModule(0).getTargetState().angle.getRotations() + 1) % 1);
 
-        SmartDashboard.putNumber(
-                "FL_drive_volts",
+        SmartDashboard.putNumber("FL_drive_volts",
                 RobotContainer.drivetrain.getModule(0).getDriveMotor().getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(
-                "FL_steer_volts",
+        SmartDashboard.putNumber("FL_steer_volts",
                 RobotContainer.drivetrain.getModule(0).getSteerMotor().getMotorVoltage().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "FR_drive_volts",
+        SmartDashboard.putNumber("FR_drive_volts",
                 RobotContainer.drivetrain.getModule(1).getDriveMotor().getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(
-                "FR_steer_volts",
+        SmartDashboard.putNumber("FR_steer_volts",
                 RobotContainer.drivetrain.getModule(1).getSteerMotor().getMotorVoltage().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "BL_drive_volts",
+        SmartDashboard.putNumber("BL_drive_volts",
                 RobotContainer.drivetrain.getModule(2).getDriveMotor().getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(
-                "BL_steer_volts",
+        SmartDashboard.putNumber("BL_steer_volts",
                 RobotContainer.drivetrain.getModule(2).getSteerMotor().getMotorVoltage().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "BR_drive_volts",
+        SmartDashboard.putNumber("BR_drive_volts",
                 RobotContainer.drivetrain.getModule(3).getDriveMotor().getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber(
-                "BR_steer_volts",
+        SmartDashboard.putNumber("BR_steer_volts",
                 RobotContainer.drivetrain.getModule(3).getSteerMotor().getMotorVoltage().getValueAsDouble());
 
-        SmartDashboard.putNumber(
-                "FL_drive_motor_rotations",
-                RobotContainer.drivetrain.getModule(0).getDriveMotor().getRotorPosition().getValue()
-                        .in(Units.Rotations));
+        SmartDashboard.putNumber("FL_drive_motor_rotations", RobotContainer.drivetrain.getModule(0).getDriveMotor()
+                .getRotorPosition().getValue().in(Units.Rotations));
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");
