@@ -63,6 +63,9 @@ public class ReefAprilTagPositions {
                     Rotation2d.fromDegrees(-60))),
     };
 
+    // These two numbers aren't factor-of-two related because of the net in the
+    // middle of the field.
+    private static final double APRILTAG_TEAM_OFFSET = 8.570;
     private static final double FIELD_LENGTH = 17.5483;
     private static final double FIELD_WIDTH = 8.0519;
 
@@ -92,7 +95,7 @@ public class ReefAprilTagPositions {
         int length = SCORING_POSES.length / 2;
         for (i = 0; i < length; i++) {
             SCORING_POSES[length + i] = new Pose2d(
-                    SCORING_POSES[i].getTranslation().plus(new Translation2d(FIELD_LENGTH / 2, 0)),
+                    SCORING_POSES[i].getTranslation().plus(new Translation2d(APRILTAG_TEAM_OFFSET, 0)),
                     SCORING_POSES[i].getRotation());
         }
     }
