@@ -124,6 +124,21 @@ public class Telemetry {
         }
     };
 
+    /**
+     * Adds to the instance variable field in sets of 6, because Elastic interprets
+     * >= 8 poses in an array as a path, not poses, and 6 is nice for the arrays in
+     * {@link ReefAprilTagPositions}
+     */
+    private void add2DPoseArray(Pose2d[] poses, String name) {
+        for (int i = 0; i < poses.length / 6; i++) {
+            Pose2d[] sixPoses = new Pose2d[6];
+            for (int j = 0; j < 6; j++) {
+                sixPoses[j] = poses[i * 6 + j];
+            }
+            Telemetry.field.getObject("poses_" + name + "_" + i).setPoses(sixPoses);
+        }
+    }
+
     /** Accept the swerve drive state and telemeterize it to SmartDashboard. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
@@ -148,21 +163,19 @@ public class Telemetry {
 
         field.setRobotPose(AutoBuilder.getCurrentPose());
 
-        // If Elastic sees >= 8 poses in one object, it gets angry (turns it into a
-        // path).
-        for (int i = 0; i < ReefAprilTagPositions.SCORING_POSES.length / 6; i++) {
-            Pose2d[] poses = new Pose2d[6];
-            for (int j = 0; j < 6; j++) {
-                poses[j] = ReefAprilTagPositions.SCORING_POSES[i * 6 + j];
-            }
-            Telemetry.field.getObject("scoringPositions_" + i).setPoses(poses);
+        for (var key : ReefAprilTagPositions.SCORING_POSES.keySet()) {
+            add2DPoseArray(ReefAprilTagPositions.SCORING_POSES.get(key), "scoring_" + key.name());
         }
+
+        add2DPoseArray(ReefAprilTagPositions.TAGS, "tags");
+
         LimelightHelpers.PoseEstimate mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         if (mt1Estimate != null) {
             field.getObject("limelightMt1Pos").setPose(mt1Estimate.pose);
         }
 
-        LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        LimelightHelpers.PoseEstimate mt2Estimate = LimelightHelpers
+                .getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
         if (mt2Estimate != null) {
             field.getObject("limelightMt2Pos").setPose(mt2Estimate.pose);
         }
