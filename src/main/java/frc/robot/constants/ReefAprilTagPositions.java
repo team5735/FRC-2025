@@ -3,6 +3,8 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.HashMap;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -20,7 +22,7 @@ public class ReefAprilTagPositions {
      *
      * <p>
      * Here's a diagram of the reefs with their tags.
-     * The 'x' in the middle is the field origin. The arrow is θ=0
+     * The 'x' in the middle is the field space origin. The arrow is θ=0
      * The 'y' in the bottom left is the blue alliance field origin.
      * In reality, each reef is a hexagon (so no __ sides), but I couldn't make that
      * look nice with ASCII.
@@ -36,7 +38,7 @@ public class ReefAprilTagPositions {
      * \y***************************************** /
      * </code>
      */
-    public static final Pose2d TAGS[] = new Pose2d[] {
+    public static final Pose2d BLUE_TAGS[] = new Pose2d[] {
             // 17
             fieldSpaceToBlueAllianceSpace(new Pose2d(
                     new Translation2d(-4.700446, -0.719482),
@@ -69,34 +71,39 @@ public class ReefAprilTagPositions {
     private static final double FIELD_LENGTH = 17.5483;
     private static final double FIELD_WIDTH = 8.0519;
 
-    public static final Pose2d SCORING_POSES[] = new Pose2d[TAGS.length * 4];
+    public static final Pose2d TAGS[] = new Pose2d[BLUE_TAGS.length * 2];
+
     static {
-        int i = 0;
-        for (Pose2d pose : TAGS) {
-            SCORING_POSES[i++] = new Pose2d(
-                    pose.getTranslation()
-                            .plus(new Translation2d(ReefAlignment.LEFT.getParallel().in(Meters),
-                                    pose.getRotation().plus(Rotation2d.kCCW_Pi_2))),
-                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
-                            new Transform2d(
-                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
-                                            0),
-                                    new Rotation2d()));
-            SCORING_POSES[i++] = new Pose2d(
-                    pose.getTranslation()
-                            .plus(new Translation2d(ReefAlignment.RIGHT.getParallel().in(Meters),
-                                    pose.getRotation().plus(Rotation2d.kCW_Pi_2))),
-                    pose.getRotation().plus(Rotation2d.kPi)).transformBy(
-                            new Transform2d(
-                                    new Translation2d(-DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
-                                            0),
-                                    new Rotation2d()));
+        Pose2d[] redTags = new Pose2d[BLUE_TAGS.length];
+        for (int i = 0; i < BLUE_TAGS.length; i++) {
+            redTags[i] = new Pose2d(BLUE_TAGS[i].getTranslation().plus(
+                    new Translation2d(APRILTAG_TEAM_OFFSET, 0)), BLUE_TAGS[i].getRotation());
         }
-        int length = SCORING_POSES.length / 2;
-        for (i = 0; i < length; i++) {
-            SCORING_POSES[length + i] = new Pose2d(
-                    SCORING_POSES[i].getTranslation().plus(new Translation2d(APRILTAG_TEAM_OFFSET, 0)),
-                    SCORING_POSES[i].getRotation());
+        System.arraycopy(BLUE_TAGS, 0, TAGS, 0, BLUE_TAGS.length);
+        System.arraycopy(redTags, 0, TAGS, BLUE_TAGS.length, redTags.length);
+    }
+
+    private static Pose2d createScoringPoseWithOffset(Pose2d pose, ReefAlignment offset) {
+        return new Pose2d(
+                pose.getTranslation()
+                        .plus(new Translation2d(offset.getParallel().in(Meters),
+                                pose.getRotation().plus(Rotation2d.kCCW_Pi_2))),
+                pose.getRotation().plus(Rotation2d.kPi)).transformBy(
+                        new Transform2d(
+                                new Translation2d(
+                                        -DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                        0),
+                                Rotation2d.kZero));
+    }
+
+    public static final HashMap<ReefAlignment, Pose2d[]> SCORING_POSES = new HashMap<>();
+    static {
+        for (ReefAlignment align : ReefAlignment.values()) {
+            Pose2d[] poses = new Pose2d[TAGS.length];
+            for (int i = 0; i < TAGS.length; i++) {
+                poses[i] = createScoringPoseWithOffset(TAGS[i], align);
+            }
+            SCORING_POSES.put(align, poses);
         }
     }
 
@@ -112,7 +119,7 @@ public class ReefAprilTagPositions {
     private static Pose2d getClosest(Translation2d position, Pose2d[] poses) {
         double closestDistanceSoFar = Double.MAX_VALUE;
         Pose2d best = null;
-        for (Pose2d tag : TAGS) {
+        for (Pose2d tag : poses) {
             double dist = tag.getTranslation().getDistance(position);
             if (dist < closestDistanceSoFar) {
                 best = tag;
@@ -138,7 +145,10 @@ public class ReefAprilTagPositions {
     }
 
     public static Pose2d getClosestScorePosition(Translation2d position) {
-        return getClosest(position, SCORING_POSES);
+        Pose2d[] allCoralPositions = new Pose2d[TAGS.length * 2];
+        System.arraycopy(SCORING_POSES.get(ReefAlignment.LEFT), 0, allCoralPositions, 0, TAGS.length);
+        System.arraycopy(SCORING_POSES.get(ReefAlignment.RIGHT), 0, allCoralPositions, TAGS.length, TAGS.length);
+        return getClosest(position, allCoralPositions);
     }
 
     public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); // exact from field diagram
