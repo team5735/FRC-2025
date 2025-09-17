@@ -3,7 +3,6 @@ package frc.robot.commands.vision;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -23,7 +22,6 @@ import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.util.ReefAlignment;
 
 public class DriveToBranch extends Command {
     private DrivetrainSubsystem drivetrain;
