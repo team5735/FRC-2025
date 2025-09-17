@@ -101,14 +101,16 @@ public class Telemetry {
      * Adds poses to field in sets of 6, because Elastic interprets >= 8 poses in an
      * array as a path, not poses, and 6 is nice for the arrays in
      * {@link ReefAprilTagPositions}
+     *
+     * batchPoses exists because other dashboards don't do that.
      */
     private static void add2dPoseArray(Pose2d[] poses, String name) {
-        String objName = "pose_" + name + "_";
+        String objName = "pose_" + name;
         if (batchPoses) {
             for (int i = 0; i < poses.length / 6; i++) {
                 Pose2d[] sixPoses = new Pose2d[6];
                 System.arraycopy(poses, i * 6, sixPoses, 0, 6);
-                field.getObject(objName).setPoses(sixPoses);
+                field.getObject(objName + "_" + i).setPoses(sixPoses);
             }
         } else {
             field.getObject(objName).setPoses(poses);
