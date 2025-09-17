@@ -50,8 +50,9 @@ public class AlignToReef extends Command {
         this.alignmentTargetPos = ReefAprilTagPositions
                 .getClosestScorePosition(drivetrain.getEstimatedPosition().getTranslation());
         this.alignmentTargetLine = new Line(
+                this.alignmentTargetPos.getTranslation(),
                 this.alignmentTargetPos.getRotation().plus(Rotation2d.k180deg),
-                this.alignmentTargetPos.getTranslation(), "alignToReef");
+                "alignToReef");
 
         angleController.setup(alignmentTargetPos.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
         lineController.setup(0, .01); // we want to be 'at' the Line.

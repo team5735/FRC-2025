@@ -14,7 +14,24 @@ public class Line {
 
     NTDoubleSection doubles;
 
-    public Line(Rotation2d angle, Translation2d position, String name) {
+    /**
+     * Construct a line with a given point and a given angle.
+     *
+     * This constructs a line that passes through the given position and has a slope
+     * of tan(angle).
+     *
+     * @param position point the line is required to pass through
+     * @param angle    the angle of the line
+     * @param name     the name of the line, used for the NTDoubleSection
+     * @return a new Line with the specified requirements
+     *
+     * @example
+     *          ```
+     *          // Represents a horizontal line passing through (0, 1).
+     *          new Line(new Translation2d(0, 1), Rotation2d.kZero);
+     *          ```
+     */
+    public Line(Translation2d position, Rotation2d angle, String name) {
         slope = Math.tan(angle.getRadians());
         centerX = position.getMeasureX();
         centerY = position.getMeasureY();
@@ -27,13 +44,16 @@ public class Line {
     }
 
     /**
-     * Modifies the current line, moving it in the direction by d
-     * units.
+     * Moves the current line by the given distance.
+     *
+     * Note that this function cares about sign. The line will be moved in the
+     * direction of arctan(slope) + pi/2.
      * 
+     * @param d the distance to offset the line by
      * @return this Line
      */
     public Line offsetBy(Distance d) {
-        Translation2d trans = new Translation2d(d.in(Meters), // unit is required to be meters
+        Translation2d trans = new Translation2d(d.in(Meters), // Translation2d doesn't fully support units
                 Rotation2d.fromRadians(Math.atan(slope)).plus(Rotation2d.kCCW_90deg));
         this.centerX = this.centerX.plus(trans.getMeasureX());
         this.centerY = this.centerY.plus(trans.getMeasureY());
@@ -46,14 +66,18 @@ public class Line {
     /**
      * Returns the distance from position to the line represented by this object.
      *
-     * <p>
-     * This formula is most similar to this one:
-     * https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Another_formula
+     * This formula is most similar to <a href=
+     * "https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Another_formula">this
+     * formula</a>.
      * Note that the sign of all the terms within Math.abs is flipped when compared
      * to the formula presented on the Wikipedia article.
-     *
+     * <p>
      * However, the absolute value is removed, in order to not accelerate towards
      * infinity when the line is passed.
+     *
+     * @param position the position to calculate from
+     * @return the distance from the position to the line
+     * @see getVectorFrom
      */
     public Distance getPIDMeasurement(Translation2d position) {
         return Meters
