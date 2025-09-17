@@ -27,14 +27,12 @@ import frc.robot.util.ReefAlignment;
 
 public class DriveToBranch extends Command {
     private DrivetrainSubsystem drivetrain;
-    private Supplier<ReefAlignment> alignment;
     private Command storedCommand = Commands.none();
     private Watchdog watchdog = new Watchdog(1, () -> {
     });
 
-    public DriveToBranch(DrivetrainSubsystem drivetrain, Supplier<ReefAlignment> alignment) {
+    public DriveToBranch(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
-        this.alignment = alignment;
         addRequirements(drivetrain);
     }
 
@@ -53,17 +51,17 @@ public class DriveToBranch extends Command {
             PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
 
             Pose2d lineUpPathOtherNode = new Pose2d(
-                    scoringPosition.getTranslation()
+                    tagPos.getTranslation()
                             .plus(new Translation2d(VisionConstants.PATH_DIST_FROM_SCOREPOS.in(Meters),
-                                    scoringPosition.getRotation().plus(Rotation2d.k180deg))),
-                    scoringPosition.getRotation());
+                                    tagPos.getRotation().plus(Rotation2d.k180deg))),
+                    tagPos.getRotation());
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(lineUpPathOtherNode,
-                    invertAngleOfPose(scoringPosition));
+                    invertAngleOfPose(tagPos));
             watchdog.addEpoch("create waypoints");
 
             PathPlannerPath path = new PathPlannerPath(waypoints, constraints,
-                    new IdealStartingState(0.5, scoringPosition.getRotation()),
-                    new GoalEndState(0, scoringPosition.getRotation()));
+                    new IdealStartingState(0.5, tagPos.getRotation()),
+                    new GoalEndState(0, tagPos.getRotation()));
             path.preventFlipping = true;
             watchdog.addEpoch("create path");
 
