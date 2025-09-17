@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -45,9 +46,9 @@ public class DriveToBranch extends Command {
     public void initialize() {
         try {
             watchdog.reset();
-            Pose2d tagPos = ReefAprilTagPositions.getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
-            Pose2d scoringPosition = new Pose2d(alignment.get().scoringPosition(tagPos),
-                    tagPos.getRotation().plus(Rotation2d.k180deg));
+            Pose2d tagPos = ReefAprilTagPositions
+                    .getClosestScorePosition(drivetrain.getEstimatedPosition().getTranslation());
+            Telemetry.field.getObject("targetPose").setPose(tagPos);
             watchdog.addEpoch("tagPos retrieved");
             PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
 
