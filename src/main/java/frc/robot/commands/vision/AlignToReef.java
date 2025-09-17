@@ -12,75 +12,73 @@ import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.Line;
+import frc.robot.util.NTBooleanSection;
 import frc.robot.util.NTDoubleSection;
-import frc.robot.util.ReefAlignment;
 import frc.robot.util.TunablePIDController;
 
 public class AlignToReef extends Command {
     private DrivetrainSubsystem drivetrain;
 
-    private Pose2d alignmentTargetTag;
-    private Line targetLine;
+    private Pose2d alignmentTargetPos;
+    private Line alignmentTargetLine;
 
-    public Line getTargetLine() {
-        return targetLine;
+    public Line getAlignmentTargetLine() {
+        return alignmentTargetLine;
     }
 
-    private TunablePIDController omegaController = new TunablePIDController("AlignToReef_omega", 5, 1, 0);
+    private TunablePIDController angleController = new TunablePIDController("AlignToReef_omega", 5, 1, 0);
     private TunablePIDController lineController = new TunablePIDController("AlignToReef_line", 5, 1, 0);
 
     private NTDoubleSection doubles = new NTDoubleSection(getName(), "omega", "deltaX", "deltaY");
+    private NTBooleanSection booleans = new NTBooleanSection(getName(), "aligning");
 
     private static boolean infinite = true;
-
-    private ReefAlignment whichBranch;
 
     private VisionSubsystem vision;
 
     /**
      * Positions the robot in order to score a coral.
      */
-    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision, ReefAlignment whichBranch) {
+    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision) {
         this.drivetrain = drivetrain;
         this.vision = vision;
-        this.whichBranch = whichBranch;
         addRequirements(drivetrain, vision);
     }
 
     @Override
     public void initialize() {
-        this.alignmentTargetTag = ReefAprilTagPositions
-                .getClosestTag(drivetrain.getEstimatedPosition().getTranslation());
-        this.targetLine = new Line(alignmentTargetTag.getRotation(), alignmentTargetTag.getTranslation(), "AlignToReef")
-                .offsetBy(whichBranch.getParallel());
+        this.alignmentTargetPos = ReefAprilTagPositions
+                .getClosestScorePosition(drivetrain.getEstimatedPosition().getTranslation());
+        this.alignmentTargetLine = new Line(
+                this.alignmentTargetPos.getRotation().plus(Rotation2d.k180deg),
+                this.alignmentTargetPos.getTranslation(), "alignToReef");
 
-        omegaController.setup(alignmentTargetTag.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
+        angleController.setup(alignmentTargetPos.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
         lineController.setup(0, .01); // we want to be 'at' the Line.
 
         vision.seedPigeon();
 
-        SmartDashboard.putBoolean("aligning", true);
+        booleans.set("aligning", true);
     }
 
     @Override
     public void execute() {
         Pose2d estimatedPosition = drivetrain.getEstimatedPosition();
 
-        double omega = omegaController.calculate(estimatedPosition.getRotation().getRadians());
+        double omega = angleController.calculate(estimatedPosition.getRotation().getRadians());
 
-        double measurement = targetLine.getPIDMeasurement(estimatedPosition.getTranslation()).in(Meters);
+        double measurement = alignmentTargetLine.getPIDMeasurement(estimatedPosition.getTranslation()).in(Meters);
         double movementTowardsLine = lineController.calculate(measurement);
-        Translation2d drivetrainMovement = targetLine.getVectorFrom(estimatedPosition.getTranslation())
-                .times(-movementTowardsLine);
+        Translation2d drivetrainMovement = alignmentTargetLine.getVectorFrom(estimatedPosition.getTranslation())
+                .times(movementTowardsLine);
 
         doubles.set("omega", omega);
         doubles.set("deltaX", drivetrainMovement.getX());
         doubles.set("deltaY", drivetrainMovement.getY());
 
-        if (Meters.of(lineController.getController().getError())
-                .compareTo(VisionConstants.PATH_DIST_FROM_SCOREPOS) < 0) {
+        if (lineController.atSetpoint()) {
             drivetrainMovement = drivetrainMovement
-                    .plus(targetLine.getVectorAlongLine().times(VisionConstants.ALONG_LINE_SPEED));
+                    .plus(alignmentTargetLine.getVectorAlongLine().times(VisionConstants.ALONG_LINE_SPEED));
         }
 
         drivetrain.pidDrive(drivetrainMovement, omega);
@@ -88,11 +86,11 @@ public class AlignToReef extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        SmartDashboard.putBoolean("aligning", false);
+        booleans.set("aligning", false);
     }
 
     private boolean atSetpoint() {
-        return lineController.atSetpoint() && omegaController.atSetpoint();
+        return lineController.atSetpoint() && angleController.atSetpoint();
     }
 
     @Override

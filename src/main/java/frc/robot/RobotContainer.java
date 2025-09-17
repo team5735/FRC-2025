@@ -116,11 +116,11 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // also used for branch scoring
-        // driveController.a().whileTrue(drivetrain.brakeCommand());
         driveController.rightStick().whileTrue(coraler.branchCommand());
-        // drivecontroller.b() slow mode and driving forward
+        // drivecontroller.b() slow mode
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-        driveController.x().whileTrue(drivetrain.brakeCommand());
+
+        driveController.x().whileTrue(new AlignToReef(drivetrain, vision));
 
         driveController.x().and(driveController.b()).whileTrue(new PIDToNearestBranch(drivetrain));
 
