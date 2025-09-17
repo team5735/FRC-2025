@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
+import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
@@ -119,7 +120,7 @@ public class RobotContainer {
         // drivecontroller.b() slow mode
         driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driveController.x().whileTrue(new AlignToReef(drivetrain, vision));
+        driveController.x().whileTrue(new DriveToBranch(drivetrain));
 
         driveController.x().and(driveController.b()).whileTrue(new PIDToNearestBranch(drivetrain));
 
