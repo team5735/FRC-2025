@@ -94,6 +94,29 @@ public class Telemetry {
 
     public static final Field2d field = new Field2d();
 
+    /**
+     * Adds poses to field in sets of 6, because Elastic interprets >= 8 poses in an
+     * array as a path, not poses, and 6 is nice for the arrays in
+     * {@link ReefAprilTagPositions}
+     */
+    private static void add2dPoseArray(Pose2d[] poses, String name) {
+        for (int i = 0; i < poses.length / 6; i++) {
+            Pose2d[] sixPoses = new Pose2d[6];
+            for (int j = 0; j < 6; j++) {
+                sixPoses[j] = poses[i * 6 + j];
+            }
+            field.getObject("poses_" + name + "_" + i).setPoses(sixPoses);
+        }
+    }
+
+    static {
+        for (var key : ReefAprilTagPositions.SCORING_POSES.keySet()) {
+            add2dPoseArray(ReefAprilTagPositions.SCORING_POSES.get(key), "scoring_" + key.name());
+        }
+
+        add2dPoseArray(ReefAprilTagPositions.TAGS, "tags");
+    }
+
     private final Sendable sendableState = new Sendable() {
         @Override
         public void initSendable(SendableBuilder builder) {
@@ -124,21 +147,6 @@ public class Telemetry {
         }
     };
 
-    /**
-     * Adds to the instance variable field in sets of 6, because Elastic interprets
-     * >= 8 poses in an array as a path, not poses, and 6 is nice for the arrays in
-     * {@link ReefAprilTagPositions}
-     */
-    private void add2DPoseArray(Pose2d[] poses, String name) {
-        for (int i = 0; i < poses.length / 6; i++) {
-            Pose2d[] sixPoses = new Pose2d[6];
-            for (int j = 0; j < 6; j++) {
-                sixPoses[j] = poses[i * 6 + j];
-            }
-            Telemetry.field.getObject("poses_" + name + "_" + i).setPoses(sixPoses);
-        }
-    }
-
     /** Accept the swerve drive state and telemeterize it to SmartDashboard. */
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
@@ -162,12 +170,6 @@ public class Telemetry {
         }
 
         field.setRobotPose(AutoBuilder.getCurrentPose());
-
-        for (var key : ReefAprilTagPositions.SCORING_POSES.keySet()) {
-            add2DPoseArray(ReefAprilTagPositions.SCORING_POSES.get(key), "scoring_" + key.name());
-        }
-
-        add2DPoseArray(ReefAprilTagPositions.TAGS, "tags");
 
         LimelightHelpers.PoseEstimate mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         if (mt1Estimate != null) {
