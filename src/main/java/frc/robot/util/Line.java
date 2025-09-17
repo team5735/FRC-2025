@@ -63,14 +63,35 @@ public class Line {
     }
 
     /**
-     * {@returns a {@link Translation2d} such that adding it to position returns a
-     * point on the line represented by this object}
+     * Gets the vector from a position to the line.
+     *
+     * Returns the shortest vector such that when the restult is added to the input
+     * position, a vector representing a point on this line is returned.
+     * <p>
+     * Intended for making a PID that moves the robot to be on the line.
+     *
+     * @param position the position to calculate from
+     * @return the vector between the position and the line
      */
     public Translation2d getVectorFrom(Translation2d position) {
         double perpendicularAngle = Math.atan(slope) + Math.PI / 2;
         return new Translation2d(1, Rotation2d.fromRadians(perpendicularAngle));
     }
 
+    /**
+     * Returns a vector that points along this line.
+     *
+     * Returns a unit vector with the same angle as this line was originally given.
+     *
+     * @return an {@link Translation2d} of length 1 with the angle of the line
+     *
+     * @example
+     *          ```
+     *          Rotation2d angle = ...;
+     *          Line line = new Line(..., angle, ...);
+     *          line.getVectorAlongLine() == angle;
+     *          ```
+     */
     public Translation2d getVectorAlongLine() {
         return new Translation2d(1, Rotation2d.fromRadians(Math.atan(slope)));
     }
