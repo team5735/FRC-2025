@@ -142,9 +142,9 @@ public class RobotContainer {
 
         // Vision bindings
         driveController.povLeft().and(driveController.a().negate())
-                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.LEFT));
+                .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povRight().and(driveController.a().negate())
-                .whileTrue(new AlignToReef(drivetrain, vision, ReefAlignment.RIGHT));
+                .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
 
         // reset the field-centric heading on left bumper press
