@@ -95,18 +95,23 @@ public class Telemetry {
 
     public static final Field2d field = new Field2d();
 
+    private static final boolean batchPoses = false;
+
     /**
      * Adds poses to field in sets of 6, because Elastic interprets >= 8 poses in an
      * array as a path, not poses, and 6 is nice for the arrays in
      * {@link ReefAprilTagPositions}
      */
     private static void add2dPoseArray(Pose2d[] poses, String name) {
-        for (int i = 0; i < poses.length / 6; i++) {
-            Pose2d[] sixPoses = new Pose2d[6];
-            for (int j = 0; j < 6; j++) {
-                sixPoses[j] = poses[i * 6 + j];
+        String objName = "pose_" + name + "_";
+        if (batchPoses) {
+            for (int i = 0; i < poses.length / 6; i++) {
+                Pose2d[] sixPoses = new Pose2d[6];
+                System.arraycopy(poses, i * 6, sixPoses, 0, 6);
+                field.getObject(objName).setPoses(sixPoses);
             }
-            field.getObject("poses_" + name + "_" + i).setPoses(sixPoses);
+        } else {
+            field.getObject(objName).setPoses(poses);
         }
     }
 
