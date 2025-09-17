@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.ReefAlignment;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -110,11 +111,9 @@ public class Telemetry {
     }
 
     static {
-        for (var key : ReefAprilTagPositions.SCORING_POSES.keySet()) {
-            add2dPoseArray(ReefAprilTagPositions.SCORING_POSES.get(key), "scoring_" + key.name());
-        }
-
         add2dPoseArray(ReefAprilTagPositions.TAGS, "tags");
+        add2dPoseArray(ReefAprilTagPositions.SCORING_POSES.get(ReefAlignment.LEFT), "score_left");
+        add2dPoseArray(ReefAprilTagPositions.SCORING_POSES.get(ReefAlignment.RIGHT), "score_right");
     }
 
     private final Sendable sendableState = new Sendable() {
