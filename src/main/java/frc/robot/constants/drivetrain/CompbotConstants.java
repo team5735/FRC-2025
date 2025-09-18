@@ -49,10 +49,10 @@ public class CompbotConstants implements DrivetrainConstants {
     @Override
     public PathConstraints getPathFollowConstraints() {
         return new PathConstraints(
-                MetersPerSecond.of(0),
-                MetersPerSecondPerSecond.of(0),
-                DegreesPerSecond.of(0),
-                DegreesPerSecondPerSecond.of(0)); // TODO add and test values
+                MetersPerSecond.of(1),
+                MetersPerSecondPerSecond.of(0.5),
+                DegreesPerSecond.of(60),
+                DegreesPerSecondPerSecond.of(30)); // TODO add and test values
     }
 
     @Override

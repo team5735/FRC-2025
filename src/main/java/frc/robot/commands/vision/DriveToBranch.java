@@ -3,6 +3,7 @@ package frc.robot.commands.vision;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -22,15 +23,18 @@ import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.util.ReefAlignment;
 
 public class DriveToBranch extends Command {
     private DrivetrainSubsystem drivetrain;
     private Command storedCommand = Commands.none();
     private Watchdog watchdog = new Watchdog(1, () -> {
     });
+    private Supplier<ReefAlignment> alignment;
 
-    public DriveToBranch(DrivetrainSubsystem drivetrain) {
+    public DriveToBranch(DrivetrainSubsystem drivetrain, Supplier<ReefAlignment> alignment) {
         this.drivetrain = drivetrain;
+        this.alignment = alignment;
         addRequirements(drivetrain);
     }
 
@@ -43,7 +47,8 @@ public class DriveToBranch extends Command {
         try {
             watchdog.reset();
             Pose2d tagPos = ReefAprilTagPositions
-                    .getClosestScorePosition(drivetrain.getEstimatedPosition().getTranslation());
+                    .getClosest(drivetrain.getEstimatedPosition().getTranslation(),
+                            ReefAprilTagPositions.SCORING_POSES.get(this.alignment.get()));
             Telemetry.field.getObject("targetPose").setPose(tagPos);
             watchdog.addEpoch("tagPos retrieved");
             PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();

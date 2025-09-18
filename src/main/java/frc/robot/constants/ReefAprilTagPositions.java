@@ -116,7 +116,7 @@ public class ReefAprilTagPositions {
     private static final StructPublisher<Pose2d> closestPosePublisher = NetworkTableInstance.getDefault()
             .getTable("sections").getSubTable("closestTag").getStructTopic("pos", Pose2d.struct).publish();
 
-    private static Pose2d getClosest(Translation2d position, Pose2d[] poses) {
+    public static Pose2d getClosest(Translation2d position, Pose2d[] poses) {
         double closestDistanceSoFar = Double.MAX_VALUE;
         Pose2d best = null;
         for (Pose2d tag : poses) {
