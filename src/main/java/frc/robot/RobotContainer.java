@@ -116,6 +116,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // also used for branch scoring
+        driveController.leftStick().onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.rightStick().whileTrue(coraler.branchCommand());
         // drivecontroller.b() slow mode
         // driveController.y().onTrue(drivetrain.runOnce(() ->
