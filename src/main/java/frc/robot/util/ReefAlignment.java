@@ -12,7 +12,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public enum ReefAlignment {
     LEFT(Inches.of(4)),
-    RIGHT(Inches.of(17)),
+    RIGHT(Inches.of(16.5)),
     ALGAE(Meters.of(0));
 
     private Distance parallel;
