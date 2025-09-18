@@ -153,5 +153,11 @@ public class ReefAprilTagPositions {
         return getClosest(position, allCoralPositions);
     }
 
+    public static double getScoreDistance(DrivetrainSubsystem drivetrain) {
+        Pose2d drivetrainPos = drivetrain.getEstimatedPosition();
+        Pose2d scorePos = getClosestScorePosition(drivetrainPos.getTranslation());
+        return scorePos.getTranslation().getDistance(drivetrainPos.getTranslation());
+    }
+
     public static final Distance DISTANCE_BETWEEN_BRANCHES = Inches.of(12.94); // exact from field diagram
 }

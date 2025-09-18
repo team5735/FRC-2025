@@ -1,11 +1,14 @@
 package frc.robot.commands.vision;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.util.ReefAlignment;
 import frc.robot.util.TunablePIDController;
 
 public class PIDToNearestBranch extends Command {
@@ -15,15 +18,19 @@ public class PIDToNearestBranch extends Command {
     private TunablePIDController yController = new TunablePIDController("PIDToNearestBranch_y");
     private TunablePIDController omegaController = new TunablePIDController("PIDToNearestBranch_omega");
 
-    public PIDToNearestBranch(DrivetrainSubsystem drivetrain) {
+    private Supplier<ReefAlignment> alignment;
+
+    public PIDToNearestBranch(DrivetrainSubsystem drivetrain, Supplier<ReefAlignment> alignment) {
         this.drivetrain = drivetrain;
+        this.alignment = alignment;
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
         Pose2d targetPos = ReefAprilTagPositions
-                .getClosestScorePosition(drivetrain.getEstimatedPosition().getTranslation());
+                .getClosest(drivetrain.getEstimatedPosition().getTranslation(),
+                        ReefAprilTagPositions.SCORING_POSES.get(this.alignment.get()));
 
         Telemetry.field.getObject("closestBranch").setPose(targetPos);
 

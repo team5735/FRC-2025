@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -27,6 +28,8 @@ import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
+import frc.robot.constants.ReefAprilTagPositions;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -101,6 +104,17 @@ public class RobotContainer {
         configureBindings();
     }
 
+    private ReefAlignment chooseAlignment() {
+        switch (driveController.getHID().getPOV()) {
+            case 270:
+                return ReefAlignment.LEFT;
+            case 90:
+                return ReefAlignment.RIGHT;
+            default:
+                return ReefAlignment.ALGAE;
+        }
+    }
+
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -123,18 +137,16 @@ public class RobotContainer {
         // drivetrain.seedFieldCentric()));
         driveController.y().onTrue(drivetrain.runOnce(() -> vision.seedPigeon()));
 
-        driveController.getHID().getPOV();
-        driveController.x().onTrue(new DriveToBranch(drivetrain, () -> {
-            if (driveController.getHID().getPOV() == 270) {
-                return ReefAlignment.LEFT;
-            } else if (driveController.getHID().getPOV() == 90) {
-                return ReefAlignment.RIGHT;
+        Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
+        Command pidDrive = new PIDToNearestBranch(drivetrain, () -> chooseAlignment());
+        Map<Integer, Command> driveOptionsMap = Map.of(0, pathPlannerDrive, 1, pidDrive);
+        driveController.x().onTrue(Commands.select(driveOptionsMap, () -> {
+            if (ReefAprilTagPositions.getScoreDistance(drivetrain) < VisionConstants.PID_DRIVE_THRESHOLD.in(Meters)) {
+                return 0;
             } else {
-                return ReefAlignment.ALGAE;
+                return 1;
             }
         }));
-
-        driveController.x().and(driveController.b()).whileTrue(new PIDToNearestBranch(drivetrain));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());
