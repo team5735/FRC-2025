@@ -35,6 +35,7 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
@@ -62,7 +63,7 @@ public class RobotContainer {
                 break;
         }
     }
-    private static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+    public static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
     public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
     public static final CoralSubsystem coraler = new CoralSubsystem();
@@ -97,7 +98,6 @@ public class RobotContainer {
         SmartDashboard.putData("Choose an Auto", autoChooser);
         PathfindingCommand.warmupCommand().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
-        vision.scheduleWaitForApriltagCommand();
         configureBindings();
     }
 
@@ -118,9 +118,20 @@ public class RobotContainer {
         // also used for branch scoring
         driveController.rightStick().whileTrue(coraler.branchCommand());
         // drivecontroller.b() slow mode
-        driveController.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        // driveController.y().onTrue(drivetrain.runOnce(() ->
+        // drivetrain.seedFieldCentric()));
+        driveController.y().onTrue(drivetrain.runOnce(() -> vision.seedPigeon()));
 
-        driveController.x().whileTrue(new DriveToBranch(drivetrain));
+        driveController.getHID().getPOV();
+        driveController.x().onTrue(new DriveToBranch(drivetrain, () -> {
+            if (driveController.getHID().getPOV() == 270) {
+                return ReefAlignment.LEFT;
+            } else if (driveController.getHID().getPOV() == 90) {
+                return ReefAlignment.RIGHT;
+            } else {
+                return ReefAlignment.ALGAE;
+            }
+        }));
 
         driveController.x().and(driveController.b()).whileTrue(new PIDToNearestBranch(drivetrain));
 
@@ -138,14 +149,12 @@ public class RobotContainer {
 
         coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
-        driveController.povDown().and(driveController.a().negate()).onTrue(elevator.toLevelCommand(Level.BASE));
-
-        // Vision bindings
-        driveController.povLeft().and(driveController.a().negate())
+        driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povLeft().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain, vision));
-        driveController.povRight().and(driveController.a().negate())
+        driveController.povRight().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain, vision));
-        driveController.povUp().and(driveController.a().negate()).onTrue(vision.getSeedPigeon());
+        driveController.povUp().and(driveController.y()).onTrue(vision.getSeedPigeon());
 
         // reset the field-centric heading on left bumper press
 
