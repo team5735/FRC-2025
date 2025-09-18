@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -91,7 +92,8 @@ public class ReefAprilTagPositions {
                 pose.getRotation().plus(Rotation2d.kPi)).transformBy(
                         new Transform2d(
                                 new Translation2d(
-                                        -DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().in(Meters),
+                                        -DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().minus(Centimeters.of(5))
+                                                .in(Meters),
                                         0),
                                 Rotation2d.kZero));
     }
