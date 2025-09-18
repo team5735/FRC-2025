@@ -132,10 +132,12 @@ public class RobotContainer {
         // also used for branch scoring
         driveController.leftStick().onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.rightStick().whileTrue(coraler.branchCommand());
+
+        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
         // drivecontroller.b() slow mode
-        // driveController.y().onTrue(drivetrain.runOnce(() ->
-        // drivetrain.seedFieldCentric()));
-        driveController.y().onTrue(drivetrain.runOnce(() -> vision.seedPigeon()));
 
         Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
         Command pidDrive = new PIDToNearestBranch(drivetrain, () -> chooseAlignment());
@@ -147,20 +149,8 @@ public class RobotContainer {
                 return 1;
             }
         }));
-
-        driveController.leftBumper().whileTrue(coraler.unfeedCommand());
-        driveController.rightBumper().onTrue(coraler.feedStageCommand());
-
-        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
-        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
-
-        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
-
-        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
-
-        coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
+        driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
+                .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft().and(driveController.y())
@@ -169,7 +159,13 @@ public class RobotContainer {
                 .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povUp().and(driveController.y()).onTrue(vision.getSeedPigeon());
 
-        // reset the field-centric heading on left bumper press
+        driveController.leftBumper().whileTrue(coraler.unfeedCommand());
+        driveController.rightBumper().onTrue(coraler.feedStageCommand());
+
+        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
+        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
+
+        coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
         // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
