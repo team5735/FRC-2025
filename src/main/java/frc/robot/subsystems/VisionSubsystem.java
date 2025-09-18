@@ -107,7 +107,7 @@ public class VisionSubsystem extends SubsystemBase {
         Commands.idle(this) // do nothing
                 .until(() -> { // until any limelight sees a tag
                     return Arrays.stream(LIMELIGHTS).anyMatch(limelight -> LimelightHelpers.getTV(limelight));
-                }).withName("wait for limelight")
+                })
                 .andThen(runOnce(() -> { // and then reset the robot pose
                     for (String limelight : LIMELIGHTS) {
                         if (LimelightHelpers.getTV(limelight)) {
@@ -116,7 +116,9 @@ public class VisionSubsystem extends SubsystemBase {
                             break;
                         }
                     }
-                }).withName("reset robot pose"))
+                }))
+                .andThen(Commands.idle(drivetrain).withTimeout(.2)) // and block the drivetrain for 2 seconds for
+                                                                    // reaction time
                 .schedule();
     }
 }
