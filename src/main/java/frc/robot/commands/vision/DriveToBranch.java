@@ -51,8 +51,8 @@ public class DriveToBranch extends Command {
                             ReefAprilTagPositions.SCORING_POSES.get(this.alignment.get()));
             Telemetry.field.getObject("targetPose").setPose(tagPos);
             watchdog.addEpoch("tagPos retrieved");
-            PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
 
+            PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
             Pose2d lineUpPathOtherNode = new Pose2d(
                     tagPos.getTranslation()
                             .plus(new Translation2d(VisionConstants.PATH_DIST_FROM_SCOREPOS.in(Meters),
