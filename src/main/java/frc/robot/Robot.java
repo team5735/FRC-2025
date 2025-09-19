@@ -58,9 +58,10 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        RobotContainer.vision.scheduleWaitForApriltagCommand();
-        // RobotContainer.coraler.flipperTimedReset().schedule();
-        // RobotContainer.elevator.toLevelCommand(Level.BASE).schedule();
+
+        if (!isSimulation()) {
+            RobotContainer.vision.getWaitForMt1().schedule();
+        }
     }
 
     @Override
