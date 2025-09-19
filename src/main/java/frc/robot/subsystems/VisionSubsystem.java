@@ -103,22 +103,22 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    public void scheduleWaitForApriltagCommand() {
-        Commands.idle(this) // do nothing
+    private void resetToMt1() {
+        for (String limelight : LIMELIGHTS) {
+            if (LimelightHelpers.getTV(limelight)) {
+                drivetrain.resetPose(LimelightHelpers.getBotPose2d(limelight));
+                System.out.println("Robot pose set to mt1 report from " + limelight);
+                break;
+            }
+        }
+    }
+
+    public Command getWaitForMt1() {
+        return Commands.idle(this) // wait
                 .until(() -> { // until any limelight sees a tag
                     return Arrays.stream(LIMELIGHTS).anyMatch(limelight -> LimelightHelpers.getTV(limelight));
                 })
-                .andThen(runOnce(() -> { // and then reset the robot pose
-                    for (String limelight : LIMELIGHTS) {
-                        if (LimelightHelpers.getTV(limelight)) {
-                            drivetrain.resetPose(LimelightHelpers.getBotPose2d(limelight));
-                            System.out.println("Robot pose set to mt1 report from " + limelight);
-                            break;
-                        }
-                    }
-                }))
-                .andThen(Commands.idle(drivetrain).withTimeout(.2)) // and block the drivetrain for 2 seconds for
-                                                                    // reaction time
-                .schedule();
+                .andThen(Commands.run(() -> resetToMt1(), drivetrain).withTimeout(.1)) // reset pose
+        ;
     }
 }
