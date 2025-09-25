@@ -114,7 +114,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Command getWaitForMt1() {
-        return Commands.idle(this) // wait
+        return Commands.idle() // wait
                 .until(() -> { // until any limelight sees a tag
                     return Arrays.stream(LIMELIGHTS).anyMatch(limelight -> LimelightHelpers.getTV(limelight));
                 })
