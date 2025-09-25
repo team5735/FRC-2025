@@ -16,8 +16,8 @@
     "To S2"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 2.0,
-  "defaultMaxAccel": 2.0,
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 0.5,
   "defaultMaxAngVel": 120.0,
   "defaultMaxAngAccel": 90.0,
   "defaultNominalVoltage": 12.0,
