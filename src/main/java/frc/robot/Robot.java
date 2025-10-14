@@ -58,10 +58,6 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-
-        if (!isSimulation()) {
-            RobotContainer.vision.getWaitForMt1().schedule();
-        }
     }
 
     @Override

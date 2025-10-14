@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -24,12 +23,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
-import frc.robot.commands.vision.PIDToNearestBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
-import frc.robot.constants.ReefAprilTagPositions;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -139,19 +135,7 @@ public class RobotContainer {
         driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
         // drivecontroller.b() slow mode
 
-        Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
-        Command pidDrive = new PIDToNearestBranch(drivetrain, () -> chooseAlignment());
-        Map<Integer, Command> driveOptionsMap = Map.of(0, pathPlannerDrive, 1, pidDrive);
-        driveController.x().onTrue(Commands.select(driveOptionsMap, () -> {
-            if (ReefAprilTagPositions.getScoreDistance(drivetrain) < VisionConstants.PID_DRIVE_THRESHOLD.in(Meters)) {
-                System.out.println("using pid drive");
-                return 0;
-            } else {
-                System.out.println("using path planner drive");
-                return 1;
-            }
-        }));
-
+        driveController.x().onTrue(new DriveToBranch(drivetrain, () -> chooseAlignment()));
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
