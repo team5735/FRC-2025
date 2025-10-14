@@ -25,7 +25,7 @@ import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
-import frc.robot.constants.ElevatorConstants.OldLevel;
+import frc.robot.constants.ElevatorConstants.Height;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -72,16 +72,16 @@ public class RobotContainer {
     public RobotContainer() {
         Map<String, Command> commandsForAuto = new HashMap<>();
 
-        commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(OldLevel.L1, coraler));
-        commandsForAuto.put("l2AndScore", elevator.toLevelAndCoral(OldLevel.L2, coraler));
-        commandsForAuto.put("l3AndScore", elevator.toLevelAndCoral(OldLevel.L3, coraler));
-        commandsForAuto.put("l4AndScore", elevator.toLevelAndCoral(OldLevel.L4, coraler));
+        commandsForAuto.put("l1AndScore", elevator.getSetLevelAndCoral(Height.L1, coraler));
+        commandsForAuto.put("l2AndScore", elevator.getSetLevelAndCoral(Height.L2, coraler));
+        commandsForAuto.put("l3AndScore", elevator.getSetLevelAndCoral(Height.L3, coraler));
+        commandsForAuto.put("l4AndScore", elevator.getSetLevelAndCoral(Height.L4, coraler));
 
-        commandsForAuto.put("elevatorBase", elevator.toLevelCommand(OldLevel.BASE));
-        commandsForAuto.put("l1", elevator.toLevelCommand(OldLevel.L1));
-        commandsForAuto.put("l2", elevator.toLevelCommand(OldLevel.L2));
-        commandsForAuto.put("l3", elevator.toLevelCommand(OldLevel.L3));
-        commandsForAuto.put("l4", elevator.toLevelCommand(OldLevel.L4));
+        commandsForAuto.put("elevatorBase", elevator.getSetLevel(Height.BASE));
+        commandsForAuto.put("l1", elevator.getSetLevel(Height.L1));
+        commandsForAuto.put("l2", elevator.getSetLevel(Height.L2));
+        commandsForAuto.put("l3", elevator.getSetLevel(Height.L3));
+        commandsForAuto.put("l4", elevator.getSetLevel(Height.L4));
 
         commandsForAuto.put("troughScore", coraler.troughCommand().withTimeout(CoralConstants.TROUGH_TIMEOUT));
         commandsForAuto.put("branchScore", coraler.branchCommand().withTimeout(CoralConstants.BRANCH_TIMEOUT));
@@ -126,13 +126,13 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // also used for branch scoring
-        driveController.leftStick().onTrue(elevator.toLevelCommand(OldLevel.BASE));
+        driveController.leftStick().onTrue(elevator.getSetLevel(Height.BASE));
         driveController.rightStick().whileTrue(coraler.branchCommand());
 
-        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L1));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L2));
-        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L3));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L4));
+        driveController.povRight().and(driveController.a()).onTrue(elevator.getSetLevel(Height.L1));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.getSetLevel(Height.L2));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.getSetLevel(Height.L3));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.getSetLevel(Height.L4));
         // drivecontroller.b() slow mode
 
         Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
@@ -140,7 +140,7 @@ public class RobotContainer {
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(OldLevel.BASE));
+        driveController.povDown().and(driveController.y()).onTrue(elevator.getSetLevel(Height.BASE));
         driveController.povLeft().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povRight().and(driveController.y())
@@ -149,9 +149,6 @@ public class RobotContainer {
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());
-
-        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
-        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
 
         coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
 
