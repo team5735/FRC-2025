@@ -72,6 +72,6 @@ public class YamsElevatorSubsystem extends SubsystemBase {
 
     public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
         return getSetLevel(level).until(atLevel(level))
-                .andThen(getSetLevel(level).alongWith(coraler.outputBasedOnLevel(() -> currentHeight)));
+                .andThen(coraler.outputBasedOnLevel(() -> currentHeight));
     }
 }
