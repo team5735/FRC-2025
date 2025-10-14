@@ -30,10 +30,9 @@ public class ElevatorConstants {
     public static final Distance L1_HEIGHT = Inches.of(5);
     public static final Distance L2_HEIGHT = Inches.of(13);
     public static final Distance L3_HEIGHT = Inches.of(29);
-    // public static final Distance L4_HEIGHT = Inches.of(53.25);
     public static final Distance L4_HEIGHT = Inches.of(53.5);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
-    public static final Distance MAX_HEIGHT = Inches.of(53.25); // TODO
+    public static final Distance MAX_HEIGHT = L4_HEIGHT;
 
     public enum Level {
         BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kRed),
@@ -47,8 +46,6 @@ public class ElevatorConstants {
                         SmartDashboard.getNumber("Elevator/HeightTargetInches", BASE_HEIGHT.in(Units.Inches)))
                         .in(Units.Meters),
                 0), Color.kBisque);
-        // IDLE(() -> new State(RobotContainer.elevator.getPosition().in(Units.Meters),
-        // 0), Color.kOrange);
 
         public final Supplier<State> stateSupplier;
         public final Color levelColor;
