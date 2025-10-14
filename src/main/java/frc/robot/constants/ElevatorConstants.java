@@ -6,15 +6,9 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Millimeters;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 
 public class ElevatorConstants {
     public static final double KP = 3;
@@ -51,28 +45,6 @@ public class ElevatorConstants {
 
         private Height(Distance height) {
             this.height = height;
-        }
-    }
-
-    public enum OldLevel {
-        BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kRed),
-        PROCESSOR(() -> new State(PROCESS_HEIGHT.in(Units.Meters), 0), Color.kTurquoise),
-        L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kOrange),
-        L2(() -> new State(L2_HEIGHT.in(Units.Meters), 0), Color.kYellow),
-        L3(() -> new State(L3_HEIGHT.in(Units.Meters), 0), Color.kGreen),
-        L4(() -> new State(L4_HEIGHT.in(Units.Meters), 0), Color.kBlue),
-        SMARTDASHBOARD(() -> new State(
-                Inches.of(
-                        SmartDashboard.getNumber("Elevator/HeightTargetInches", BASE_HEIGHT.in(Units.Inches)))
-                        .in(Units.Meters),
-                0), Color.kBisque);
-
-        public final Supplier<State> stateSupplier;
-        public final Color levelColor;
-
-        private OldLevel(Supplier<State> stateSupplier, Color levelColor) {
-            this.stateSupplier = stateSupplier;
-            this.levelColor = levelColor;
         }
     }
 }
