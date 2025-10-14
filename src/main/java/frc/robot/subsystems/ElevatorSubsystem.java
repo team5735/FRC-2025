@@ -70,12 +70,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command getSetLevel(Height level) {
-        return runOnce(() -> currentHeight = level).andThen(elevator.setHeight(level.height));
+        return runOnce(() -> currentHeight = level).andThen(elevator.setHeight(level.height))
+                .withName("set level to " + level);
     }
 
     public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
         return getSetLevel(level).until(atLevel(level))
-                .andThen(coraler.outputBasedOnLevel(() -> currentHeight));
+                .andThen(coraler.outputBasedOnLevel(() -> currentHeight))
+                .withName("set level to " + level + " and coral");
     }
 
     /**
@@ -86,10 +88,10 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return a Command to set to that speed
      */
     public Command getSetSpeed(double elevatorSpeed) {
-        return elevator.set(elevatorSpeed);
+        return elevator.set(elevatorSpeed).withName("set elevator to " + elevatorSpeed);
     }
 
     public Command sysId() {
-        return elevator.sysId(Volts.of(0.5), Volts.of(0.1).per(Second), Seconds.of(30));
+        return elevator.sysId(Volts.of(0.5), Volts.of(0.1).per(Second), Seconds.of(30)).withName("elevator sysID");
     }
 }
