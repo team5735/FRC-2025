@@ -25,15 +25,15 @@ import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
-import frc.robot.constants.ElevatorConstants.Level;
+import frc.robot.constants.ElevatorConstants.OldLevel;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.YamsElevatorSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
@@ -66,22 +66,22 @@ public class RobotContainer {
 
     public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
     public static final CoralSubsystem coraler = new CoralSubsystem();
-    public static final ElevatorSubsystem elevator = new ElevatorSubsystem();
+    public static final YamsElevatorSubsystem elevator = new YamsElevatorSubsystem();
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {
         Map<String, Command> commandsForAuto = new HashMap<>();
 
-        commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(Level.L1, coraler));
-        commandsForAuto.put("l2AndScore", elevator.toLevelAndCoral(Level.L2, coraler));
-        commandsForAuto.put("l3AndScore", elevator.toLevelAndCoral(Level.L3, coraler));
-        commandsForAuto.put("l4AndScore", elevator.toLevelAndCoral(Level.L4, coraler));
+        commandsForAuto.put("l1AndScore", elevator.toLevelAndCoral(OldLevel.L1, coraler));
+        commandsForAuto.put("l2AndScore", elevator.toLevelAndCoral(OldLevel.L2, coraler));
+        commandsForAuto.put("l3AndScore", elevator.toLevelAndCoral(OldLevel.L3, coraler));
+        commandsForAuto.put("l4AndScore", elevator.toLevelAndCoral(OldLevel.L4, coraler));
 
-        commandsForAuto.put("elevatorBase", elevator.toLevelCommand(Level.BASE));
-        commandsForAuto.put("l1", elevator.toLevelCommand(Level.L1));
-        commandsForAuto.put("l2", elevator.toLevelCommand(Level.L2));
-        commandsForAuto.put("l3", elevator.toLevelCommand(Level.L3));
-        commandsForAuto.put("l4", elevator.toLevelCommand(Level.L4));
+        commandsForAuto.put("elevatorBase", elevator.toLevelCommand(OldLevel.BASE));
+        commandsForAuto.put("l1", elevator.toLevelCommand(OldLevel.L1));
+        commandsForAuto.put("l2", elevator.toLevelCommand(OldLevel.L2));
+        commandsForAuto.put("l3", elevator.toLevelCommand(OldLevel.L3));
+        commandsForAuto.put("l4", elevator.toLevelCommand(OldLevel.L4));
 
         commandsForAuto.put("troughScore", coraler.troughCommand().withTimeout(CoralConstants.TROUGH_TIMEOUT));
         commandsForAuto.put("branchScore", coraler.branchCommand().withTimeout(CoralConstants.BRANCH_TIMEOUT));
@@ -126,13 +126,13 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // also used for branch scoring
-        driveController.leftStick().onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.leftStick().onTrue(elevator.toLevelCommand(OldLevel.BASE));
         driveController.rightStick().whileTrue(coraler.branchCommand());
 
-        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L1));
-        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L2));
-        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L3));
-        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
+        driveController.povRight().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L1));
+        driveController.povDown().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L2));
+        driveController.povLeft().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L3));
+        driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(OldLevel.L4));
         // drivecontroller.b() slow mode
 
         Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
@@ -140,7 +140,7 @@ public class RobotContainer {
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(OldLevel.BASE));
         driveController.povLeft().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povRight().and(driveController.y())

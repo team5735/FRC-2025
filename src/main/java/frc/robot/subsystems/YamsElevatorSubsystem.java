@@ -6,9 +6,12 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants;
+import frc.robot.constants.ElevatorConstants.Height;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ElevatorConfig;
 import yams.mechanisms.positional.Elevator;
@@ -43,6 +46,8 @@ public class YamsElevatorSubsystem extends SubsystemBase {
 
     private Elevator elevator = new Elevator(elevatorConfig);
 
+    private Height currentHeight;
+
     public YamsElevatorSubsystem() {
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
     }
@@ -55,5 +60,18 @@ public class YamsElevatorSubsystem extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         elevator.simIterate();
+    }
+
+    public Trigger atLevel(Height target) {
+        return elevator.isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
+    }
+
+    public Command getSetLevel(Height level) {
+        return runOnce(() -> currentHeight = level).andThen(elevator.setHeight(level.height));
+    }
+
+    public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
+        return getSetLevel(level).until(atLevel(level))
+                .andThen(getSetLevel(level).alongWith(coraler.outputBasedOnLevel(() -> currentHeight)));
     }
 }

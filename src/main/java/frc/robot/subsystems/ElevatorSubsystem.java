@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants;
-import frc.robot.constants.ElevatorConstants.Level;
+import frc.robot.constants.ElevatorConstants.OldLevel;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
@@ -43,7 +43,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorFeedforward ff = new ElevatorFeedforward(
             ElevatorConstants.KS, ElevatorConstants.KG, ElevatorConstants.KV, ElevatorConstants.KA);
 
-    private ElevatorConstants.Level activeLevel = ElevatorConstants.Level.BASE;
+    private ElevatorConstants.OldLevel activeLevel = ElevatorConstants.OldLevel.BASE;
 
     private final SysIdRoutine routine = new SysIdRoutine(
             new SysIdRoutine.Config(Volts.of(0.1).per(Second), Volts.of(0.5), Seconds.of(30), null),
@@ -71,11 +71,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         pid.setTolerance(0.005); // 0.5cm
 
-        this.setDefaultCommand(toLevelCommand(ElevatorConstants.Level.BASE));
+        this.setDefaultCommand(toLevelCommand(ElevatorConstants.OldLevel.BASE));
     }
 
     public boolean isAtRest() {
-        return (activeLevel == Level.BASE) && pid.atGoal();
+        return (activeLevel == OldLevel.BASE) && pid.atGoal();
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.INCHES_PER_ENCODER_COUNTS);
     }
 
-    public Command toLevelCommand(ElevatorConstants.Level level) {
+    public Command toLevelCommand(ElevatorConstants.OldLevel level) {
         return startRun(() -> setLevel(level), () -> setPIDVolts());
     }
 
@@ -131,7 +131,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         return routine.dynamic(direction).andThen(runOnce(() -> krakenRight.setVoltage(ElevatorConstants.KG)));
     }
 
-    private void setLevel(ElevatorConstants.Level level) {
+    private void setLevel(ElevatorConstants.OldLevel level) {
         activeLevel = level;
     }
 
@@ -161,13 +161,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
     }
 
-    public Level getActiveLevel() {
+    public OldLevel getActiveLevel() {
         return activeLevel;
 
     }
 
-    public Command toLevelAndCoral(Level level, CoralSubsystem coral) {
+    public Command toLevelAndCoral(OldLevel level, CoralSubsystem coral) {
         return toLevelCommand(level).until(() -> pid.atGoal())
-                .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(this));
+                .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(() -> this.activeLevel));
     }
 }

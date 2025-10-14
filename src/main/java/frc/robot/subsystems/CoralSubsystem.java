@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
+import frc.robot.constants.ElevatorConstants.Height;
 import frc.robot.util.TunableNumber;
 
 public class CoralSubsystem extends SubsystemBase {
@@ -221,8 +224,8 @@ public class CoralSubsystem extends SubsystemBase {
                 flipperResetCommand().withTimeout(CoralConstants.FLIPPER_RESET_TIMOUT));
     } // TODO test flipper times OR create a setpoint to return to
 
-    public Command outputBasedOnLevel(ElevatorSubsystem elevator) {
-        switch (elevator.getActiveLevel()) {
+    public Command outputBasedOnLevel(Supplier<Height> activeLevel) {
+        switch (activeLevel.get()) {
             case L1:
                 return troughCommand().withTimeout(CoralConstants.TROUGH_TIMEOUT);
             case L2:

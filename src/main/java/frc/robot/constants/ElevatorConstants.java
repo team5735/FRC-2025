@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Millimeters;
 
 import java.util.function.Supplier;
 
@@ -36,8 +37,24 @@ public class ElevatorConstants {
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
     public static final Distance MAX_HEIGHT = L4_HEIGHT;
 
+    public static final Distance AT_LEVEL_THRESHOLD = Millimeters.of(5);
 
-    public enum Level {
+    public enum Height {
+        BASE(Inches.of(0)),
+        L1(Inches.of(5)),
+        L2(Inches.of(13)),
+        L3(Inches.of(29)),
+        L4(Inches.of(53.5)),
+        PROCESS(Inches.of(0));
+
+        public final Distance height;
+
+        private Height(Distance height) {
+            this.height = height;
+        }
+    }
+
+    public enum OldLevel {
         BASE(() -> new State(BASE_HEIGHT.in(Units.Meters), 0), Color.kRed),
         PROCESSOR(() -> new State(PROCESS_HEIGHT.in(Units.Meters), 0), Color.kTurquoise),
         L1(() -> new State(L1_HEIGHT.in(Units.Meters), 0), Color.kOrange),
@@ -53,7 +70,7 @@ public class ElevatorConstants {
         public final Supplier<State> stateSupplier;
         public final Color levelColor;
 
-        private Level(Supplier<State> stateSupplier, Color levelColor) {
+        private OldLevel(Supplier<State> stateSupplier, Color levelColor) {
             this.stateSupplier = stateSupplier;
             this.levelColor = levelColor;
         }
