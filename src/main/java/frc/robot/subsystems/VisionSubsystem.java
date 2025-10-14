@@ -88,7 +88,7 @@ public class VisionSubsystem extends SubsystemBase {
                 Double.isNaN(drivetrain.getEstimatedPosition().getY())
                 || Double.isInfinite(drivetrain.getEstimatedPosition().getY())) {
             drivetrain.resetPose(LimelightHelpers.getBotPose2d_wpiBlue(limelight_name));
-            System.out.println("had to reset pose estimator due to detected NaN");
+            System.out.println("reset pose estimator due to NaN or inf");
         }
     }
 

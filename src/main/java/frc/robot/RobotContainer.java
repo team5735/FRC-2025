@@ -144,19 +144,17 @@ public class RobotContainer {
         Map<Integer, Command> driveOptionsMap = Map.of(0, pathPlannerDrive, 1, pidDrive);
         driveController.x().onTrue(Commands.select(driveOptionsMap, () -> {
             if (ReefAprilTagPositions.getScoreDistance(drivetrain) < VisionConstants.PID_DRIVE_THRESHOLD.in(Meters)) {
+                System.out.println("using pid drive");
                 return 0;
             } else {
+                System.out.println("using path planner drive");
                 return 1;
             }
         }));
+
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povLeft().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain, vision));
-        driveController.povRight().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain, vision));
         driveController.povUp().and(driveController.y()).onTrue(vision.getSeedPigeon());
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
