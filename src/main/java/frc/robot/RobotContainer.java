@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.vision.AlignToReef;
@@ -33,7 +32,7 @@ import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.YamsElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
@@ -66,7 +65,7 @@ public class RobotContainer {
 
     public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
     public static final CoralSubsystem coraler = new CoralSubsystem();
-    public static final YamsElevatorSubsystem elevator = new YamsElevatorSubsystem();
+    public static final ElevatorSubsystem elevator = new ElevatorSubsystem();
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
     public RobotContainer() {

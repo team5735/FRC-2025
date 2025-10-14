@@ -1,173 +1,77 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants;
-import frc.robot.constants.ElevatorConstants.OldLevel;
+import frc.robot.constants.ElevatorConstants.Height;
+import yams.mechanisms.SmartMechanism;
+import yams.mechanisms.config.ElevatorConfig;
+import yams.mechanisms.positional.Elevator;
+import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ElevatorSubsystem extends SubsystemBase {
+    private SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
+            .withControlMode(ControlMode.CLOSED_LOOP)
+            .withMechanismCircumference(Inches.of(ElevatorConstants.INCHES_PER_ENCODER_COUNTS))
+            .withClosedLoopController(ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
+                    ElevatorConstants.MAX_VELOCITY, ElevatorConstants.MAX_ACCELERATION)
+            .withTelemetry("elevator_motor", TelemetryVerbosity.HIGH)
+            .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(1)))
+            .withMotorInverted(false)
+            .withIdleMode(MotorMode.COAST);
+
     private final TalonFX krakenRight = new TalonFX(Constants.ELEVATOR_KRAKEN_RIGHT_ID);
     private final TalonFX krakenLeft = new TalonFX(Constants.ELEVATOR_KRAKEN_LEFT_ID);
 
-    private boolean enabled = true;
+    private SmartMotorController rightMotorController = new TalonFXWrapper(krakenRight, DCMotor.getKrakenX60(1),
+            config);
 
-    private ProfiledPIDController pid = new ProfiledPIDController(
-            ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
-            new Constraints(
-                    ElevatorConstants.MAX_VELOCITY.in(MetersPerSecond),
-                    ElevatorConstants.MAX_ACCELERATION.in(MetersPerSecondPerSecond)));
-    private ElevatorFeedforward ff = new ElevatorFeedforward(
-            ElevatorConstants.KS, ElevatorConstants.KG, ElevatorConstants.KV, ElevatorConstants.KA);
+    private ElevatorConfig elevatorConfig = new ElevatorConfig(rightMotorController)
+            .withStartingHeight(ElevatorConstants.BASE_HEIGHT)
+            .withHardLimits(ElevatorConstants.BASE_HEIGHT, ElevatorConstants.MAX_HEIGHT)
+            .withTelemetry("elevator", TelemetryVerbosity.HIGH);
 
-    private ElevatorConstants.OldLevel activeLevel = ElevatorConstants.OldLevel.BASE;
+    private Elevator elevator = new Elevator(elevatorConfig);
 
-    private final SysIdRoutine routine = new SysIdRoutine(
-            new SysIdRoutine.Config(Volts.of(0.1).per(Second), Volts.of(0.5), Seconds.of(30), null),
-            new SysIdRoutine.Mechanism(
-                    v -> krakenRight.setVoltage(v.in(Volts)),
-                    null,
-                    this));
+    private Height currentHeight;
 
     public ElevatorSubsystem() {
-        krakenRight.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast));
         krakenLeft.setControl(new Follower(Constants.ELEVATOR_KRAKEN_RIGHT_ID, true));
-
-        resetMeasurement();
-
-        SmartDashboard.putNumber("Elevator/PosMeters", ElevatorConstants.BASE_HEIGHT.in(Meters));
-        SmartDashboard.putNumber("Elevator/VelocityMPS", 0);
-        SmartDashboard.putNumber("Elevator/Volts",
-                krakenRight.getMotorVoltage().getValue().in(Volts));
-
-        SmartDashboard.putNumber("Elevator/TuningVolts", 0);
-
-        SmartDashboard.putString("Elevator/ActiveLevel", activeLevel.name());
-        SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
-        SmartDashboard.putNumber("Elevator/HeightTargetFeet", ElevatorConstants.BASE_HEIGHT.in(Units.Feet));
-
-        pid.setTolerance(0.005); // 0.5cm
-
-        this.setDefaultCommand(toLevelCommand(ElevatorConstants.OldLevel.BASE));
-    }
-
-    public boolean isAtRest() {
-        return (activeLevel == OldLevel.BASE) && pid.atGoal();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator/PosMeters", getPosition().in(Meters));
-        SmartDashboard.putNumber("Elevator/PosInches", getPosition().in(Inches));
-        SmartDashboard.putNumber("Elevator/EncoderRots", krakenRight.getPosition().getValue().in(Rotations));
-        SmartDashboard.putNumber(
-                "Elevator/VelocityMPS",
-                InchesPerSecond.of(
-                        krakenRight.getVelocity().getValue().in(RotationsPerSecond)
-                                * ElevatorConstants.INCHES_PER_ENCODER_COUNTS)
-                        .in(MetersPerSecond));
-        SmartDashboard.putNumber("Elevator/Volts",
-                krakenRight.getMotorVoltage().getValue().in(Volts) + 0.00001 * Math.random()); // I am hacker genius
-        SmartDashboard.putString("Elevator/ActiveLevel", activeLevel.name());
-        SmartDashboard.putString("Elevator/ActiveLevelColor", activeLevel.levelColor.toHexString());
-        SmartDashboard.putNumber("Elevator/PosSetpointMet", pid.getSetpoint().position);
-        SmartDashboard.putNumber("Elevator/VelSetpointMPS", pid.getSetpoint().velocity);
-        SmartDashboard.putBoolean("Elevator/IsEnable", enabled);
-        if (getPosition().in(Meters) < 0) {
-            resetMeasurement();
-        }
+        elevator.updateTelemetry();
     }
 
-    private void setPIDVolts() {
-        pid.setGoal(activeLevel.stateSupplier.get());
-
-        double voltsToSet = pid.calculate(getPosition().in(Meters)) +
-                ff.calculate(pid.getSetpoint().velocity);
-        if (isAtRest())
-            voltsToSet = 0; // TODO check if better logic is needed here
-
-        if (enabled) {
-            krakenRight.setVoltage(voltsToSet);
-        }
+    @Override
+    public void simulationPeriodic() {
+        elevator.simIterate();
     }
 
-    public Distance getPosition() {
-        return Inches
-                .of(krakenRight.getPosition().getValue().in(Rotations) * ElevatorConstants.INCHES_PER_ENCODER_COUNTS);
+    public Trigger atLevel(Height target) {
+        return elevator.isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
     }
 
-    public Command toLevelCommand(ElevatorConstants.OldLevel level) {
-        return startRun(() -> setLevel(level), () -> setPIDVolts());
+    public Command getSetLevel(Height level) {
+        return runOnce(() -> currentHeight = level).andThen(elevator.setHeight(level.height));
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction).andThen(runOnce(() -> krakenRight.setVoltage(ElevatorConstants.KG)));
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction).andThen(runOnce(() -> krakenRight.setVoltage(ElevatorConstants.KG)));
-    }
-
-    private void setLevel(ElevatorConstants.OldLevel level) {
-        activeLevel = level;
-    }
-
-    public void resetMeasurement() {
-        resetMeasurement(ElevatorConstants.BASE_HEIGHT);
-    }
-
-    public void resetMeasurement(Distance height) {
-        krakenRight.setPosition(Rotations.of(height.in(Inches) / ElevatorConstants.INCHES_PER_ENCODER_COUNTS));
-    }
-
-    public void swapEnableStatus() {
-        enabled = !enabled;
-    }
-
-    public Command manualElevatorUp() {
-        return startEnd(() -> {
-            krakenRight.setVoltage(1.75);
-            enabled = false;
-        }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
-    }
-
-    public Command manualElevatorDown() {
-        return startEnd(() -> {
-            krakenRight.setVoltage(-2.5 + ElevatorConstants.KG);
-            enabled = false;
-        }, () -> krakenRight.setVoltage(ElevatorConstants.KG));
-    }
-
-    public OldLevel getActiveLevel() {
-        return activeLevel;
-
-    }
-
-    public Command toLevelAndCoral(OldLevel level, CoralSubsystem coral) {
-        return toLevelCommand(level).until(() -> pid.atGoal())
-                .andThen(toLevelCommand(level)).alongWith(coral.outputBasedOnLevel(() -> this.activeLevel));
+    public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
+        return getSetLevel(level).until(atLevel(level))
+                .andThen(coraler.outputBasedOnLevel(() -> currentHeight));
     }
 }
