@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -73,5 +76,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
         return getSetLevel(level).until(atLevel(level))
                 .andThen(coraler.outputBasedOnLevel(() -> currentHeight));
+    }
+
+    /**
+     * Returns a Command that sets this elevator to a specific speed in the range
+     * [-1, 1].
+     *
+     * @param elevatorSpeed the speed between -1 and 1 to set
+     * @return a Command to set to that speed
+     */
+    public Command getSetSpeed(double elevatorSpeed) {
+        return elevator.set(elevatorSpeed);
+    }
+
+    public Command sysId() {
+        return elevator.sysId(Volts.of(0.5), Volts.of(0.1).per(Second), Seconds.of(30));
     }
 }

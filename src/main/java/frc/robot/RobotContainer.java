@@ -163,13 +163,10 @@ public class RobotContainer {
         subsystemController.rightTrigger(0.1).or(subsystemController.leftTrigger(0.1))
                 .whileTrue(LEDs.colorAngryCommand());
 
-        subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
-        subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
+        subsystemController.povUp().whileTrue(elevator.getSetSpeed(1));
+        subsystemController.povDown().whileTrue(elevator.getSetSpeed(-1));
 
-        testController.a().whileTrue(elevator.sysIdDynamic(Direction.kForward));
-        testController.b().whileTrue(elevator.sysIdDynamic(Direction.kReverse));
-        testController.x().whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
-        testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+        testController.a().whileTrue(elevator.sysId());
     }
 
     public Command getAutonomousCommand() {
