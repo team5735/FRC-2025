@@ -5,13 +5,19 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.constants.ElevatorConstants.Height;
@@ -69,6 +75,21 @@ public class ElevatorSubsystem extends SubsystemBase {
         return elevator.isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
     }
 
+    /**
+     * Returns a command to go to the specified level.
+     *
+     * This function returns a {@link Command} that, when run, tells this elevator
+     * to go to the specified level. The command finishes when {@link #atLevel}'s
+     * {@link Trigger} is true.
+     *
+     * @param level the {@link Height} to set the elevator to
+     * @return a {@link Command} that sets the elevator to the specified height
+     *
+     * @example
+     *          ```
+     *          driveController.a().onTrue(elevator.getSetLevel(Height.BASE));
+     *          ```
+     */
     public Command getSetLevel(Height level) {
         return runOnce(() -> currentHeight = level)
                 .alongWith(elevator.setHeight(level.height)
@@ -76,6 +97,26 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .withName("set level to " + level);
     }
 
+    /**
+     * Returns a command to score at the specified level.
+     *
+     * This function returns a {@link Command} that, when run, tells the elevator to
+     * go to the specified level and then score. This command finishes when both
+     * actions are complete. This command chains {@link #getSetLevel(Height)} and
+     * the passed {@link CoralSubsystem}'s
+     * {@link CoralSubsystem#outputBasedOnLevel(Supplier)}
+     * command.
+     *
+     * @param level   the target level
+     * @param coraler the coral subsystem to use for scoring
+     * @return a command to go to the target level and score a coral
+     *
+     * @example
+     *          ```
+     *          driveController.b().onTrue(elevator.getSetLevelAndCoral(Height.L4,
+     *          coraler));
+     *          ```
+     */
     public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
         return getSetLevel(level)
                 .andThen(coraler.outputBasedOnLevel(() -> currentHeight))
@@ -93,6 +134,21 @@ public class ElevatorSubsystem extends SubsystemBase {
         return elevator.set(elevatorSpeed).withName("set elevator to " + elevatorSpeed);
     }
 
+    /**
+     * Returns a command to run a SysID routine on this elevator.
+     *
+     * This function returns a System Identification routine used for determining
+     * the PID coefficients. This makes use of
+     * {@link Elevator#sysId(Voltage, Velocity, Time)} as opposed to
+     * {@link SysIdRoutine}.
+     *
+     * @return a SysID routine
+     *
+     * @example
+     *          ```
+     *          driveController.menu().onTrue(elevator.sysId());
+     *          ```
+     */
     public Command sysId() {
         return elevator.sysId(Volts.of(0.5), Volts.of(0.1).per(Second), Seconds.of(30)).withName("elevator sysID");
     }
