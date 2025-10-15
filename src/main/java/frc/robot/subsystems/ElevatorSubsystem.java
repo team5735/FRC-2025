@@ -71,6 +71,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevator.simIterate();
     }
 
+    /**
+     * Retrieve a {@link Trigger} for when the elevator is close enough to a
+     * {@link Height}.
+     *
+     * {@link ElevatorConstants#AT_LEVEL_THRESHOLD} is used as the threshold for
+     * determining whether the elevator is at the specified height. As a
+     * {@link Trigger}, this should be used for composition with commands (it is of
+     * the same type as `driveController.a()`).
+     *
+     * @param target the {@link Height} to check against
+     * @return a {@link Trigger} for whether the elevator is at the specified height
+     * @see #isAtLevel(Height)
+     *
+     * @example
+     *          ```
+     *          elevator.atLevel(Height.BASE).whileTrue(LEDs.elevatorAtBase());
+     *          ```
+     */
     public Trigger atLevel(Height target) {
         return elevator.isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
     }
@@ -78,9 +96,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     /**
      * Returns a command to go to the specified level.
      *
-     * This function returns a {@link Command} that, when run, tells this elevator
-     * to go to the specified level. The command finishes when {@link #atLevel}'s
-     * {@link Trigger} is true.
+     * When run, the returned command instructs this elevator to go to the specified
+     * level. The command finishes when {@link #atLevel}'s {@link Trigger} is true.
      *
      * @param level the {@link Height} to set the elevator to
      * @return a {@link Command} that sets the elevator to the specified height
@@ -100,13 +117,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     /**
      * Returns a command to score at the specified level.
      *
-     * This function returns a {@link Command} that, when run, tells the elevator to
-     * go to the specified level and then score. This command finishes when both
-     * actions are complete. This command chains {@link #getSetLevel(Height)} and
-     * the passed {@link CoralSubsystem}'s
-     * {@link CoralSubsystem#outputBasedOnLevel(Supplier)}
-     * command.
-     *
+     * Using {@link #getSetLevel(Height)}, go to the specified level and score with
+     * {@link CoralSubsystem#outputBasedOnLevel(Supplier)}. This command finishes
+     * when both actions are complete.
+     * 
      * @param level   the target level
      * @param coraler the coral subsystem to use for scoring
      * @return a command to go to the target level and score a coral
