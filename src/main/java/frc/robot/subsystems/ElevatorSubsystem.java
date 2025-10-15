@@ -70,12 +70,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command getSetLevel(Height level) {
-        return runOnce(() -> currentHeight = level).andThen(elevator.setHeight(level.height))
+        return runOnce(() -> currentHeight = level)
+                .alongWith(elevator.setHeight(level.height)
+                        .until(atLevel(level)))
                 .withName("set level to " + level);
     }
 
     public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
-        return getSetLevel(level).until(atLevel(level))
+        return getSetLevel(level)
                 .andThen(coraler.outputBasedOnLevel(() -> currentHeight))
                 .withName("set level to " + level + " and coral");
     }
