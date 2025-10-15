@@ -72,7 +72,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Retrieve a {@link Trigger} for when the elevator is close enough to a
+     * Constructs a {@link Trigger} for when the elevator is close enough to a
      * {@link Height}.
      *
      * {@link ElevatorConstants#AT_LEVEL_THRESHOLD} is used as the threshold for
@@ -91,6 +91,35 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public Trigger atLevel(Height target) {
         return elevator.isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
+    }
+
+    /**
+     * Queries whether the elevator is currently at the specified level.
+     *
+     * Like {@link #atLevel(Height)}, but instead of returning a {@link Trigger},
+     * checks immediately and returns `true` or `false`. This should be used instead
+     * of {@link #atLevel(Height)} unless your purpose of calling is to acquire a
+     * {@link Trigger}, because the following code creates {@link Trigger}s
+     * repeatedly, overflowing the event loop and choking the robot processor:
+     *
+     * ```
+     * if (elevator.atLevel(target).getAsBoolean()) {
+     * }
+     * ```
+     *
+     * @param target the target {@link Height} to check against
+     * @return whether we're within {@link ElevatorConstants#AT_LEVEL_THRESHOLD} of
+     *         the target
+     * @see #atLevel(Height)
+     *
+     * @example
+     *          ```
+     *          if (elevator.isAtLevel(target)) {
+     *          }
+     *          ```
+     */
+    public boolean isAtLevel(Height target) {
+        return elevator.getMotor().getMeasurementPosition().isNear(target.height, ElevatorConstants.AT_LEVEL_THRESHOLD);
     }
 
     /**
