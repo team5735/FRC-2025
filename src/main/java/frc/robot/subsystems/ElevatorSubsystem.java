@@ -34,11 +34,11 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class ElevatorSubsystem extends SubsystemBase {
     private SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
+            // Our gearbox is included in this number.
             .withMechanismCircumference(Inches.of(ElevatorConstants.INCHES_PER_ENCODER_COUNTS))
             .withClosedLoopController(ElevatorConstants.KP, ElevatorConstants.KI, ElevatorConstants.KD,
                     ElevatorConstants.MAX_VELOCITY, ElevatorConstants.MAX_ACCELERATION)
             .withTelemetry("elevator_motor", TelemetryVerbosity.HIGH)
-            .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(1)))
             .withMotorInverted(false)
             .withIdleMode(MotorMode.COAST);
 
