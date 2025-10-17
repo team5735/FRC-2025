@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class TunableNumber {
     private static final String kBaseTable = "tunables";
 
-    private DoubleSubscriber m_subscriber;
+    private DoubleSubscriber subscriber;
 
     /**
      * Creates a new TunableNumber named name, the default table, and an initVal
@@ -72,7 +72,7 @@ public class TunableNumber {
         }
         DoubleTopic topic = table.getDoubleTopic(name);
         topic.publish().set(value);
-        m_subscriber = topic.subscribe(value);
+        subscriber = topic.subscribe(value);
     }
 
     /**
@@ -81,6 +81,6 @@ public class TunableNumber {
      * @return The value of this TunableNumber in NetworkTables.
      */
     public double get() {
-        return m_subscriber.get();
+        return subscriber.get();
     }
 }

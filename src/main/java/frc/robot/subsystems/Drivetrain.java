@@ -56,7 +56,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private NTDoubleSection doubles = new NTDoubleSection("drivetrain", "timestampIn", "timestampOut", "timestampDiff");
 
     /* Keep track if we've ever applied the operator perspective before or not */
-    private boolean m_hasAppliedOperatorPerspective = false;
+    private boolean hasAppliedOperatorPerspective = false;
 
     /* Swerve requests to apply during SysId characterization */
     public final SwerveRequest.SysIdSwerveTranslation translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -128,7 +128,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     this));
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineTranslation;
+    private SysIdRoutine sysIdRoutineToApply = sysIdRoutineTranslation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -232,24 +232,24 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
-     * specified by {@link #m_sysIdRoutineToApply}.
+     * specified by {@link #sysIdRoutineToApply}.
      *
      * @param direction Direction of the SysId Quasistatic test
      * @return Command to run
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);
+        return sysIdRoutineToApply.quasistatic(direction);
     }
 
     /**
      * Runs the SysId Dynamic test in the given direction for the routine
-     * specified by {@link #m_sysIdRoutineToApply}.
+     * specified by {@link #sysIdRoutineToApply}.
      *
      * @param direction Direction of the SysId Dynamic test
      * @return Command to run
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);
+        return sysIdRoutineToApply.dynamic(direction);
     }
 
     @Override
@@ -265,13 +265,13 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
          * This ensures driving behavior doesn't change until an explicit disable event
          * occurs during testing.
          */
-        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+        if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red
                                 ? Constants.RED_ALLIANCE_PERSPECTIVE_ROTATION
                                 : Constants.BLUE_ALLIANCE_PERSPECTIVE_ROTATION);
-                m_hasAppliedOperatorPerspective = true;
+                hasAppliedOperatorPerspective = true;
             });
         }
     }
