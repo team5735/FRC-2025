@@ -22,17 +22,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.ReefAlignment;
 
 public class DriveToBranch extends Command {
-    private DrivetrainSubsystem drivetrain;
+    private Drivetrain drivetrain;
     private Command storedCommand = Commands.none();
     private Watchdog watchdog = new Watchdog(1, () -> {
     });
     private Supplier<ReefAlignment> alignment;
 
-    public DriveToBranch(DrivetrainSubsystem drivetrain, Supplier<ReefAlignment> alignment) {
+    public DriveToBranch(Drivetrain drivetrain, Supplier<ReefAlignment> alignment) {
         this.drivetrain = drivetrain;
         this.alignment = alignment;
         addRequirements(drivetrain);
@@ -52,7 +52,7 @@ public class DriveToBranch extends Command {
             Telemetry.field.getObject("targetPose").setPose(tagPos);
             watchdog.addEpoch("tagPos retrieved");
 
-            PathConstraints constraints = DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints();
+            PathConstraints constraints = Drivetrain.CONSTANTS.getPathFollowConstraints();
             Pose2d lineUpPathOtherNode = new Pose2d(
                     tagPos.getTranslation()
                             .plus(new Translation2d(VisionConstants.PATH_DIST_FROM_SCOREPOS.in(Meters),

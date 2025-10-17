@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.ReefAlignment;
 
 public class ReefAprilTagPositions {
@@ -92,7 +92,7 @@ public class ReefAprilTagPositions {
                 pose.getRotation().plus(Rotation2d.kPi)).transformBy(
                         new Transform2d(
                                 new Translation2d(
-                                        -DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront().minus(Centimeters.of(5))
+                                        -Drivetrain.CONSTANTS.getPigeonToRobotFront().minus(Centimeters.of(5))
                                                 .in(Meters),
                                         0),
                                 Rotation2d.kZero));
@@ -153,7 +153,7 @@ public class ReefAprilTagPositions {
         return getClosest(position, allCoralPositions);
     }
 
-    public static double getScoreDistance(DrivetrainSubsystem drivetrain) {
+    public static double getScoreDistance(Drivetrain drivetrain) {
         Pose2d drivetrainPos = drivetrain.getEstimatedPosition();
         Pose2d scorePos = getClosestScorePosition(drivetrainPos.getTranslation());
         return scorePos.getTranslation().getDistance(drivetrainPos.getTranslation());

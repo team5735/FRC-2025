@@ -10,13 +10,13 @@ import frc.robot.constants.AlgaeConstants;
 import frc.robot.constants.Constants;
 import frc.robot.util.TunableNumber;
 
-public class AlgaeSubsystem extends SubsystemBase {
+public class Algae extends SubsystemBase {
     private final TalonFX falcon = new TalonFX(Constants.ALGAE_FALCON_ID);
 
     private TunableNumber grabVolts = new TunableNumber("algae", "grab_volts", AlgaeConstants.GRAB_VOLTS);
     private TunableNumber spitVolts = new TunableNumber("algae", "spit_volts", AlgaeConstants.SPIT_VOLTS);
 
-    public AlgaeSubsystem() {
+    public Algae() {
         falcon.getConfigurator().apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
     }
 

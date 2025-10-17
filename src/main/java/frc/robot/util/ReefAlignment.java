@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Drivetrain;
 
 public enum ReefAlignment {
     LEFT(Inches.of(4)),
@@ -28,7 +28,7 @@ public enum ReefAlignment {
     public Translation2d scoringPosition(Pose2d tagPos) {
         Rotation2d theta = tagPos.getRotation();
 
-        Translation2d offset = new Translation2d(DrivetrainSubsystem.CONSTANTS.getPigeonToRobotFront(), parallel)
+        Translation2d offset = new Translation2d(Drivetrain.CONSTANTS.getPigeonToRobotFront(), parallel)
                 .rotateBy(theta);
 
         return tagPos.getTranslation().plus(offset);

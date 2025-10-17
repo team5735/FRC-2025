@@ -146,7 +146,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Returns a command to score at the specified level.
      *
      * Using {@link #getSetLevel(Height)}, go to the specified level and score with
-     * {@link CoralSubsystem#outputBasedOnLevel(Supplier)}. This command finishes
+     * {@link Coral#outputBasedOnLevel(Supplier)}. This command finishes
      * when both actions are complete.
      * 
      * @param level   the target level
@@ -159,7 +159,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      *          coraler));
      *          ```
      */
-    public Command getSetLevelAndCoral(Height level, CoralSubsystem coraler) {
+    public Command getSetLevelAndCoral(Height level, Coral coraler) {
         return getSetLevel(level)
                 .andThen(coraler.outputBasedOnLevel(() -> currentHeight))
                 .withName("set level to " + level + " and coral");

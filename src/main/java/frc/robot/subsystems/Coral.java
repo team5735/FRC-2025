@@ -26,7 +26,7 @@ import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Height;
 import frc.robot.util.TunableNumber;
 
-public class CoralSubsystem extends SubsystemBase {
+public class Coral extends SubsystemBase {
     private final SparkFlex vortexManipTop = new SparkFlex(Constants.CORAL_MOTOR_BOTTOM_ID, MotorType.kBrushless);
     private final SparkFlex vortexManipBottom = new SparkFlex(Constants.CORAL_MOTOR_TOP_ID, MotorType.kBrushless);
 
@@ -51,7 +51,7 @@ public class CoralSubsystem extends SubsystemBase {
     private TunableNumber feedVolts = new TunableNumber("feed", "feed_volts", CoralConstants.FEEDER_VOLTS);
     private TunableNumber unfeedVolts = new TunableNumber("unfeed", "unfeed_volts", CoralConstants.UNFEED_VOLTS);
 
-    public CoralSubsystem() {
+    public Coral() {
         vortexManipTop.configure(
                 new SparkFlexConfig().inverted(false).idleMode(IdleMode.kBrake),
                 ResetMode.kResetSafeParameters,

@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Telemetry;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.ReefAlignment;
 import frc.robot.util.TunablePIDController;
 
 public class PIDToNearestBranch extends Command {
-    private DrivetrainSubsystem drivetrain;
+    private Drivetrain drivetrain;
 
     private TunablePIDController xController = new TunablePIDController("PIDToNearestBranch_x");
     private TunablePIDController yController = new TunablePIDController("PIDToNearestBranch_y");
@@ -20,7 +20,7 @@ public class PIDToNearestBranch extends Command {
 
     private Supplier<ReefAlignment> alignment;
 
-    public PIDToNearestBranch(DrivetrainSubsystem drivetrain, Supplier<ReefAlignment> alignment) {
+    public PIDToNearestBranch(Drivetrain drivetrain, Supplier<ReefAlignment> alignment) {
         this.drivetrain = drivetrain;
         this.alignment = alignment;
         addRequirements(drivetrain);

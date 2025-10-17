@@ -16,15 +16,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.NTDoubleSection;
 
-public class VisionSubsystem extends SubsystemBase {
-    DrivetrainSubsystem drivetrain;
+public class Vision extends SubsystemBase {
+    Drivetrain drivetrain;
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
     private static final String LIMELIGHTS[] = { "limelight", "limelight_back" };
 
     // Initializes the vision subsystem
-    public VisionSubsystem(DrivetrainSubsystem drivetrain) {
+    public Vision(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
     }
 

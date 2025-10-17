@@ -26,12 +26,12 @@ import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Height;
 import frc.robot.constants.drivetrain.CompbotTunerConstants;
 import frc.robot.constants.drivetrain.DevbotTunerConstants;
-import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.CANdleSubsystem;
-import frc.robot.subsystems.CoralSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.Vision;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
@@ -47,7 +47,7 @@ public class RobotContainer {
 
     private final CommandXboxController testController = new CommandXboxController(2);
 
-    public static final DrivetrainSubsystem drivetrain;
+    public static final Drivetrain drivetrain;
 
     static {
         switch (Constants.DRIVETRAIN_TYPE) {
@@ -60,10 +60,10 @@ public class RobotContainer {
                 break;
         }
     }
-    public static final VisionSubsystem vision = new VisionSubsystem(drivetrain);
+    public static final Vision vision = new Vision(drivetrain);
 
-    public static final AlgaeSubsystem algaer = new AlgaeSubsystem();
-    public static final CoralSubsystem coraler = new CoralSubsystem();
+    public static final Algae algaer = new Algae();
+    public static final Coral coraler = new Coral();
     public static final ElevatorSubsystem elevator = new ElevatorSubsystem();
     public static final CANdleSubsystem LEDs = new CANdleSubsystem();
 
