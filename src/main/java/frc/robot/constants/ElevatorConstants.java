@@ -31,7 +31,7 @@ public class ElevatorConstants {
     public static final Distance L2_HEIGHT = Inches.of(13);
     public static final Distance L3_HEIGHT = Inches.of(29);
     // public static final Distance L4_HEIGHT = Inches.of(53.25);
-    public static final Distance L4_HEIGHT = Inches.of(53.25);
+    public static final Distance L4_HEIGHT = Inches.of(53.5);
     public static final Distance PROCESS_HEIGHT = Feet.of(0);
     public static final Distance MAX_HEIGHT = Inches.of(53.25); // TODO
 
