@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,8 +28,32 @@ public class VisionSubsystem extends SubsystemBase {
         this.drivetrain = drivetrain;
     }
 
+    private boolean trySeedPigeon(String name) {
+        if (!LimelightHelpers.getTV(name)) {
+            return false;
+        }
+        drivetrain.getPigeon2()
+                .setYaw(LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose.getRotation().getDegrees());
+        drivetrain.resetPose(
+                new Pose2d(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose.getTranslation(),
+                        drivetrain.getPigeon2().getRotation2d()));
+        return true;
+    }
+
+    public void seedPigeon() {
+        for (String name : LIMELIGHTS) {
+            if (trySeedPigeon(name)) {
+                break;
+            }
+        }
+    }
+
     public void updateVisionMeasurement(String limelightName) {
-        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        LimelightHelpers.SetRobotOrientation(limelightName,
+                drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+                0, 0, 0);
+
+        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
         if (estimate == null) {
             SmartDashboard.putNumber(limelightName + "_status", 1);
@@ -56,7 +81,7 @@ public class VisionSubsystem extends SubsystemBase {
             double mt2xdev = stddevs[6];
             double mt2ydev = stddevs[7];
             drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds,
-                    VecBuilder.fill(.7, .7, 9999999));
+                    VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
         }
 
         if (Double.isNaN(drivetrain.getEstimatedPosition().getX())

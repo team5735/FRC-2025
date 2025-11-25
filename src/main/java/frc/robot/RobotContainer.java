@@ -10,13 +10,10 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -143,6 +140,7 @@ public class RobotContainer {
                 .whileTrue(new AlignToReef(drivetrain));
         driveController.povRight().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain));
+        driveController.povUp().and(driveController.y()).onTrue(vision.runOnce(() -> vision.seedPigeon()));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());
@@ -176,8 +174,8 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // Command auto = autoChooser.getSelected();
         // if (auto == null) {
-        //     System.out.println("auto is null");
-        //     return drivetrain.brakeCommand();
+        // System.out.println("auto is null");
+        // return drivetrain.brakeCommand();
         // }
 
         return Commands.none();
