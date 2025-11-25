@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.NTDoubleSection;
 
 public class VisionSubsystem extends SubsystemBase {
     DrivetrainSubsystem drivetrain;
@@ -41,32 +41,45 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void seedPigeon() {
-        for (String name : LIMELIGHTS) {
-            if (trySeedPigeon(name)) {
-                break;
-            }
-        }
+        trySeedPigeon("limelight-left") ;
     }
 
-    public void updateVisionMeasurement(String limelightName) {
-        LimelightHelpers.SetRobotOrientation(limelightName,
-                drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-                0, 0, 0);
+    private LimelightHelpers.PoseEstimate lastEstimate;
 
-        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    public void updateVisionMeasurement(String limelightName) {
+        LimelightHelpers.PoseEstimate estimate;
+        if (VisionConstants.IS_MT2) {
+            LimelightHelpers.SetRobotOrientation(limelightName,
+                    drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+                    0, 0, 0);
+
+            estimate = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+        } else {
+            estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+        }
+
+        boolean reject = false;
 
         if (estimate == null) {
             SmartDashboard.putNumber(limelightName + "_status", 1);
             return;
         }
 
-        boolean reject = false;
+        if (lastEstimate != null && estimate.pose == lastEstimate.pose) {
+            SmartDashboard.putNumber(limelightName + "_status", 5);
+            reject = true;
+        }
+        lastEstimate = estimate;
+
         if (estimate.tagCount == 1 && estimate.rawFiducials.length == 1) {
             var firstFiducial = estimate.rawFiducials[0];
             if (firstFiducial.ambiguity > .7) {
                 reject = true;
                 SmartDashboard.putNumber(limelightName + "_status", 2);
-            } else {
+            } else if (limelightName == "limelight-right" // our Limelight 3
+                    && firstFiducial.distToCamera > 3) {
+                reject = true;
                 SmartDashboard.putNumber(limelightName + "_status", 3);
             }
         } else if (estimate.tagCount == 0) {
@@ -78,10 +91,16 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putNumber(limelightName + "_status", 0);
             double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
                     .getDoubleArray(new double[12]);
-            double mt2xdev = stddevs[6];
-            double mt2ydev = stddevs[7];
+            double xdev, ydev;
+            if (VisionConstants.IS_MT2) {
+                xdev = stddevs[6];
+                ydev = stddevs[7];
+            } else {
+                xdev = stddevs[0];
+                ydev = stddevs[1];
+            }
             drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds,
-                    VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
+                    VecBuilder.fill(xdev, ydev, 9999999));
         }
 
         if (Double.isNaN(drivetrain.getEstimatedPosition().getX())
@@ -92,10 +111,6 @@ public class VisionSubsystem extends SubsystemBase {
             System.out.println("reset pose estimator due to NaN or inf");
         }
     }
-
-    // all in degrees
-    NTDoubleSection telemetry_doubles = new NTDoubleSection("test_telem_doubles", "mt1_rz", "mt2_rz", "pigeon",
-            "poseest", "averagedMt1");
 
     @Override
     public void periodic() {

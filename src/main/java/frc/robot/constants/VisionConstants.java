@@ -13,4 +13,6 @@ public class VisionConstants {
     public static final double MAX_PID_ERROR = 5;
 
     public static final Distance PID_DRIVE_THRESHOLD = Meters.of(0.5);
+
+    public static final boolean IS_MT2 = true;
 }
