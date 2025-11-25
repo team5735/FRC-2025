@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         for (String limelight : VisionSubsystem.LIMELIGHTS) {
-            RobotContainer.vision.updateVisionMeasurement(limelight);
+            RobotContainer.vision.maybeUpdateVisionMeasurement(limelight);
         }
     }
 
