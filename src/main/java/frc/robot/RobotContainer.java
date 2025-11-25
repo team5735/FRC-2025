@@ -142,10 +142,9 @@ public class RobotContainer {
 
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain, vision));
+                .whileTrue(new AlignToReef(drivetrain));
         driveController.povRight().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain, vision));
-        driveController.povUp().and(driveController.y()).onTrue(vision.getSeedPigeon());
+                .whileTrue(new AlignToReef(drivetrain));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
         driveController.rightBumper().onTrue(coraler.feedStageCommand());

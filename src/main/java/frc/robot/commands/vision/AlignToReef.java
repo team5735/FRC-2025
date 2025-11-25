@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ReefAprilTagPositions;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.Line;
 import frc.robot.util.NTBooleanSection;
 import frc.robot.util.NTDoubleSection;
@@ -33,15 +32,12 @@ public class AlignToReef extends Command {
 
     private static boolean infinite = true;
 
-    private VisionSubsystem vision;
-
     /**
      * Positions the robot in order to score a coral.
      */
-    public AlignToReef(DrivetrainSubsystem drivetrain, VisionSubsystem vision) {
+    public AlignToReef(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
-        this.vision = vision;
-        addRequirements(drivetrain, vision);
+        addRequirements(drivetrain);
     }
 
     @Override
@@ -55,8 +51,6 @@ public class AlignToReef extends Command {
 
         angleController.setup(alignmentTargetPos.getRotation().plus(Rotation2d.k180deg).getRadians(), 0.015);
         lineController.setup(0, .01); // we want to be 'at' the Line.
-
-        vision.seedPigeon();
 
         booleans.set("aligning", true);
     }
