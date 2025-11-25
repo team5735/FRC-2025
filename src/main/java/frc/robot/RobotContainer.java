@@ -135,11 +135,9 @@ public class RobotContainer {
         driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
         // drivecontroller.b() slow mode
 
-        Command pathPlannerDrive = new DriveToBranch(drivetrain, () -> chooseAlignment());
-        driveController.x().onTrue(pathPlannerDrive);
+        driveController.x().onTrue(new DriveToBranch(drivetrain, () -> chooseAlignment()));
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft().and(driveController.y())
                 .whileTrue(new AlignToReef(drivetrain));
