@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,44 +20,50 @@ public class VisionSubsystem extends SubsystemBase {
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
-    private static final String LIMELIGHTS[] = { "limelight_left", "limelight_right" };
+    public static final String LIMELIGHTS[] = { "limelight-left", "limelight-right" };
 
     // Initializes the vision subsystem
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
     }
 
-    private void updateVisionMeasurement(String limelight_name) {
-        LimelightHelpers.SetRobotOrientation(limelight_name,
-                drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-                0, 0, 0);
+    public void updateVisionMeasurement(String limelightName) {
+        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
-        LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight_name);
+        if (estimate == null) {
+            SmartDashboard.putNumber(limelightName + "_status", 1);
+            return;
+        }
 
         boolean reject = false;
         if (estimate.tagCount == 1 && estimate.rawFiducials.length == 1) {
             var firstFiducial = estimate.rawFiducials[0];
-            if (firstFiducial.ambiguity > .7 || firstFiducial.distToCamera > 3) {
+            if (firstFiducial.ambiguity > .7) {
                 reject = true;
+                SmartDashboard.putNumber(limelightName + "_status", 2);
+            } else {
+                SmartDashboard.putNumber(limelightName + "_status", 3);
             }
         } else if (estimate.tagCount == 0) {
             reject = true;
+            SmartDashboard.putNumber(limelightName + "_status", 4);
         }
 
         if (!reject) {
-            double[] stddevs = NetworkTableInstance.getDefault().getTable(limelight_name).getEntry("stddevs")
+            SmartDashboard.putNumber(limelightName + "_status", 0);
+            double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
                     .getDoubleArray(new double[12]);
             double mt2xdev = stddevs[6];
             double mt2ydev = stddevs[7];
             drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds,
-                    VecBuilder.fill(mt2xdev, mt2ydev, 9999999));
+                    VecBuilder.fill(.7, .7, 9999999));
         }
 
         if (Double.isNaN(drivetrain.getEstimatedPosition().getX())
                 || Double.isInfinite(drivetrain.getEstimatedPosition().getX()) ||
                 Double.isNaN(drivetrain.getEstimatedPosition().getY())
                 || Double.isInfinite(drivetrain.getEstimatedPosition().getY())) {
-            drivetrain.resetPose(LimelightHelpers.getBotPose2d_wpiBlue(limelight_name));
+            drivetrain.resetPose(LimelightHelpers.getBotPose2d_wpiBlue(limelightName));
             System.out.println("reset pose estimator due to NaN or inf");
         }
     }

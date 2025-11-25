@@ -41,7 +41,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MAX_SPEED);
 
-    private final SendableChooser<Command> autoChooser;
+    // private final SendableChooser<Command> autoChooser;
 
     private final CommandXboxController driveController = new CommandXboxController(Constants.DRIVE_CONTROLLER_PORT);
     private final CommandXboxController subsystemController = new CommandXboxController(
@@ -92,9 +92,9 @@ public class RobotContainer {
 
         NamedCommands.registerCommands(commandsForAuto);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser = AutoBuilder.buildAutoChooser();
 
-        SmartDashboard.putData("Choose an Auto", autoChooser);
+        // SmartDashboard.putData("Choose an Auto", autoChooser);
         PathfindingCommand.warmupCommand().schedule();
         DriverStation.silenceJoystickConnectionWarning(true);
         configureBindings();
@@ -174,12 +174,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Command auto = autoChooser.getSelected();
-        if (auto == null) {
-            System.out.println("auto is null");
-            return drivetrain.brakeCommand();
-        }
+        // Command auto = autoChooser.getSelected();
+        // if (auto == null) {
+        //     System.out.println("auto is null");
+        //     return drivetrain.brakeCommand();
+        // }
 
-        return auto;
+        return Commands.none();
     }
 }
