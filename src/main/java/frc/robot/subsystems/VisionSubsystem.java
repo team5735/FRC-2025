@@ -21,7 +21,7 @@ public class VisionSubsystem extends SubsystemBase {
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
-    public static final String LIMELIGHTS[] = { "limelight-left", "limelight-right" };
+    public static final String LIMELIGHTS[] = { "limelight-left" };
 
     // Initializes the vision subsystem
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
@@ -41,7 +41,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void seedPigeon() {
-        trySeedPigeon("limelight-left") ;
+        trySeedPigeon("limelight-left");
     }
 
     private LimelightHelpers.PoseEstimate lastEstimate;
@@ -50,8 +50,12 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.PoseEstimate estimate;
         if (VisionConstants.IS_MT2) {
             LimelightHelpers.SetRobotOrientation(limelightName,
-                    drivetrain.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+                    drivetrain.getPigeon2().getYaw().getValueAsDouble(),
+                    drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(), 0,
                     0, 0, 0);
+            SmartDashboard.putNumber("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
+            SmartDashboard.putNumber("drivetrainOmegaZ",
+                    drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
 
             estimate = LimelightHelpers
                     .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
@@ -98,6 +102,9 @@ public class VisionSubsystem extends SubsystemBase {
             } else {
                 xdev = stddevs[0];
                 ydev = stddevs[1];
+            }
+            if (drivetrain.getEstimatedPosition().getTranslation().getDistance(estimate.pose.getTranslation()) > 4) {
+                drivetrain.resetPose(estimate.pose);
             }
             drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds,
                     VecBuilder.fill(xdev, ydev, 9999999));
