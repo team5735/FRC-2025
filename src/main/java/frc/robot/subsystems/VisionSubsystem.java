@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
@@ -47,7 +49,7 @@ public class VisionSubsystem extends SubsystemBase {
     private LimelightHelpers.PoseEstimate lastEstimate;
 
     private LimelightHelpers.PoseEstimate getMt2Estimate(String limelightName) {
-        LimelightHelpers.SetRobotOrientation(limelightName, -117, 0, 0,
+        LimelightHelpers.SetRobotOrientation(limelightName, drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 0,
                 0, 0, 0);
         SmartDashboard.putNumber("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
         SmartDashboard.putNumber("drivetrainOmegaZ",
@@ -101,7 +103,18 @@ public class VisionSubsystem extends SubsystemBase {
         updateVisionMeasurement(limelightName, estimate);
     }
 
+    private int pigeonDelay = 0;
+
     private void updateVisionMeasurement(String limelightName, LimelightHelpers.PoseEstimate estimate) {
+        if (Arrays.stream(estimate.rawFiducials)
+                .allMatch(tag -> tag.distToCamera < VisionConstants.RESET_PIGEON_DISTANCE.in(Meters))
+                && pigeonDelay > VisionConstants.RESET_PIGEON_DELAY) {
+            System.out.println("reset pigeon yaw due to close enough");
+            drivetrain.getPigeon2().setYaw(estimate.pose.getRotation().getMeasure());
+            pigeonDelay = 0;
+        }
+        pigeonDelay++;
+
         SmartDashboard.putNumber(limelightName + "_status", 0);
         double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
                 .getDoubleArray(new double[12]);
