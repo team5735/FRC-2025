@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -152,5 +153,9 @@ public class CompbotConstants implements DrivetrainConstants {
 
     public Distance getBumperWidth() {
         return Inches.of(3.5); // TODO
+    }
+
+    public Rotation3d getPigeonRotation() {
+        return new Rotation3d(); // TODO: measure
     }
 }

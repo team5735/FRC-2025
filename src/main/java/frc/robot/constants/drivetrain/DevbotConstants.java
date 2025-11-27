@@ -1,5 +1,6 @@
 package frc.robot.constants.drivetrain;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
@@ -14,6 +15,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -154,5 +156,14 @@ public class DevbotConstants implements DrivetrainConstants {
 
     public Distance getBumperWidth() {
         return Inches.of(3.5);
+    }
+
+    public Rotation3d getPigeonRotation() {
+        // These were obtained by copying the offsets from Phoenix Tuner X after Pigeon
+        // calibration.
+        return new Rotation3d(
+                Degrees.of(-0.621528685092926),
+                Degrees.of(2.193615198135376),
+                Degrees.of(1.2157641649246216));
     }
 }
