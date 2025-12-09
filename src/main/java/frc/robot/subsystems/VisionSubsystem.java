@@ -46,19 +46,23 @@ public class VisionSubsystem extends SubsystemBase {
 
     private LimelightHelpers.PoseEstimate lastEstimate;
 
+    private LimelightHelpers.PoseEstimate getMt2Estimate(String limelightName) {
+        LimelightHelpers.SetRobotOrientation(limelightName,
+                drivetrain.getPigeon2().getYaw().getValueAsDouble(),
+                drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(), 0,
+                0, 0, 0);
+        SmartDashboard.putNumber("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("drivetrainOmegaZ",
+                drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
+
+        return LimelightHelpers
+                .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+    }
+
     public void updateVisionMeasurement(String limelightName) {
         LimelightHelpers.PoseEstimate estimate;
         if (VisionConstants.IS_MT2) {
-            LimelightHelpers.SetRobotOrientation(limelightName,
-                    drivetrain.getPigeon2().getYaw().getValueAsDouble(),
-                    drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble(), 0,
-                    0, 0, 0);
-            SmartDashboard.putNumber("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
-            SmartDashboard.putNumber("drivetrainOmegaZ",
-                    drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
-
-            estimate = LimelightHelpers
-                    .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+            estimate = getMt2Estimate(limelightName);
         } else {
             estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
         }
