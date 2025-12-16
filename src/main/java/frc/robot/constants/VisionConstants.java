@@ -17,5 +17,5 @@ public class VisionConstants {
     public static final boolean IS_MT2 = true;
 
     public static final Distance RESET_PIGEON_DISTANCE = Meters.of(105);
-    public static final int RESET_PIGEON_DELAY = 50;
+    public static final int RESET_PIGEON_TICKS = 50;
 }

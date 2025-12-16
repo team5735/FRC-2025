@@ -11,12 +11,12 @@ import java.util.Arrays;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.NTDoubleSection;
 
 public class VisionSubsystem extends SubsystemBase {
     DrivetrainSubsystem drivetrain;
@@ -25,9 +25,14 @@ public class VisionSubsystem extends SubsystemBase {
 
     public static final String LIMELIGHTS[] = { "limelight-left" };
 
-    // Initializes the vision subsystem
+    private NTDoubleSection doubles = new NTDoubleSection("vision", "drivetrainYaw", "drivetrainOmegaZ",
+            "drivetrainYaw", "status");
+
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
+        for (String limelight : LIMELIGHTS) {
+            doubles.addEntry(limelight + "_status");
+        }
     }
 
     private boolean trySeedPigeon(String name) {
@@ -51,9 +56,8 @@ public class VisionSubsystem extends SubsystemBase {
     private LimelightHelpers.PoseEstimate getMt2Estimate(String limelightName) {
         LimelightHelpers.SetRobotOrientation(limelightName, drivetrain.getPigeon2().getYaw().getValueAsDouble(), 0, 0,
                 0, 0, 0);
-        SmartDashboard.putNumber("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
-        SmartDashboard.putNumber("drivetrainOmegaZ",
-                drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
+        doubles.set("drivetrainYaw", drivetrain.getPigeon2().getYaw().getValueAsDouble());
+        doubles.set("drivetrainOmegaZ", drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
 
         return LimelightHelpers
                 .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
@@ -75,12 +79,12 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         if (estimate == null) {
-            SmartDashboard.putNumber(limelightName + "_status", 1);
+            doubles.set(limelightName + "_status", 1);
             return;
         }
 
         if (lastEstimate != null && estimate.pose == lastEstimate.pose) {
-            SmartDashboard.putNumber(limelightName + "_status", 5);
+            doubles.set(limelightName + "_status", 5);
             return;
         }
         lastEstimate = estimate;
@@ -88,34 +92,33 @@ public class VisionSubsystem extends SubsystemBase {
         if (estimate.tagCount == 1 && estimate.rawFiducials.length == 1) {
             var firstFiducial = estimate.rawFiducials[0];
             if (firstFiducial.ambiguity > .7) {
-                SmartDashboard.putNumber(limelightName + "_status", 2);
+                doubles.set(limelightName + "_status", 2);
                 return;
             } else if (limelightName == "limelight-right" // our Limelight 3
                     && firstFiducial.distToCamera > 3) {
-                SmartDashboard.putNumber(limelightName + "_status", 3);
+                doubles.set(limelightName + "_status", 3);
                 return;
             }
         } else if (estimate.tagCount == 0) {
-            SmartDashboard.putNumber(limelightName + "_status", 4);
+            doubles.set(limelightName + "_status", 4);
             return;
         }
 
         updateVisionMeasurement(limelightName, estimate);
     }
 
-    private int pigeonDelay = 0;
+    private int pigeonTimer = 0;
 
     private void updateVisionMeasurement(String limelightName, LimelightHelpers.PoseEstimate estimate) {
         if (Arrays.stream(estimate.rawFiducials)
                 .allMatch(tag -> tag.distToCamera < VisionConstants.RESET_PIGEON_DISTANCE.in(Meters))
-                && pigeonDelay > VisionConstants.RESET_PIGEON_DELAY) {
-            System.out.println("reset pigeon yaw due to close enough");
+                && pigeonTimer > VisionConstants.RESET_PIGEON_TICKS) {
             drivetrain.getPigeon2().setYaw(estimate.pose.getRotation().getMeasure());
-            pigeonDelay = 0;
+            pigeonTimer = 0;
         }
-        pigeonDelay++;
+        pigeonTimer++;
 
-        SmartDashboard.putNumber(limelightName + "_status", 0);
+        doubles.set(limelightName + "_status", 0);
         double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
                 .getDoubleArray(new double[12]);
         double xdev, ydev;
