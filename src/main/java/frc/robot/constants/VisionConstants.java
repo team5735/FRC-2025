@@ -1,8 +1,10 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
 
 public class VisionConstants {
     public static final int AVERAGING_WINDOW = 5;
@@ -17,5 +19,5 @@ public class VisionConstants {
     public static final boolean IS_MT2 = true;
 
     public static final Distance RESET_PIGEON_DISTANCE = Meters.of(105);
-    public static final int RESET_PIGEON_TICKS = 50;
+    public static final Time RESET_PIGEON_INTERVAL = Seconds.of(1);
 }

@@ -5,12 +5,14 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -107,16 +109,16 @@ public class VisionSubsystem extends SubsystemBase {
         updateVisionMeasurement(limelightName, estimate);
     }
 
-    private int pigeonTimer = 0;
+    private double lastUpdateTimestamp = 0;
 
     private void updateVisionMeasurement(String limelightName, LimelightHelpers.PoseEstimate estimate) {
+        double timestamp = Timer.getFPGATimestamp();
         if (Arrays.stream(estimate.rawFiducials)
                 .allMatch(tag -> tag.distToCamera < VisionConstants.RESET_PIGEON_DISTANCE.in(Meters))
-                && pigeonTimer > VisionConstants.RESET_PIGEON_TICKS) {
+                && Math.abs(lastUpdateTimestamp - timestamp) > VisionConstants.RESET_PIGEON_INTERVAL.in(Seconds)) {
             drivetrain.getPigeon2().setYaw(estimate.pose.getRotation().getMeasure());
-            pigeonTimer = 0;
+            lastUpdateTimestamp = timestamp;
         }
-        pigeonTimer++;
 
         doubles.set(limelightName + "_status", 0);
         double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
