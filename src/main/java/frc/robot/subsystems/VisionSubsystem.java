@@ -25,10 +25,10 @@ public class VisionSubsystem extends SubsystemBase {
     @SuppressWarnings("unused")
     private double driftEstimateTicks;
 
-    public static final String LIMELIGHTS[] = { "limelight-left" };
+    public static final String LIMELIGHTS[] = { "limelight-left", "limelight-right" };
 
     private NTDoubleSection doubles = new NTDoubleSection("vision", "drivetrainYaw", "drivetrainOmegaZ",
-            "drivetrainYaw", "status");
+            "drivetrainYaw");
 
     public VisionSubsystem(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
@@ -50,7 +50,9 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void seedPigeon() {
-        trySeedPigeon("limelight-left");
+        for (String limelight : LIMELIGHTS) {
+            trySeedPigeon(limelight);
+        }
     }
 
     private LimelightHelpers.PoseEstimate lastEstimate;
