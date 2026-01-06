@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.vision.AlignToReef;
 import frc.robot.commands.vision.DriveToBranch;
+import frc.robot.commands.vision.FaceTranslation;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
@@ -136,10 +136,7 @@ public class RobotContainer {
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povLeft().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain));
-        driveController.povRight().and(driveController.y())
-                .whileTrue(new AlignToReef(drivetrain));
+        driveController.povLeft().and(driveController.y()).onTrue(new FaceTranslation(drivetrain));
         driveController.povUp().and(driveController.y()).onTrue(vision.runOnce(() -> vision.seedPigeon()));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());
