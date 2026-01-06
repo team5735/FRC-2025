@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -33,8 +34,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
-import frc.robot.util.NTDoubleSection;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
+import frc.robot.util.NTDoubleSection;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -284,9 +285,9 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
      * For use by PIDs. Speed limited for safety.
      */
     public void pidDrive(double vx, double vy, double omega) {
-        if (Math.abs(vx) > maxSpeed || Math.abs(vy) > maxSpeed || Math.abs(omega) > maxAngularRate) {
-            setControl(brakeRequest);
-        }
+        vx = MathUtil.clamp(vx, -maxSpeed, maxSpeed);
+        vy = MathUtil.clamp(vy, -maxSpeed, maxSpeed);
+        omega = MathUtil.clamp(omega, -maxAngularRate, maxAngularRate);
         setControl(fieldCentricRequest.withVelocityX(vx).withVelocityY(vy).withRotationalRate(omega));
     }
 
