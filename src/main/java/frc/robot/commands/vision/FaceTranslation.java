@@ -10,8 +10,9 @@ import frc.robot.util.TunablePIDController;
 public class FaceTranslation extends Command {
     private DrivetrainSubsystem drivetrain;
     private TunablePIDController controller = new TunablePIDController("face_translation");
-    private TunableNumber target_x = new TunableNumber("face_translation", "x");
-    private TunableNumber target_y = new TunableNumber("face_translation", "y");
+    // initVals are for april tag id 15 for 2025 season
+    private TunableNumber target_x = new TunableNumber("face_translation", "x", 8.27);
+    private TunableNumber target_y = new TunableNumber("face_translation", "y", 1.92);
 
     public FaceTranslation(DrivetrainSubsystem drivetrain) {
         this.drivetrain = drivetrain;
@@ -25,12 +26,18 @@ public class FaceTranslation extends Command {
         Translation2d botToTarget = target.minus(currentPos);
         Rotation2d angle = new Rotation2d(botToTarget.getX(), botToTarget.getY());
         controller.setup(angle.getRadians());
+        controller.getController().enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
     public void execute() {
         double omega = controller.calculate(drivetrain.getEstimatedPosition().getRotation().getRadians());
-        drivetrain.pidDrive(new Translation2d(), omega);
+        drivetrain.pidDrive(0, 0, omega);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.pidDrive(0, 0, 0);
     }
 
     @Override
