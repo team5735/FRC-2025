@@ -98,7 +98,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public AngularVelocity getDefaultRotationalRate() {
-        return DegreesPerSecond.of(180);
+        return DegreesPerSecond.of(80);
     }
 
     @Override
