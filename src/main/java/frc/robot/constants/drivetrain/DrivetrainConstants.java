@@ -15,6 +15,12 @@ public interface DrivetrainConstants {
 
     public PIDConstants getAutoRotConstants();
 
+    public double getRotKs();
+
+    public double getRotKv();
+
+    public double getRotKa();
+
     public Distance getRobotTotalWidth();
 
     public Distance getRobotTotalLength();
@@ -22,18 +28,6 @@ public interface DrivetrainConstants {
     public Distance getPigeonToRobotFront();
 
     public PathConstraints getPathFollowConstraints();
-
-    public double getSpinKp();
-
-    public double getSpinKi();
-
-    public double getSpinKd();
-
-    public double getSpinKs();
-
-    public double getSpinKv();
-
-    public double getSpinKa();
 
     public LinearVelocity getDefaultSpeed();
 

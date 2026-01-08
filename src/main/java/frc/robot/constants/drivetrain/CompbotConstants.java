@@ -30,6 +30,21 @@ public class CompbotConstants implements DrivetrainConstants {
     public PIDConstants getAutoRotConstants() {
         return new PIDConstants(12, 0);
     }
+    
+    @Override
+    public double getRotKs() {
+        return 0.16327;
+    }
+
+    @Override
+    public double getRotKv() {
+        return 0.80246;
+    }
+
+    @Override
+    public double getRotKa() {
+        return 0.185;
+    }
 
     @Override
     public Distance getRobotTotalWidth() {
@@ -53,36 +68,6 @@ public class CompbotConstants implements DrivetrainConstants {
                 MetersPerSecondPerSecond.of(0),
                 DegreesPerSecond.of(0),
                 DegreesPerSecondPerSecond.of(0)); // TODO add and test values
-    }
-
-    @Override
-    public double getSpinKp() {
-        return 0.014687;
-    }
-
-    @Override
-    public double getSpinKi() {
-        return 0;
-    }
-
-    @Override
-    public double getSpinKd() {
-        return 0;
-    }
-
-    @Override
-    public double getSpinKs() {
-        return 0.16327;
-    }
-
-    @Override
-    public double getSpinKv() {
-        return 0.80246;
-    }
-
-    @Override
-    public double getSpinKa() {
-        return 0.185;
     }
 
     @Override
@@ -117,7 +102,7 @@ public class CompbotConstants implements DrivetrainConstants {
 
     @Override
     public double getRobotMoiKgxMxM() {
-        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getSpinKa()
+        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getRotKa()
                 / CompbotTunerConstants.DRIVE_GAINS.kA;
     }
 

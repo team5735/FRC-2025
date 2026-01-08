@@ -25,12 +25,27 @@ import frc.robot.util.Todo;
 public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(15, 0);
+        return new PIDConstants(15, 0); //TODO
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(10, 0);
+        return new PIDConstants(10, 0); //TODO
+    }
+
+    @Override
+    public double getRotKs() {
+        throw new Todo();
+    }
+
+    @Override
+    public double getRotKv() {
+        throw new Todo();
+    }
+
+    @Override
+    public double getRotKa() {
+        throw new Todo();
     }
 
     @Override
@@ -49,42 +64,12 @@ public class DevbotConstants implements DrivetrainConstants {
     }
 
     @Override
-    public PathConstraints getPathFollowConstraints() {
+    public PathConstraints getPathFollowConstraints() { 
         return new PathConstraints(
                 MetersPerSecond.of(4),
                 MetersPerSecondPerSecond.of(2),
                 DegreesPerSecond.of(540),
                 DegreesPerSecondPerSecond.of(270));
-    }
-
-    @Override
-    public double getSpinKp() {
-        throw new Todo();
-    }
-
-    @Override
-    public double getSpinKi() {
-        throw new Todo();
-    }
-
-    @Override
-    public double getSpinKd() {
-        throw new Todo();
-    }
-
-    @Override
-    public double getSpinKs() {
-        return 0.08652;
-    }
-
-    @Override
-    public double getSpinKv() {
-        return 1.0453;
-    }
-
-    @Override
-    public double getSpinKa() {
-        return 0.042742;
     }
 
     @Override
@@ -108,19 +93,19 @@ public class DevbotConstants implements DrivetrainConstants {
     }
 
     @Override
-    public Mass getRobotMass() {
+    public Mass getRobotMass() { //TODO - weigh
         return Kilograms.of(37.50);
     }
 
     @Override
-    public Distance getMaxWheelDistance() {
+    public Distance getMaxWheelDistance() { //TODO - verify
         return Inches.of(25);
     }
 
     @Override
     public double getRobotMoiKgxMxM() {
-        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getSpinKa()
-                / DevbotTunerConstants.DRIVE_GAINS.kA;
+        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getRotKa()
+                / DevbotTunerConstants.DRIVE_CONSTANTS.kA;
     }
 
     @Override
@@ -138,10 +123,10 @@ public class DevbotConstants implements DrivetrainConstants {
                     DCMotor.getKrakenX60(1).withReduction(DevbotTunerConstants.DRIVE_GEAR_RATIO),
                     60,
                     1),
-            new Translation2d(DevbotTunerConstants.FRONT_LEFT_XPOS, DevbotTunerConstants.FRONT_LEFT_YPOS),
-            new Translation2d(DevbotTunerConstants.FRONT_RIGHT_XPOS, DevbotTunerConstants.FRONT_RIGHT_YPOS),
-            new Translation2d(DevbotTunerConstants.BACK_LEFT_XPOS, DevbotTunerConstants.BACK_LEFT_YPOS),
-            new Translation2d(DevbotTunerConstants.BACK_RIGHT_XPOS, DevbotTunerConstants.BACK_RIGHT_YPOS));
+            new Translation2d(DevbotTunerConstants.FL_XPOS, DevbotTunerConstants.FL_YPOS),
+            new Translation2d(DevbotTunerConstants.FR_XPOS, DevbotTunerConstants.FR_YPOS),
+            new Translation2d(DevbotTunerConstants.BL_XPOS, DevbotTunerConstants.BL_YPOS),
+            new Translation2d(DevbotTunerConstants.BR_XPOS, DevbotTunerConstants.BR_YPOS));
 
     @Override
     public RobotConfig getConfig() {
