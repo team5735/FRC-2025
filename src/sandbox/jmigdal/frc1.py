@@ -176,7 +176,29 @@ def nearest_point_visualization():
 
     cv2.destroyAllWindows()
 
+def compute_heading(robot_x, robot_y, target_x, target_y):
+    """
+    computes the pose angle that the robot needs to be facing
+    for it to be looking at the target
+
+    Parameters:
+    robot_x, robot_y: robot location (nominally in meters)
+    target_x, target_y: the point of the thing we want to be looking at
+    """
+    dx = target_x - robot_x
+    dy = target_y - robot_y
+    theta = math.atan2(dy, dx)
+    theta = normalize_angle(theta)
+    return theta
+
+def heading1():
+    print(math.degrees(compute_heading(0,0,1,0)))
+    print(math.degrees(compute_heading(0,0,0,1)))
+    print(math.degrees(compute_heading(0,0,1,1)))
+    print(math.degrees(compute_heading(0,0,-1,-1)))
+
 def main():
+    return heading1()
     return nearest_point_visualization()
     return nearest_point1()
     return nearest_point_on_circle(-5,0,0,0,2)
