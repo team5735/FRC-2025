@@ -5,15 +5,19 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -160,10 +164,18 @@ public class RobotContainer {
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
-        testController.a().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        testController.b().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        testController.x().whileTrue(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        testController.y().whileTrue(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        testController.a().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        testController.b().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        testController.x().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        testController.y().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+        testController.rightBumper().whileTrue(drivetrain.applyRequest(
+                () -> {
+                    double x = testController.getRightX();
+                    double y = testController.getRightY();
+                    Angle theta = Radians.of(Math.atan(y / x));
+                    return new SwerveRequest.PointWheelsAt().withModuleDirection(new Rotation2d(theta));
+                }));
     }
 
     public Command getAutonomousCommand() {

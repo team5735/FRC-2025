@@ -43,13 +43,13 @@ public class DevbotTunerConstants {
 
     // The steer motor uses any SwerveModule.SteerRequestType control request with
     // the output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
-    public static final Slot0Configs DEFAULT_STEER_CONSTANTS = new Slot0Configs() //TODO find values
-            .withKP(100).withKI(0).withKD(0.5)
-            .withKS(0.1).withKV(2.66).withKA(0)
+    public static final Slot0Configs DEFAULT_STEER_CONSTANTS = new Slot0Configs() // TODO find values
+            .withKP(50).withKI(0).withKD(0.5)
+            .withKS(0.1).withKV(2.4023).withKA(0.059703)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control output type
     // specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-    public static final Slot0Configs DRIVE_CONSTANTS = new Slot0Configs() //TODO find values
+    public static final Slot0Configs DRIVE_CONSTANTS = new Slot0Configs() // TODO find values
             .withKP(0.1).withKI(0).withKD(0)
             .withKS(0).withKV(0.124).withKA(0);
 
@@ -91,7 +91,7 @@ public class DevbotTunerConstants {
 
     // CAN bus that the devices are located on.
     // All swerve devices must share the same CAN bus
-    public static final CANBus CAN_BUS = new CANBus("rio", "./logs/example.hoot"); //TODO - physically swap to CANivore
+    public static final CANBus CAN_BUS = new CANBus("rio", "./logs/example.hoot"); // TODO - physically swap to CANivore
 
     // Theoretical free speed (m/s) at 12 V applied output.
     // This needs to be tuned to your individual robot
@@ -151,9 +151,9 @@ public class DevbotTunerConstants {
     private static final boolean FL_STEER_INVERT = true;
     private static final boolean FL_ENCODER_INVERT = false;
 
-    public static final Slot0Configs FL_STEER_CONSTANTS = new Slot0Configs() //TODO 
-            .withKP(54.02).withKI(0).withKD(0.3)
-            .withKS(0.052654).withKV(2.4095).withKA(0.49012)
+    public static final Slot0Configs FL_STEER_CONSTANTS = new Slot0Configs() // TODO
+            // .withKP(30).withKI(0).withKD(1)
+            .withKS(0.059703).withKV(2.4023).withKA(0.059703)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final Distance FL_XPOS = Inches.of(12.5);
@@ -167,9 +167,9 @@ public class DevbotTunerConstants {
     private static final boolean FR_STEER_INVERT = true;
     private static final boolean FR_ENCODER_INVERT = false;
 
-    public static final Slot0Configs FR_STEER_CONSTANTS = new Slot0Configs() //TODO
-            .withKP(43.928).withKI(0).withKD(0.3)
-            .withKS(0.052654).withKV(2.3784).withKA(0.6636)
+    public static final Slot0Configs FR_STEER_CONSTANTS = new Slot0Configs() // TODO
+            // .withKP(30).withKI(0).withKD(1)
+            .withKS(0.085).withKV(2.366).withKA(0.090293)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final Distance FR_XPOS = Inches.of(12.5);
@@ -183,9 +183,9 @@ public class DevbotTunerConstants {
     private static final boolean BL_STEER_INVERT = true;
     private static final boolean BL_ENCODER_INVERT = false;
 
-    public static final Slot0Configs BL_STEER_CONSTANTS = new Slot0Configs() //TODO
-            .withKP(54.382).withKI(0).withKD(0.3)
-            .withKS(0.052654).withKV(2.3776).withKA(0.48389)
+    public static final Slot0Configs BL_STEER_CONSTANTS = new Slot0Configs() // TODO
+            // .withKP(30).withKI(0).withKD(1)
+            .withKS(0.0145).withKV(2.3805).withKA(0.27784)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final Distance BL_XPOS = Inches.of(-12.5);
@@ -199,9 +199,9 @@ public class DevbotTunerConstants {
     private static final boolean BR_STEER_INVERT = true;
     private static final boolean BR_ENCODER_INVERT = false;
 
-    public static final Slot0Configs BR_STEER_CONSTANTS = new Slot0Configs() //TODO
-            .withKP(56.649).withKI(0).withKD(0.3)
-            .withKS(0.052654).withKV(2.3471).withKA(0.73024)
+    public static final Slot0Configs BR_STEER_CONSTANTS = new Slot0Configs() // TODO
+            // .withKP(30).withKI(0).withKD(1)
+            .withKS(0.077).withKV(2.3859).withKA(0.1415)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
     public static final Distance BR_XPOS = Inches.of(-12.5);
