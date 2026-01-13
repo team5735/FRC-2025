@@ -168,6 +168,17 @@ def nearest_point_visualization():
                 # Draw connecting line
                 cv2.line(img, click_point, closest, (255, 255, 0), 1)
 
+                theta = compute_heading(closest[0], closest[1], CENTER[0], CENTER[1])
+                theta = math.degrees(theta)
+
+                # draw heading to center of circle
+                font_face = cv2.FONT_HERSHEY_DUPLEX
+                font_scale = 1.0
+                font_thickness = 1
+                font_color = [255, 255, 255]
+                text_pt = (50, 50)
+                cv2.putText(img, 'theta: %.1f'%theta, text_pt, font_face, font_scale, font_color, font_thickness, cv2.LINE_AA)
+
         cv2.imshow("Arc Nearest Point", img)
 
         key = cv2.waitKey(16)
@@ -198,8 +209,8 @@ def heading1():
     print(math.degrees(compute_heading(0,0,-1,-1)))
 
 def main():
-    return heading1()
     return nearest_point_visualization()
+    return heading1()
     return nearest_point1()
     return nearest_point_on_circle(-5,0,0,0,2)
     return nearest_point_on_circle(4,3,1,1,2)
