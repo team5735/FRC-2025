@@ -17,9 +17,6 @@ public class PIDToPose extends Command {
 
     private DrivetrainSubsystem drivetrain;
 
-    /**
-     * Create a PIDTOPose command with the given name.
-     */
     public PIDToPose(DrivetrainSubsystem drivetrain, Supplier<Pose2d> poseSupplier, String name) {
         this.drivetrain = drivetrain;
         this.poseSupplier = poseSupplier;
