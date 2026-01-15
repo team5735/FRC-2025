@@ -35,6 +35,11 @@ public class Arc {
     }
 
     public Translation2d nearestPointOnArc(Translation2d position) {
+        // return any point on the arc if we're passed the center
+        if (position.equals(center)) {
+            return center.plus(new Translation2d(radius, thetaStart));
+        }
+
         Translation2d givenToCenter = center.minus(position);
         Rotation2d thetaA = givenToCenter.getAngle();
 
