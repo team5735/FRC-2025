@@ -144,11 +144,11 @@ public class RobotContainer {
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
             Translation2d currentPose = drivetrain.getEstimatedPosition().getTranslation();
-            // NOTE: should probably refactor to separate function if one wants
+            // NOTE: this should probably be refactored to a separate function if one wants
             // TunableNumber
             Rotation2d targetAngle = new Translation2d(2, 2).minus(currentPose).getAngle();
             return new Pose2d(currentPose, targetAngle);
-        }, "inplace face translation"));
+        }, "face a translation in-place"));
         driveController.povRight().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
             Translation2d destinationTrans = hubArcModel
                     .nearestPointOnArc(drivetrain.getEstimatedPosition().getTranslation());
