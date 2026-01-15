@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.drivetrain.PIDToPose;
 import frc.robot.commands.vision.DriveToBranch;
-import frc.robot.commands.vision.FaceTranslation;
 import frc.robot.constants.Constants;
 import frc.robot.constants.CoralConstants;
 import frc.robot.constants.ElevatorConstants.Level;
