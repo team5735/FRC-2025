@@ -13,11 +13,15 @@ import java.util.Map;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.drivetrain.PIDToPose;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.commands.vision.FaceTranslation;
 import frc.robot.constants.Constants;
@@ -31,6 +35,7 @@ import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.util.Arc;
 import frc.robot.util.ReefAlignment;
 
 public class RobotContainer {
@@ -108,6 +113,8 @@ public class RobotContainer {
         }
     }
 
+    Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
+
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -136,7 +143,19 @@ public class RobotContainer {
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
-        driveController.povLeft().and(driveController.y()).onTrue(new FaceTranslation(drivetrain));
+        driveController.povLeft().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
+            Translation2d currentPose = drivetrain.getEstimatedPosition().getTranslation();
+            // NOTE: should probably refactor to separate function if one wants
+            // TunableNumber
+            Rotation2d targetAngle = new Translation2d(2, 2).minus(currentPose).getAngle();
+            return new Pose2d(currentPose, targetAngle);
+        }, "inplace face translation"));
+        driveController.povRight().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
+            Translation2d destinationTrans = hubArcModel
+                    .nearestPointOnArc(drivetrain.getEstimatedPosition().getTranslation());
+            Rotation2d angleToArcCenter = hubArcModel.getCenter().minus(destinationTrans).getAngle();
+            return new Pose2d(destinationTrans, angleToArcCenter);
+        }, "drive to arc"));
         driveController.povUp().and(driveController.y()).onTrue(vision.runOnce(() -> vision.seedPigeon()));
 
         driveController.leftBumper().whileTrue(coraler.unfeedCommand());

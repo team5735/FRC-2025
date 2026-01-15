@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -53,9 +52,20 @@ public class Arc {
         return center.getDistance(p1) <= center.getDistance(p2) ? p1 : p2;
     }
 
-    public Pose2d nearestPoseOnArc(Translation2d position) {
-        Translation2d targetTrans = nearestPointOnArc(position);
-        Rotation2d botAngle = center.minus(targetTrans).getAngle();
-        return new Pose2d(targetTrans, botAngle);
+    public Translation2d getCenter() {
+        return center;
     }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public Rotation2d getThetaStart() {
+        return thetaStart;
+    }
+
+    public Rotation2d getThetaEnd() {
+        return thetaEnd;
+    }
+
 }
