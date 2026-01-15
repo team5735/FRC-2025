@@ -19,11 +19,11 @@ def grab_image(limelight_ip):
     """
     try:
         # Generate URLs
-        snapshot_url = f"http://{limelight_ip}/cam/snapshot"
-        manifest_url = f"http://{limelight_ip}/cam/snapshot/manifest"
+        snapshot_url = f"http://{limelight_ip}:5807/capture-snapshot"
+        manifest_url = f"http://{limelight_ip}:5807/snapshotmanifest"
 
         # Request snapshot
-        response = requests.get(snapshot_url)
+        response = requests.post(snapshot_url)
         response.raise_for_status()
         time.sleep(0.2)  # Give the camera time to save the snapshot
 
@@ -36,16 +36,19 @@ def grab_image(limelight_ip):
             return None, None
 
         # Find latest snapshot
-        latest_file = sorted(manifest, key=lambda x: x['timestamp'], reverse=True)[0]['filename']
+        #latest_file = sorted(manifest, key=lambda x: x['timestamp'], reverse=True)[0]['filename']
+        latest_file = manifest[-1]
+        print(latest_file)
 
         # Download latest snapshot
-        file_url = f"http://{limelight_ip}/cam/snapshot/{latest_file}"
+        file_url = f"http://{limelight_ip}:5801/snapshots/{latest_file}"
         response = requests.get(file_url)
         response.raise_for_status()
 
         # Convert to OpenCV image (BGR)
         image_array = np.frombuffer(response.content, dtype=np.uint8)
         image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+        image = cv2.flip(image, 0) # 0=flip vertically
         return image, latest_file
 
     except requests.RequestException as e:
