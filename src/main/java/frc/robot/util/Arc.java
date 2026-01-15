@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -16,16 +15,16 @@ public class Arc {
         this.thetaEnd = thetaEnd;
     }
 
-    private static double normalizeAngle(double theta) {
+    public static double normalizeAngle(double theta) {
         double twoPi = 2 * Math.PI;
         theta = theta % twoPi;
         return theta < 0 ? theta + twoPi : theta;
     }
 
-    private static boolean angleInRange(double theta, double start, double end) {
+    public boolean angleInRange(double theta) {
         theta = normalizeAngle(theta);
-        start = normalizeAngle(start);
-        end = normalizeAngle(end);
+        double start = normalizeAngle(thetaStart.getRadians());
+        double end = normalizeAngle(thetaEnd.getRadians());
 
         if (start <= end) {
             return theta >= start && theta <= end;
@@ -34,11 +33,11 @@ public class Arc {
         }
     }
 
-    private Translation2d nearestTranslation2dOnCircleArc(Translation2d position) {
+    public Translation2d nearestTranslation2dOnCircleArc(Translation2d position) {
         Translation2d givenToCenter = center.minus(position);
         Rotation2d thetaA = givenToCenter.getAngle();
 
-        if (angleInRange(thetaA.getRadians(), thetaStart.getRadians(), thetaEnd.getRadians())) {
+        if (angleInRange(thetaA.getRadians())) {
             return new Translation2d(radius, thetaA);
         }
 
