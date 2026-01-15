@@ -43,15 +43,15 @@ public class DevbotTunerConstants {
 
     // The steer motor uses any SwerveModule.SteerRequestType control request with
     // the output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
-    public static final Slot0Configs DEFAULT_STEER_CONSTANTS = new Slot0Configs() // TODO find values
-            .withKP(50).withKI(0).withKD(0.5)
+    public static final Slot0Configs DEFAULT_STEER_CONSTANTS = new Slot0Configs()
+            .withKP(50).withKI(0).withKD(0.25)
             .withKS(0.1).withKV(2.4023).withKA(0.059703)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control output type
     // specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs DRIVE_CONSTANTS = new Slot0Configs() // TODO find values
-            .withKP(0.1).withKI(0).withKD(0)
-            .withKS(0).withKV(0.124).withKA(0);
+            .withKP(0).withKI(0).withKD(0)
+            .withKS(0.0441).withKV(2.4424).withKA(0.095459);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -151,10 +151,8 @@ public class DevbotTunerConstants {
     private static final boolean FL_STEER_INVERT = true;
     private static final boolean FL_ENCODER_INVERT = false;
 
-    public static final Slot0Configs FL_STEER_CONSTANTS = new Slot0Configs() // TODO
-            // .withKP(30).withKI(0).withKD(1)
-            .withKS(0.059703).withKV(2.4023).withKA(0.059703)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    public static final Slot0Configs FL_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
+            .withKS(0.059703).withKV(2.4023).withKA(0.059703);
 
     public static final Distance FL_XPOS = Inches.of(12.5);
     public static final Distance FL_YPOS = Inches.of(12.5);
@@ -163,14 +161,12 @@ public class DevbotTunerConstants {
     private static final int FR_DRIVE_ID = 8;
     private static final int FR_STEER_ID = 7;
     private static final int FR_ENCODER_ID = 12;
-    private static final Angle FR_ENCODER_OFFSET = Rotations.of(0.465576171875);
+    private static final Angle FR_ENCODER_OFFSET = Rotations.of(-0.040039);
     private static final boolean FR_STEER_INVERT = true;
     private static final boolean FR_ENCODER_INVERT = false;
 
-    public static final Slot0Configs FR_STEER_CONSTANTS = new Slot0Configs() // TODO
-            // .withKP(30).withKI(0).withKD(1)
-            .withKS(0.085).withKV(2.366).withKA(0.090293)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    public static final Slot0Configs FR_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
+            .withKS(0.085).withKV(2.366).withKA(0.090293);
 
     public static final Distance FR_XPOS = Inches.of(12.5);
     public static final Distance FR_YPOS = Inches.of(-12.5);
@@ -183,10 +179,8 @@ public class DevbotTunerConstants {
     private static final boolean BL_STEER_INVERT = true;
     private static final boolean BL_ENCODER_INVERT = false;
 
-    public static final Slot0Configs BL_STEER_CONSTANTS = new Slot0Configs() // TODO
-            // .withKP(30).withKI(0).withKD(1)
-            .withKS(0.0145).withKV(2.3805).withKA(0.27784)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    public static final Slot0Configs BL_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
+            .withKS(0.0145).withKV(2.3805).withKA(0.27784);
 
     public static final Distance BL_XPOS = Inches.of(-12.5);
     public static final Distance BL_YPOS = Inches.of(12.5);
@@ -199,10 +193,8 @@ public class DevbotTunerConstants {
     private static final boolean BR_STEER_INVERT = true;
     private static final boolean BR_ENCODER_INVERT = false;
 
-    public static final Slot0Configs BR_STEER_CONSTANTS = new Slot0Configs() // TODO
-            // .withKP(30).withKI(0).withKD(1)
-            .withKS(0.077).withKV(2.3859).withKA(0.1415)
-            .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
+    public static final Slot0Configs BR_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
+            .withKS(0.077).withKV(2.3859).withKA(0.1415);
 
     public static final Distance BR_XPOS = Inches.of(-12.5);
     public static final Distance BR_YPOS = Inches.of(-12.5);
