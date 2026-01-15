@@ -1,0 +1,98 @@
+{
+  "NetworkTables": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Pose": "Field2d",
+      "/SmartDashboard/Choose an Auto": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Module 0": "Mechanism2d",
+      "/SmartDashboard/Module 1": "Mechanism2d",
+      "/SmartDashboard/Module 2": "Mechanism2d",
+      "/SmartDashboard/Module 3": "Mechanism2d",
+      "/SmartDashboard/PathPlanner": "Alerts",
+      "/SmartDashboard/Scheduler": "Scheduler"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "bottom": 1638,
+        "builtin": "2025 Reefscape",
+        "height": 8.051901817321777,
+        "left": 534,
+        "limelightMt1Pos": {
+          "arrowColor": [
+            0.0,
+            255.0,
+            232.33326721191406,
+            255.0
+          ]
+        },
+        "limelightMt2Pos": {
+          "arrowColor": [
+            249.333251953125,
+            0.0,
+            255.0,
+            255.0
+          ]
+        },
+        "pose_score_left": {
+          "arrows": false,
+          "color": [
+            0.0,
+            0.0,
+            1.0,
+            255.0
+          ],
+          "weight": 1.0
+        },
+        "pose_score_right": {
+          "arrows": false,
+          "color": [
+            0.0,
+            0.0,
+            1.0,
+            255.0
+          ],
+          "weight": 1.0
+        },
+        "pose_tags": {
+          "arrows": false,
+          "color": [
+            0.0,
+            1.0,
+            0.0,
+            255.0
+          ],
+          "weight": 1.0
+        },
+        "right": 3466,
+        "targetPose": {
+          "arrows": false,
+          "color": [
+            0.0,
+            1.0,
+            0.0,
+            255.0
+          ],
+          "weight": 8.0
+        },
+        "top": 291,
+        "width": 17.54825210571289,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT3)",
+    "serverTeam": "5735"
+  }
+}

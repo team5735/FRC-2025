@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.vision.DriveToBranch;
 import frc.robot.commands.vision.FaceTranslation;
 import frc.robot.constants.Constants;
@@ -162,10 +162,10 @@ public class RobotContainer {
         subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
         subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
-        testController.a().whileTrue(elevator.sysIdDynamic(Direction.kForward));
-        testController.b().whileTrue(elevator.sysIdDynamic(Direction.kReverse));
-        testController.x().whileTrue(elevator.sysIdQuasistatic(Direction.kForward));
-        testController.y().whileTrue(elevator.sysIdQuasistatic(Direction.kReverse));
+        testController.a().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        testController.b().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        testController.x().whileTrue(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        testController.y().whileTrue(elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     }
 
     public Command getAutonomousCommand() {
