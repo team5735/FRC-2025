@@ -139,7 +139,7 @@ public class VisionSubsystem extends SubsystemBase {
             drivetrain.resetPose(estimate.pose);
         }
         drivetrain.addVisionMeasurement(estimate.pose, estimate.timestampSeconds,
-                VecBuilder.fill(xdev, ydev, 9999999));
+                VecBuilder.fill(.7, .7, 9999999));
     }
 
     @Override
