@@ -110,15 +110,15 @@ public class VisionSubsystem extends SubsystemBase {
         updateVisionMeasurement(limelightName, estimate);
     }
 
-    private double lastUpdateTimestamp = 0;
+    private double lastPigeonReset = 0;
 
     private void updateVisionMeasurement(String limelightName, LimelightHelpers.PoseEstimate estimate) {
         double timestamp = Timer.getFPGATimestamp();
         if (Arrays.stream(estimate.rawFiducials)
                 .allMatch(tag -> tag.distToCamera < VisionConstants.RESET_PIGEON_DISTANCE.in(Meters))
-                && Math.abs(lastUpdateTimestamp - timestamp) > VisionConstants.RESET_PIGEON_INTERVAL.in(Seconds)) {
+                && Math.abs(lastPigeonReset - timestamp) > VisionConstants.RESET_PIGEON_INTERVAL.in(Seconds)) {
             drivetrain.getPigeon2().setYaw(estimate.pose.getRotation().getMeasure());
-            lastUpdateTimestamp = timestamp;
+            lastPigeonReset = timestamp;
         }
 
         doubles.set(limelightName + "_status", 0);
