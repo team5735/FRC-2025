@@ -37,6 +37,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.Arc;
 import frc.robot.util.ReefAlignment;
+import frc.robot.util.TunableNumber;
 
 public class RobotContainer {
     private final double MAX_SPEED = CompbotTunerConstants.SPEED_AT_12_VOLTS.in(MetersPerSecond);
@@ -159,6 +160,9 @@ public class RobotContainer {
 
     Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
 
+    TunableNumber testPIDToX = new TunableNumber("test pid_to_x", 2);
+    TunableNumber testPIDToY = new TunableNumber("test pid_to_y", 2);
+
     private void configureTestBindings() {
         driveController.x().onTrue(new PathPlannerToPose(drivetrain, () -> {
             return ReefAprilTagPositions.getClosest(drivetrain.getEstimatedPosition().getTranslation(),
@@ -170,9 +174,8 @@ public class RobotContainer {
         driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
         driveController.povLeft().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
             Translation2d currentPose = drivetrain.getEstimatedPosition().getTranslation();
-            // NOTE: this should probably be refactored to a separate function if one wants
-            // TunableNumber
-            Rotation2d targetAngle = new Translation2d(2, 2).minus(currentPose).getAngle();
+            Rotation2d targetAngle = new Translation2d(testPIDToX.get(), testPIDToY.get()).minus(currentPose)
+                    .getAngle();
             return new Pose2d(currentPose, targetAngle);
         }, "face a translation in-place"));
         driveController.povRight().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
