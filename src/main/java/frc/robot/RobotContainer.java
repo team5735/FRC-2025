@@ -113,8 +113,6 @@ public class RobotContainer {
         }
     }
 
-    Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
-
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -139,6 +137,29 @@ public class RobotContainer {
         driveController.povUp().and(driveController.a()).onTrue(elevator.toLevelCommand(Level.L4));
         // drivecontroller.b() slow mode
 
+        driveController.leftBumper().whileTrue(coraler.unfeedCommand());
+        driveController.rightBumper().onTrue(coraler.feedStageCommand());
+
+        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
+        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
+
+        coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
+
+        subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
+        subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
+
+        subsystemController.rightTrigger(0.1).or(subsystemController.leftTrigger(0.1))
+                .whileTrue(LEDs.colorAngryCommand());
+
+        subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
+        subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
+
+        configureTestBindings();
+    }
+
+    Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
+
+    private void configureTestBindings() {
         driveController.x().onTrue(new PathPlannerToPose(drivetrain, () -> {
             return ReefAprilTagPositions.getClosest(drivetrain.getEstimatedPosition().getTranslation(),
                     ReefAprilTagPositions.SCORING_POSES.get(chooseAlignment()));
@@ -162,28 +183,10 @@ public class RobotContainer {
         }, "drive to arc"));
         driveController.povUp().and(driveController.y()).onTrue(vision.runOnce(() -> vision.seedPigeon()));
 
-        driveController.leftBumper().whileTrue(coraler.unfeedCommand());
-        driveController.rightBumper().onTrue(coraler.feedStageCommand());
-
-        driveController.back().onTrue(Commands.runOnce(() -> elevator.resetMeasurement()));
-        driveController.start().whileTrue(Commands.runOnce(() -> elevator.swapEnableStatus()));
-
-        coraler.beamBreakEngaged().whileTrue(LEDs.colorFedCommand());
-
-        // Coral manipulator temporary testing bindings
         subsystemController.a().whileTrue(coraler.simpleManipCommand());
         // subsystemController.b().whileTrue(coraler.branchCommand());
         // subsystemController.x().whileTrue(coraler.l4BranchCommand());
         subsystemController.y().whileTrue(coraler.troughCommand());
-
-        subsystemController.leftBumper().whileTrue(coraler.flipOutCommand());
-        subsystemController.rightBumper().whileTrue(coraler.flipperResetCommand());
-
-        subsystemController.rightTrigger(0.1).or(subsystemController.leftTrigger(0.1))
-                .whileTrue(LEDs.colorAngryCommand());
-
-        subsystemController.povUp().whileTrue(elevator.manualElevatorUp());
-        subsystemController.povDown().whileTrue(elevator.manualElevatorDown());
 
         testController.a().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
         testController.b().whileTrue(elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
