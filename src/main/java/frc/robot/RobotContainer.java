@@ -160,8 +160,12 @@ public class RobotContainer {
 
     Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
 
+    TunableNumber testPIDFaceX = new TunableNumber("test pid_face_x", 2);
+    TunableNumber testPIDFaceY = new TunableNumber("test pid_face_y", 2);
+
     TunableNumber testPIDToX = new TunableNumber("test pid_to_x", 2);
     TunableNumber testPIDToY = new TunableNumber("test pid_to_y", 2);
+    TunableNumber testPIDToRotation = new TunableNumber("test pid_to_rotation", 2);
 
     private void configureTestBindings() {
         driveController.x().onTrue(new PathPlannerToPose(drivetrain, () -> {
@@ -171,10 +175,14 @@ public class RobotContainer {
 
         driveController.y().and(driveController.pov(-1)) // pov -1 is unpressed
                 .onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-        driveController.povDown().and(driveController.y()).onTrue(elevator.toLevelCommand(Level.BASE));
+        driveController.povDown().and(driveController.y())
+                .onTrue(new PIDToPose(drivetrain,
+                        () -> new Pose2d(testPIDToX.get(), testPIDToY.get(),
+                                Rotation2d.fromDegrees(testPIDToRotation.get())),
+                        "pid to pose"));
         driveController.povLeft().and(driveController.y()).onTrue(new PIDToPose(drivetrain, () -> {
             Translation2d currentPose = drivetrain.getEstimatedPosition().getTranslation();
-            Rotation2d targetAngle = new Translation2d(testPIDToX.get(), testPIDToY.get()).minus(currentPose)
+            Rotation2d targetAngle = new Translation2d(testPIDFaceX.get(), testPIDFaceY.get()).minus(currentPose)
                     .getAngle();
             return new Pose2d(currentPose, targetAngle);
         }, "face a translation in-place"));
