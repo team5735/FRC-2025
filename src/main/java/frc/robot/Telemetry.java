@@ -194,7 +194,6 @@ public class Telemetry {
         SmartDashboard.putNumber("DriveState/OdometryPeriod/seconds", state.OdometryPeriod);
 
         SmartDashboard.putNumber("translation_position", state.Pose.getY());
-        SmartDashboard.putNumber("translation_velocity", state.ModuleStates[0].speedMetersPerSecond);
 
         SmartDashboard.putNumber(
                 "FL_steer_position",
@@ -202,6 +201,7 @@ public class Telemetry {
         SmartDashboard.putNumber(
                 "FL_steer_velocity",
                 RobotContainer.drivetrain.getModule(0).getSteerMotor().getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("FL_drive_velocity", state.ModuleStates[0].speedMetersPerSecond);
 
         SmartDashboard.putNumber(
                 "FR_steer_position",
@@ -209,6 +209,7 @@ public class Telemetry {
         SmartDashboard.putNumber(
                 "FR_steer_velocity",
                 RobotContainer.drivetrain.getModule(1).getSteerMotor().getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("FR_drive_velocity", state.ModuleStates[1].speedMetersPerSecond);
 
         SmartDashboard.putNumber(
                 "BL_steer_position",
@@ -216,6 +217,7 @@ public class Telemetry {
         SmartDashboard.putNumber(
                 "BL_steer_velocity",
                 RobotContainer.drivetrain.getModule(2).getSteerMotor().getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("BL_drive_velocity", state.ModuleStates[2].speedMetersPerSecond);
 
         SmartDashboard.putNumber(
                 "BR_steer_position",
@@ -223,6 +225,7 @@ public class Telemetry {
         SmartDashboard.putNumber(
                 "BR_steer_velocity",
                 RobotContainer.drivetrain.getModule(3).getSteerMotor().getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("BR_drive_velocity", state.ModuleStates[3].speedMetersPerSecond);
 
         SmartDashboard.putNumber(
                 "rotation_position",

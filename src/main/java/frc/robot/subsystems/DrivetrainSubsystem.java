@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -27,14 +31,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.Constants;
 import frc.robot.constants.drivetrain.CompbotConstants;
 import frc.robot.constants.drivetrain.CompbotTunerConstants.TunerSwerveDrivetrain;
-import frc.robot.util.NTDoubleSection;
+import frc.robot.constants.drivetrain.DevbotConstants;
 import frc.robot.constants.drivetrain.DrivetrainConstants;
+import frc.robot.util.NTDoubleSection;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -44,8 +50,16 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public static final DrivetrainConstants CONSTANTS;
 
     static {
-        CONSTANTS = new CompbotConstants();
-    } // TODO add missing switch case for devbot
+        switch (Constants.DRIVETRAIN_TYPE) {
+            case DEVBOT:
+                CONSTANTS = new DevbotConstants();
+                break;
+            case COMPBOT:
+            default:
+                CONSTANTS = new CompbotConstants();
+                break;
+        }
+    }
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier simNotifier = null;
@@ -69,6 +83,24 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public final SwerveRequest.SwerveDriveBrake brakeRequest = new SwerveRequest.SwerveDriveBrake();
     public final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric();
 
+    private final Consumer<SysIdRoutineLog> translationLogConsumer = (log) -> {
+        log.motor("FL_drive")
+                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearVelocity(MetersPerSecond.of(getState().ModuleStates[0].speedMetersPerSecond))
+                .voltage(getModule(0).getDriveMotor().getMotorVoltage().getValue());
+        log.motor("FR_drive")
+                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearVelocity(MetersPerSecond.of(getState().ModuleStates[1].speedMetersPerSecond))
+                .voltage(getModule(1).getDriveMotor().getMotorVoltage().getValue());
+        log.motor("BL_drive")
+                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearVelocity(MetersPerSecond.of(getState().ModuleStates[2].speedMetersPerSecond))
+                .voltage(getModule(2).getDriveMotor().getMotorVoltage().getValue());
+        log.motor("BR_drive")
+                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearVelocity(MetersPerSecond.of(getState().ModuleStates[3].speedMetersPerSecond))
+                .voltage(getModule(3).getDriveMotor().getMotorVoltage().getValue());
+    };
     /*
      * SysId routine for characterizing translation. This is used to find PID gains
      * for the drive motors.
@@ -82,8 +114,27 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     null),
             new SysIdRoutine.Mechanism(
                     output -> setControl(translationCharacterization.withVolts(output)),
-                    null,
+                    translationLogConsumer,
                     this));
+
+    private final Consumer<SysIdRoutineLog> steerLogConsumer = (log) -> {
+        log.motor("FL_steer")
+                .angularPosition(Rotations.of((getModule(0).getCurrentState().angle.getRotations() + 1) % 1))
+                .angularVelocity(RotationsPerSecond.of(getModule(0).getSteerMotor().getVelocity().getValueAsDouble()))
+                .voltage(getModule(0).getSteerMotor().getMotorVoltage().getValue());
+        log.motor("FR_steer")
+                .angularPosition(Rotations.of((getModule(1).getCurrentState().angle.getRotations() + 1) % 1))
+                .angularVelocity(RotationsPerSecond.of(getModule(1).getSteerMotor().getVelocity().getValueAsDouble()))
+                .voltage(getModule(0).getSteerMotor().getMotorVoltage().getValue());
+        log.motor("BL_steer")
+                .angularPosition(Rotations.of((getModule(2).getCurrentState().angle.getRotations() + 1) % 1))
+                .angularVelocity(RotationsPerSecond.of(getModule(2).getSteerMotor().getVelocity().getValueAsDouble()))
+                .voltage(getModule(0).getSteerMotor().getMotorVoltage().getValue());
+        log.motor("BR_steer")
+                .angularPosition(Rotations.of((getModule(3).getCurrentState().angle.getRotations() + 1) % 1))
+                .angularVelocity(RotationsPerSecond.of(getModule(3).getSteerMotor().getVelocity().getValueAsDouble()))
+                .voltage(getModule(0).getSteerMotor().getMotorVoltage().getValue());
+    };
 
     /*
      * SysId routine for characterizing steer. This is used to find PID gains for
@@ -98,7 +149,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     null),
             new SysIdRoutine.Mechanism(
                     volts -> setControl(steerCharacterization.withVolts(volts)),
-                    null,
+                    steerLogConsumer,
                     this));
 
     /*
@@ -128,7 +179,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     this));
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineTranslation;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineSteer;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.

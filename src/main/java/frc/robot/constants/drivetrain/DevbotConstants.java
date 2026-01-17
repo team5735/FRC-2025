@@ -20,32 +20,31 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
-import frc.robot.util.Todo;
 
 public class DevbotConstants implements DrivetrainConstants {
     @Override
     public PIDConstants getAutoPosConstants() {
-        return new PIDConstants(15, 0); //TODO
+        return new PIDConstants(15, 0); // TODO
     }
 
     @Override
     public PIDConstants getAutoRotConstants() {
-        return new PIDConstants(10, 0); //TODO
+        return new PIDConstants(10, 0); // TODO
     }
 
     @Override
     public double getRotKs() {
-        throw new Todo();
+        return 0; // TODO
     }
 
     @Override
     public double getRotKv() {
-        throw new Todo();
+        return 0; // TODO
     }
 
     @Override
     public double getRotKa() {
-        throw new Todo();
+        return 0; // TODO
     }
 
     @Override
@@ -64,7 +63,7 @@ public class DevbotConstants implements DrivetrainConstants {
     }
 
     @Override
-    public PathConstraints getPathFollowConstraints() { 
+    public PathConstraints getPathFollowConstraints() {
         return new PathConstraints(
                 MetersPerSecond.of(4),
                 MetersPerSecondPerSecond.of(2),
@@ -74,7 +73,7 @@ public class DevbotConstants implements DrivetrainConstants {
 
     @Override
     public LinearVelocity getDefaultSpeed() {
-        return MetersPerSecond.of(4);
+        return MetersPerSecond.of(2);
     }
 
     @Override
@@ -93,19 +92,19 @@ public class DevbotConstants implements DrivetrainConstants {
     }
 
     @Override
-    public Mass getRobotMass() { //TODO - weigh
+    public Mass getRobotMass() { // TODO - weigh
         return Kilograms.of(37.50);
     }
 
     @Override
-    public Distance getMaxWheelDistance() { //TODO - verify
+    public Distance getMaxWheelDistance() { // TODO - verify
         return Inches.of(25);
     }
 
     @Override
     public double getRobotMoiKgxMxM() {
         return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getRotKa()
-                / DevbotTunerConstants.DRIVE_CONSTANTS.kA;
+                / DevbotTunerConstants.DEFAULT_DRIVE_CONSTANTS.kA;
     }
 
     @Override
