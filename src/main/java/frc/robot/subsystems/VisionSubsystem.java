@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -123,16 +122,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         doubles.set(limelightName + "_status", 0);
-        double[] stddevs = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("stddevs")
-                .getDoubleArray(new double[12]);
-        double xdev, ydev;
-        if (VisionConstants.IS_MT2) {
-            xdev = stddevs[6];
-            ydev = stddevs[7];
-        } else {
-            xdev = stddevs[0];
-            ydev = stddevs[1];
-        }
+        // if the estimate is more than 4 meters away from the current estimate, reset
         if (drivetrain.getEstimatedPosition().getTranslation()
                 .getDistance(estimate.pose.getTranslation()) > 4
                 || drivetrainIsNaNOrInf()) {
