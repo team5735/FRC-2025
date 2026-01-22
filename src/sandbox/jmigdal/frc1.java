@@ -1,16 +1,17 @@
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 
 public class frc1{
@@ -26,12 +27,12 @@ public class frc1{
     public static PathPlannerPath createLinearPath(Translation2d startPoint,
                                                    Translation2d endPoint,
                                                    Rotation2d endRobotHeading,
-                                                   Constraints constraints) {
+                                                   PathConstraints constraints) {
         // the path heading is different than the robot heading. The path heading
         // points in the direction of travel. This ensures the resulting path (a Bezier curve) is well formed
         // without swoops and small loops in it
         // for a path that is simply a line, the direction of travel is constant: heading toward the end point
-        Rotation2d pathHeading = endPointPath.minus(startPoint).getAngle();
+        Rotation2d pathHeading = endPoint.minus(startPoint).getAngle();
         Pose2d startPose = new Pose2d(startPoint, pathHeading);
         Pose2d endPose = new Pose2d(endPoint, pathHeading);
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(startPose, endPose);
@@ -47,11 +48,16 @@ public class frc1{
         return path;
     }
 
+    public static void pathPlannerTest(){
+        createLinearPath(new Translation2d(0,0), new Translation2d(1,1), Rotation2d.fromDegrees(135), 
+        new PathConstraints(10,10,10,10));
+    }
 
     public static void helloworld(){
         System.out.println("Hello World");
     }
     public static void main(String[] args) {
-        helloworld();
+        pathPlannerTest();
+        // helloworld();
     }
 }
