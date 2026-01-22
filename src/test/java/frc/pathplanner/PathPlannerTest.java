@@ -26,7 +26,6 @@ public class PathPlannerTest {
             new Translation2d(0,0), 
             new Translation2d(1,1), 
             Rotation2d.fromDegrees(-45), 
-            //new Translation2d(2,0),
             new PathConstraints(3.0, 2.0, 360, 540));
             
         PathPlannerTrajectory trajectory = path.generateTrajectory(new ChassisSpeeds(), Rotation2d.fromDegrees(0),bot.getConfig());
