@@ -52,6 +52,12 @@ public class RobotContainer {
         configureBindings();
     }
 
+    TunableNumber testArcCenterX = new TunableNumber("test arc center x", 12.5);
+    TunableNumber testArcCenterY = new TunableNumber("test arc center y", 4);
+    TunableNumber testArcRadius = new TunableNumber("test arc radius", 1.5);
+    TunableNumber testArcStartAngle = new TunableNumber("test arc start angle", -90);
+    TunableNumber testArcEndAngle = new TunableNumber("test arc end angle", 90);
+
     Arc hubArcModel = new Arc(new Translation2d(), 0, new Rotation2d(), new Rotation2d());
 
     TunableNumber testPIDFaceX = new TunableNumber("test pid_face_x", 2);
@@ -86,6 +92,11 @@ public class RobotContainer {
 
         driveController.b()
                 .onTrue(new PIDToPose(drivetrain, () -> {
+                    hubArcModel = new Arc(
+                            new Translation2d(testArcCenterX.get(), testArcCenterY.get()),
+                            testArcRadius.get(),
+                            Rotation2d.fromDegrees(testArcStartAngle.get()),
+                            Rotation2d.fromDegrees(testArcEndAngle.get()));
                     Translation2d destinationTrans = hubArcModel
                             .nearestPointOnArc(drivetrain.getEstimatedPosition().getTranslation());
                     Rotation2d angleToArcCenter = hubArcModel.getCenter().minus(destinationTrans).getAngle();
