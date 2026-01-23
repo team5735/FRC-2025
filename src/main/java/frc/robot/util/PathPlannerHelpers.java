@@ -25,10 +25,11 @@ public class PathPlannerHelpers {
      *                        DrivetrainSubsystem.CONSTANTS.getPathFollowConstraints())
      * @return The path
      */
-    public static PathPlannerPath createLinearPath(Translation2d startPoint,
+    public static PathPlannerPath createPathBetween(Translation2d startPoint,
             Translation2d endPoint,
             Rotation2d endRobotHeading,
-            PathConstraints constraints) {
+            PathConstraints constraints,
+            boolean swerveIntoEnd) {
         // the path heading is different than the robot heading. The path heading
         // points in the direction of travel. This ensures the resulting path (a Bezier
         // curve) is well formed without swoops and small loops in it for a path that is
@@ -37,6 +38,9 @@ public class PathPlannerHelpers {
         Rotation2d pathHeading = endPoint.minus(startPoint).getAngle();
         Pose2d startPose = new Pose2d(startPoint, pathHeading);
         Pose2d endPose = new Pose2d(endPoint, pathHeading);
+        if (swerveIntoEnd) {
+            endPose = new Pose2d(endPoint, endRobotHeading);
+        }
 
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(startPose, endPose);
         PathPlannerPath path = new PathPlannerPath(waypoints,
@@ -49,5 +53,12 @@ public class PathPlannerHelpers {
         path.preventFlipping = true;
 
         return path;
+    }
+
+    public static PathPlannerPath createLinearPath(Translation2d startPoint,
+            Translation2d endPoint,
+            Rotation2d endRobotHeading,
+            PathConstraints constraints) {
+        return createPathBetween(startPoint, endPoint, endRobotHeading, constraints, false);
     }
 }
