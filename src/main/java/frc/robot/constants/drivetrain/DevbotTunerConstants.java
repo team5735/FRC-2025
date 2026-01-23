@@ -44,7 +44,7 @@ public class DevbotTunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with
     // the output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     public static final Slot0Configs DEFAULT_STEER_CONSTANTS = new Slot0Configs()
-            .withKP(50).withKI(0).withKD(0.25)
+            .withKP(35).withKI(0).withKD(0.25)
             .withKS(0.045).withKV(2.4).withKA(0.125)
             .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control output type
