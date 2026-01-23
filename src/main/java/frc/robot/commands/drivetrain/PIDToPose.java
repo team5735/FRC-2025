@@ -30,9 +30,10 @@ public class PIDToPose extends Command {
     @Override
     public void initialize() {
         this.targetPose = this.poseSupplier.get();
-        this.pidX.setup(targetPose.getX());
-        this.pidY.setup(targetPose.getY());
-        this.pidTheta.setup(targetPose.getRotation().getRadians());
+        this.pidX.setup(targetPose.getX(), 0.02);
+        this.pidY.setup(targetPose.getY(), 0.02);
+        this.pidTheta.setup(targetPose.getRotation().getRadians(), 0.02);
+        this.pidTheta.getController().enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
