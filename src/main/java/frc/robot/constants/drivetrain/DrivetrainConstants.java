@@ -39,7 +39,7 @@ public interface DrivetrainConstants {
 
     public Mass getRobotMass();
 
-    public Distance getMaxWheelDistance();
+    public Distance getDrivetrainWidth();
 
     public double getRobotMoiKgxMxM();
 

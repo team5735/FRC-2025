@@ -92,18 +92,18 @@ public class DevbotConstants implements DrivetrainConstants {
     }
 
     @Override
-    public Mass getRobotMass() { // TODO - weigh
-        return Kilograms.of(37.50);
+    public Mass getRobotMass() {
+        return Kilograms.of(24.75);
     }
 
     @Override
-    public Distance getMaxWheelDistance() { // TODO - verify
-        return Inches.of(25);
+    public Distance getDrivetrainWidth() {
+        return Inches.of(30);
     }
 
     @Override
     public double getRobotMoiKgxMxM() {
-        return getRobotMass().in(Kilograms) * getMaxWheelDistance().in(Meters) / 2 * getRotKa()
+        return getRobotMass().in(Kilograms) * getDrivetrainWidth().in(Meters) / 2 * getRotKa()
                 / DevbotTunerConstants.DEFAULT_DRIVE_CONSTANTS.kA;
     }
 

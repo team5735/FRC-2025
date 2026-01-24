@@ -152,6 +152,12 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     steerLogConsumer,
                     this));
 
+    private final Consumer<SysIdRoutineLog> rotationLogConsumer = (log) -> {
+        log.motor("robot_rot")
+                .angularPosition(getPigeon2().getYaw().getValue())
+                .angularVelocity(getPigeon2().getAngularVelocityZWorld().getValue())
+                .voltage(getModule(0).getDriveMotor().getMotorVoltage().getValue());
+    };
     /*
      * SysId routine for characterizing rotation.
      * This is used to find PID gains for the FieldCentricFacingAngle
@@ -175,11 +181,11 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                         /* also log the requested output for SysId */
                         SmartDashboard.putNumber("Rotational_Rate", output.in(Volts));
                     },
-                    null,
+                    rotationLogConsumer,
                     this));
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineSteer;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineRotation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
