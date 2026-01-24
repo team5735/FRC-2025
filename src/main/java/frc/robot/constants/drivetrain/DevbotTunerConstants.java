@@ -50,7 +50,7 @@ public class DevbotTunerConstants {
     // When using closed-loop control, the drive motor uses the control output type
     // specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs DEFAULT_DRIVE_CONSTANTS = new Slot0Configs()
-            .withKP(1).withKI(0).withKD(0)
+            .withKP(0.15).withKI(0).withKD(0)
             .withKS(0.073922).withKV(2.4363).withKA(0.062414);
 
     // The closed-loop output type to use for the steer motors;
@@ -154,7 +154,7 @@ public class DevbotTunerConstants {
     public static final Slot0Configs FL_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
             .withKS(0.033023).withKV(2.391).withKA(0.10173);
     public static final Slot0Configs FL_DRIVE_CONSTANTS = DEFAULT_DRIVE_CONSTANTS
-            .withKS(0.073922).withKV(2.4363).withKA(0.062414);
+            .withKS(0.0669).withKV(2.4304).withKA(0.10155);
 
     public static final Distance FL_XPOS = Inches.of(12.5);
     public static final Distance FL_YPOS = Inches.of(12.5);
@@ -163,14 +163,14 @@ public class DevbotTunerConstants {
     private static final int FR_DRIVE_ID = 8;
     private static final int FR_STEER_ID = 7;
     private static final int FR_ENCODER_ID = 12;
-    private static final Angle FR_ENCODER_OFFSET = Rotations.of(0.179443);
+    private static final Angle FR_ENCODER_OFFSET = Rotations.of(-0.308350);
     private static final boolean FR_STEER_INVERT = true;
     private static final boolean FR_ENCODER_INVERT = false;
 
     public static final Slot0Configs FR_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
             .withKS(0.074886).withKV(2.3641).withKA(0.1937);
     public static final Slot0Configs FR_DRIVE_CONSTANTS = DEFAULT_DRIVE_CONSTANTS
-            .withKS(0.093592).withKV(2.4391).withKA(0.054223);
+            .withKS(0.0640).withKV(2.4413).withKA(0.090446);
 
     public static final Distance FR_XPOS = Inches.of(12.5);
     public static final Distance FR_YPOS = Inches.of(-12.5);
@@ -186,7 +186,7 @@ public class DevbotTunerConstants {
     public static final Slot0Configs BL_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
             .withKS(0.078373).withKV(2.3735).withKA(0.15668);
     public static final Slot0Configs BL_DRIVE_CONSTANTS = DEFAULT_DRIVE_CONSTANTS
-            .withKS(0.062981).withKV(2.4538).withKA(0.12382);
+            .withKS(0.0795).withKV(2.3735).withKA(0.065728);
 
     public static final Distance BL_XPOS = Inches.of(-12.5);
     public static final Distance BL_YPOS = Inches.of(12.5);
@@ -202,7 +202,7 @@ public class DevbotTunerConstants {
     public static final Slot0Configs BR_STEER_CONSTANTS = DEFAULT_STEER_CONSTANTS
             .withKS(0.052225).withKV(2.3774).withKA(0.10977);
     public static final Slot0Configs BR_DRIVE_CONSTANTS = DEFAULT_DRIVE_CONSTANTS
-            .withKS(0.040343).withKV(2.453).withKA(0.16429);
+            .withKS(0.0784).withKV(2.447).withKA(0.067734);
 
     public static final Distance BR_XPOS = Inches.of(-12.5);
     public static final Distance BR_YPOS = Inches.of(-12.5);
