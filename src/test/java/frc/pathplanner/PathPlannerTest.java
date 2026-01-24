@@ -19,11 +19,12 @@ public class PathPlannerTest {
 
         PathConstraints constraints = bot.getPathFollowConstraints();
 
-        PathPlannerPath path = PathPlannerHelpers.createLinearPath(
+        PathPlannerPath path = PathPlannerHelpers.createPathBetween(
                 new Translation2d(0, 0),
                 new Translation2d(1, 1),
                 Rotation2d.fromDegrees(-45),
-                new PathConstraints(3.0, 2.0, 360, 540));
+                new PathConstraints(3.0, 2.0, 360, 540),
+                true);
 
         PathPlannerTrajectory trajectory = path.generateTrajectory(new ChassisSpeeds(), Rotation2d.fromDegrees(0),
                 bot.getConfig());

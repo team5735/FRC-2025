@@ -55,7 +55,7 @@ public class PathPlannerHelpers {
         return path;
     }
 
-    public static PathPlannerPath createLinearPath(Translation2d startPoint,
+    public static PathPlannerPath createPathBetween(Translation2d startPoint,
             Translation2d endPoint,
             Rotation2d endRobotHeading,
             PathConstraints constraints) {
