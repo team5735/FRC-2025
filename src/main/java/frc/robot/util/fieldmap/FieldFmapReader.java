@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.fieldmap;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,11 +16,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Reads a limelight fmap field file for programmatic access to
+ * april tag poses and competition field dimensions
+ * It does not read the base64 encoded images in the file
+ */
 public final class FieldFmapReader {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static List<FieldAprilTag> readFmap(Path fmapPath) throws IOException {
+    public static FieldSpec readFmap(Path fmapPath) throws IOException {
         JsonNode root = mapper.readTree(fmapPath.toFile());
         JsonNode fiducials = root.get("fiducials");
 
@@ -49,10 +54,19 @@ public final class FieldFmapReader {
             tags.add(new FieldAprilTag(id, size, wpiBluePose));
         }
 
-        return tags;
+        return new FieldSpec(Meters.of(fieldLength), 
+                             Meters.of(fieldWidth), 
+                             tags);
     }
 
     private static double[] readTransform(JsonNode arrayNode) {
+        // transform is 16 element array representing a 4x4 transform matrix encoding
+        // element rotation and translation in 3D:
+        // The matrix is:
+        // [[rot rot rot Tx],
+        //  [rot rot rot Ty],
+        //  [rot rot rot Tz],
+        //  [0   0   0   1 ]]
         if (arrayNode == null || arrayNode.size() != 16) {
             throw new IllegalArgumentException("Transform must be a 16-element array");
         }

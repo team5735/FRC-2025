@@ -10,18 +10,16 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import static edu.wpi.first.units.Units.Meters;
 
-import frc.robot.util.FieldFmapReader;
-import frc.robot.util.FieldAprilTag;
+import frc.robot.util.fieldmap.FieldFmapReader;
+import frc.robot.util.fieldmap.FieldAprilTag;
+import frc.robot.util.fieldmap.FieldSpec;
 
 public class FieldMapTest {
     @Test
     void fieldMapTest() throws Exception {
-        List<FieldAprilTag> tags =
-        FieldFmapReader.readFmap(Path.of(
-                "./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"
-        ));
+        FieldSpec field = FieldFmapReader.readFmap(Path.of("./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"));
 
-        for (FieldAprilTag tag : tags) {
+        for (FieldAprilTag tag : field.tags()) {
             Pose3d pose = tag.wpiBluePose();
             Translation3d t = pose.getTranslation();
             Rotation3d r = pose.getRotation();

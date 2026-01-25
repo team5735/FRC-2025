@@ -102,3 +102,12 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
+
+
+tasks.register('fieldfmap2constants', JavaExec) {
+    group = "Tools"
+    description = "CLI utility to read a limelight fieldmap file and convert it to a constants java file for programmatic access. Run this tool with --args \"srcfile dstfile\""
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "frc.tools.fieldfmap2constants"
+}
