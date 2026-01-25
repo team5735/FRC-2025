@@ -1,22 +1,58 @@
 package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.util.fieldmap.FieldAprilTag;
 
-// This was created by reading file the limelight fmap file and running this conversion script:
-// ./gradlew fieldfmap2constants --args "./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"
-// The output is copy-pasted in here
-public class FieldConstants {
-    public static final Distance FIELD_LENGTH = Meters.of(16.518);
-    public static final Distance FIELD_WIDTH = Meters.of(8.043);
+// This file provides positions, orientations, distances, and poses to field elements for
+// the REBUILT 2026 competition playing field.
+// These are based on the AndyMark field specifications
 
+// all coordinates are in the wpiBlue coordinate frame, with (0,0,0) being blue alliance right corner
+public class FieldConstants {
+    private static double in2m(double inches) {return inches*2.54/100.0;}
+
+    // gets the red alliance equivalent of the given blue field piece
+    // the returned dimensions are STILL in wpiBlue coords
+    public static Translation2d redElement(Translation2d blueElement){
+        return new Translation2d(FIELD_LENGTH.in(Meters) - blueElement.getX(),
+                                 FIELD_WIDTH.in(Meters) - blueElement.getY());
+    }
+
+
+    // dimensions of the arena
+    public static final Distance FIELD_LENGTH = Meters.of(16.518); // extent along the x-axis
+    public static final Distance FIELD_WIDTH = Meters.of(8.043);   // extent along the y-axis
+
+    // from https://firstfrc.blob.core.windows.net/frc2026/FieldAssets/2026-field-dimension-dwgs.pdf
+    // NOTE: we are only specifying blue elements.
+    //       use the function redElement() to get the corresponding red alliance element.
+    //       the coordinates for all elements are ALWAYS in the wpiBlue coordinate frame
+    //       Red "RIGHT" elements are red alliance right ie viewed from the red alliance side
+    //       So, when viewed from the blue side, the red element will be on the left
+    public static final Translation2d BLUE_HUB_CENTER = new Translation2d(in2m(181.56), in2m(158.32));
+    public static final Translation2d BLUE_OUTPOST_CENTER = new Translation2d(in2m(0), in2m(25.62));
+    public static final Translation2d BLUE_TRENCH_RIGHT_CENTER = new Translation2d(in2m(181.56), in2m(24.97));
+    public static final Translation2d BLUE_TRENCH_LEFT_CENTER = new Translation2d(in2m(181.56), in2m(FIELD_WIDTH.in(Inches)-24.97));
+    public static final Distance      TRENCH_HEIGHT = Inches.of(22.25);
+
+    public static final Translation2d BLUE_RAMP_RIGHT_CENTER = new Translation2d(in2m(181.56), in2m(24.97*2+12+73/2.0));
+    public static final Translation2d BLUE_RAMP_LEFT_CENTER = new Translation2d(in2m(181.56), in2m(FIELD_WIDTH.in(Inches)-(24.97*2+12+73/2.0)));
+    public static final Distance      RAMP_WIDTH = Inches.of(44); // extent along the x-axis of the field
+    public static final Distance      RAMP_LENGTH = Inches.of(73); // extent along the y-axis of the field (note these are named opposite of FIELD_LENGTH and FIELD_WIDTH)
+
+    // April tag section was created by reading the limelight fmap file and running this conversion script:
+    // ./gradlew fieldfmap2constants --args "./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"
+    // The output is copy-pasted in here
+    // (above FIELD_LENGTH and FIELD_WIDTH also come from this script)
     public static final Map<Integer, FieldAprilTag> APRIL_TAGS = Map.ofEntries(
             Map.entry(1,
                     new FieldAprilTag(1, Meters.of(0.165),

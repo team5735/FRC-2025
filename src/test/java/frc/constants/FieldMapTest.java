@@ -13,11 +13,12 @@ import static edu.wpi.first.units.Units.Meters;
 import frc.robot.util.fieldmap.FieldFmapReader;
 import frc.robot.util.fieldmap.FieldAprilTag;
 import frc.robot.util.fieldmap.FieldSpec;
+import frc.robot.constants.FieldConstants;
 
 public class FieldMapTest {
     @Test
     void fieldMapTest() throws Exception {
-        FieldSpec field = FieldFmapReader.readFmap(Path.of("./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"));
+        FieldSpec field = FieldFmapReader.readFmap(Path.of("./src/resources/FRC2026_ANDYMARK.fmap"));
 
         for (FieldAprilTag tag : field.tags()) {
             Pose3d pose = tag.wpiBluePose();
@@ -45,6 +46,26 @@ public class FieldMapTest {
                     Math.toDegrees(r.getZ())
             );
         }
-        
+        System.out.printf("Blue hub: %s\n",FieldConstants.BLUE_HUB_CENTER.toString());
+        System.out.printf("Red hub: %s\n",FieldConstants.redElement(FieldConstants.BLUE_HUB_CENTER).toString());
+        System.out.printf("\n");
+
+        System.out.printf("Blue outpost: %s\n",FieldConstants.BLUE_OUTPOST_CENTER.toString());
+        System.out.printf("Red outpost: %s\n",FieldConstants.redElement(FieldConstants.BLUE_OUTPOST_CENTER).toString());
+        System.out.printf("\n");
+
+        System.out.printf("Blue trench right: %s\n",FieldConstants.BLUE_TRENCH_RIGHT_CENTER.toString());
+        System.out.printf("Red trench right: %s\n",FieldConstants.redElement(FieldConstants.BLUE_TRENCH_RIGHT_CENTER).toString());
+
+        System.out.printf("Blue trench left: %s\n",FieldConstants.BLUE_TRENCH_LEFT_CENTER.toString());
+        System.out.printf("Red trench left: %s\n",FieldConstants.redElement(FieldConstants.BLUE_TRENCH_LEFT_CENTER).toString());
+        System.out.printf("\n");
+
+        System.out.printf("Blue ramp right: %s\n",FieldConstants.BLUE_RAMP_RIGHT_CENTER.toString());
+        System.out.printf("Red ramp right: %s\n",FieldConstants.redElement(FieldConstants.BLUE_RAMP_RIGHT_CENTER).toString());
+
+        System.out.printf("Blue ramp left: %s\n",FieldConstants.BLUE_RAMP_LEFT_CENTER.toString());
+        System.out.printf("Red ramp left: %s\n",FieldConstants.redElement(FieldConstants.BLUE_RAMP_LEFT_CENTER).toString());
+
     }
 }
