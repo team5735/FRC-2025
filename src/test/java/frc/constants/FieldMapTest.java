@@ -46,6 +46,10 @@ public class FieldMapTest {
                     Math.toDegrees(r.getZ())
             );
         }
+
+        System.out.printf("Field Center: %s\n",FieldConstants.FIELD_CENTER.toString());
+        System.out.printf("\n");
+
         System.out.printf("Blue hub: %s\n",FieldConstants.BLUE_HUB_CENTER.toString());
         System.out.printf("Red hub: %s\n",FieldConstants.redElement(FieldConstants.BLUE_HUB_CENTER).toString());
         System.out.printf("\n");

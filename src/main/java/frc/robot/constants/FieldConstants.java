@@ -32,6 +32,8 @@ public class FieldConstants {
     public static final Distance FIELD_LENGTH = Meters.of(16.518); // extent along the x-axis
     public static final Distance FIELD_WIDTH = Meters.of(8.043);   // extent along the y-axis
 
+    public static final Translation2d FIELD_CENTER = new Translation2d(FIELD_LENGTH.div(2), FIELD_WIDTH.div(2));
+
     // from https://firstfrc.blob.core.windows.net/frc2026/FieldAssets/2026-field-dimension-dwgs.pdf
     // NOTE: we are only specifying blue elements.
     //       use the function redElement() to get the corresponding red alliance element.
@@ -43,11 +45,13 @@ public class FieldConstants {
     public static final Translation2d BLUE_TRENCH_RIGHT_CENTER = new Translation2d(in2m(181.56), in2m(24.97));
     public static final Translation2d BLUE_TRENCH_LEFT_CENTER = new Translation2d(in2m(181.56), in2m(FIELD_WIDTH.in(Inches)-24.97));
     public static final Distance      TRENCH_HEIGHT = Inches.of(22.25);
+    public static final Distance      TRENCH_LENGTH = Inches.of(2*24.97); // the size of the opening (extent along y-axis of field)
 
     public static final Translation2d BLUE_RAMP_RIGHT_CENTER = new Translation2d(in2m(181.56), in2m(24.97*2+12+73/2.0));
     public static final Translation2d BLUE_RAMP_LEFT_CENTER = new Translation2d(in2m(181.56), in2m(FIELD_WIDTH.in(Inches)-(24.97*2+12+73/2.0)));
-    public static final Distance      RAMP_WIDTH = Inches.of(44); // extent along the x-axis of the field
+    public static final Distance      RAMP_WIDTH = Inches.of(44.4); // extent along the x-axis of the field
     public static final Distance      RAMP_LENGTH = Inches.of(73); // extent along the y-axis of the field (note these are named opposite of FIELD_LENGTH and FIELD_WIDTH)
+    public static final Distance      RAMP_HEIGHT = Inches.of(6.513); // ramp starts at 0 height and goes to this height in the middle
 
     // April tag section was created by reading the limelight fmap file and running this conversion script:
     // ./gradlew fieldfmap2constants --args "./src/main/java/frc/robot/constants/FRC2026_ANDYMARK.fmap"
