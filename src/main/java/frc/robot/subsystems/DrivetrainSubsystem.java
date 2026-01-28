@@ -85,19 +85,19 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
     private final Consumer<SysIdRoutineLog> translationLogConsumer = (log) -> {
         log.motor("FL_drive")
-                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearPosition(Meters.of(getModule(0).getPosition(false).distanceMeters))
                 .linearVelocity(MetersPerSecond.of(getState().ModuleStates[0].speedMetersPerSecond))
                 .voltage(getModule(0).getDriveMotor().getMotorVoltage().getValue());
         log.motor("FR_drive")
-                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearPosition(Meters.of(getModule(1).getPosition(false).distanceMeters))
                 .linearVelocity(MetersPerSecond.of(getState().ModuleStates[1].speedMetersPerSecond))
                 .voltage(getModule(1).getDriveMotor().getMotorVoltage().getValue());
         log.motor("BL_drive")
-                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearPosition(Meters.of(getModule(2).getPosition(false).distanceMeters))
                 .linearVelocity(MetersPerSecond.of(getState().ModuleStates[2].speedMetersPerSecond))
                 .voltage(getModule(2).getDriveMotor().getMotorVoltage().getValue());
         log.motor("BR_drive")
-                .linearPosition(Meters.of(getState().Pose.getY()))
+                .linearPosition(Meters.of(getModule(3).getPosition(false).distanceMeters))
                 .linearVelocity(MetersPerSecond.of(getState().ModuleStates[3].speedMetersPerSecond))
                 .voltage(getModule(3).getDriveMotor().getMotorVoltage().getValue());
     };
@@ -185,7 +185,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
                     this));
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineRotation;
+    private SysIdRoutine m_sysIdRoutineToApply = sysIdRoutineTranslation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
